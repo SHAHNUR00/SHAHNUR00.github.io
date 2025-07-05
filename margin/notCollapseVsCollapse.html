@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Margin Collapse vs No Collapse</title>
+	<style>
+		*{
+			font-family: 'Ubuntu Sans Mono Medium', sans-serif !important;
+		}
+		body {
+			font-family: Arial, sans-serif;
+			background: #f0f0f0;
+			margin: 0;
+			padding: 20px;
+		}
+		
+		.comparison {
+			display: flex;
+			gap: 40px;
+			margin-bottom: 40px;
+		}
+		
+		.example {
+			flex: 1;
+			background: white;
+			padding: 20px;
+			border-radius: 8px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+		}
+		
+		.example h3 {
+			margin-top: 0;
+			text-align: center;
+			padding: 10px;
+			border-radius: 4px;
+			color: white;
+		}
+		
+		.collapse-title {
+			background: #e74c3c;
+		}
+		
+		.no-collapse-title {
+			background: #27ae60;
+		}
+		
+		/* COLLAPSED MARGINS EXAMPLE */
+		.collapsed-parent {
+			background: #ffebee;
+			border: 2px dashed #e74c3c;
+			/* NO padding or border to allow collapse */
+		}
+		
+		.collapsed-child {
+			background: #ff5722;
+			color: white;
+			padding: 15px;
+			margin: 40px 0; /* This will collapse with parent */
+			text-align: center;
+			position: relative;
+		}
+		
+		/* Visual indicator for collapsed margin */
+		.collapsed-child::before {
+			content: "40px margin (COLLAPSED)";
+			position: absolute;
+			top: -40px;
+			left: 0;
+			right: 0;
+			height: 40px;
+			background: rgba(231, 76, 60, 0.3);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: #fff;
+			font-weight: bold;
+		}
+		
+		/* NOT COLLAPSED MARGINS EXAMPLE */
+		.no-collapse-parent {
+			background: #e8f5e8;
+			border: 2px dashed #27ae60;
+			padding: 1px; /* This 1px prevents collapse! */
+		}
+		
+		.no-collapse-child {
+			background: #4caf50;
+			color: white;
+			padding: 15px;
+			margin: 40px 0;
+			text-align: center;
+			position: relative;
+		}
+		
+		/* Visual indicator for non-collapsed margin */
+		.no-collapse-child::before {
+			content: "40px margin (NOT COLLAPSED)";
+			position: absolute;
+			top: -40px;
+			left: 0;
+			right: 0;
+			height: 40px;
+			background: rgba(76, 175, 80, 0.3);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: #fff;
+			font-weight: bold;
+		}
+		
+		.measurement {
+			text-align: center;
+			margin-top: 20px;
+			padding: 10px;
+			background: #f8f9fa;
+			border-radius: 4px;
+			font-weight: bold;
+		}
+		
+		.measurement.collapsed {
+			color: #e74c3c;
+		}
+		
+		.measurement.not-collapsed {
+			color: #27ae60;
+		}
+		
+		.explanation-box {
+			background: #fff3cd;
+			border: 1px solid #ffeaa7;
+			padding: 20px;
+			border-radius: 8px;
+			margin: 20px 0;
+		}
+		
+		.side-by-side {
+			display: flex;
+			gap: 20px;
+			margin: 20px 0;
+		}
+		
+		.side-by-side > div {
+			flex: 1;
+		}
+		
+		.code-block {
+			background: #2d3748;
+			color: #e2e8f0;
+			padding: 15px;
+			border-radius: 4px;
+			font-family: 'Courier New', monospace;
+			font-size: 14px;
+			overflow-x: auto;
+		}
+		
+		.highlight {
+			background: #ffd93d;
+			color: #333;
+			padding: 2px 4px;
+			border-radius: 2px;
+		}
+	</style>
+</head>
+<body>
+<h1 style="text-align: center; color: #333;">Margin Collapse vs No Collapse</h1>
+
+<div class="explanation-box">
+	<h2 style="margin-top: 0;">The Key Difference:</h2>
+	<ul>
+		<li><strong>Collapse:</strong> Margins "merge" together, space gets smaller than expected</li>
+		<li><strong>No Collapse:</strong> Margins work as expected, adding up to create the full space</li>
+	</ul>
+</div>
+
+<div class="comparison">
+	<!-- COLLAPSED EXAMPLE -->
+	<div class="example">
+		<h3 class="collapse-title">❌ MARGINS COLLAPSE</h3>
+		<div class="collapsed-parent">
+			<div class="collapsed-child">
+				Child Element<br>
+				margin: 40px 0
+			</div>
+		</div>
+		<div class="measurement collapsed">
+			⚠️ Margin "escapes" the parent!<br>
+			The child's margin pushes the ENTIRE parent down
+		</div>
+	</div>
+	
+	<!-- NOT COLLAPSED EXAMPLE -->
+	<div class="example">
+		<h3 class="no-collapse-title">✅ MARGINS DON'T COLLAPSE</h3>
+		<div class="no-collapse-parent">
+			<div class="no-collapse-child">
+				Child Element<br>
+				margin: 40px 0
+			</div>
+		</div>
+		<div class="measurement not-collapsed">
+			✅ Margin stays inside parent!<br>
+			Creates actual space inside the container
+		</div>
+	</div>
+</div>
+
+<div class="explanation-box">
+	<h2 style="margin-top: 0;">What's Happening?</h2>
+	
+	<div class="side-by-side">
+		<div>
+			<h4 style="color: #e74c3c;">❌ When Margins Collapse:</h4>
+			<div class="code-block">
+				.parent {
+				/* No padding/border */
+				}
+				.child {
+				margin-top: 40px;
+				}
+			</div>
+			<p><strong>Result:</strong> The child's margin "escapes" and pushes the entire parent container down by 40px, instead of creating space inside the parent.</p>
+		</div>
+		
+		<div>
+			<h4 style="color: #27ae60;">✅ When Margins Don't Collapse:</h4>
+			<div class="code-block">
+				.parent {
+				<span class="highlight">padding: 1px;</span> /* Prevents collapse */
+				}
+				.child {
+				margin-top: 40px;
+				}
+			</div>
+			<p><strong>Result:</strong> The child's margin creates actual 40px space inside the parent container, which is what you'd normally expect.</p>
+		</div>
+	</div>
+</div>
+
+<div class="explanation-box">
+	<h2 style="margin-top: 0;">How to Prevent Margin Collapse:</h2>
+	<ul>
+		<li>Add <code>padding</code> to the parent (even 1px works!)</li>
+		<li>Add <code>border</code> to the parent</li>
+		<li>Use <code>overflow: hidden</code> on the parent</li>
+		<li>Use <code>display: flex</code> or <code>display: grid</code> on the parent</li>
+		<li>Use <code>position: absolute</code> on the child</li>
+	</ul>
+</div>
+</body>
+</html>
