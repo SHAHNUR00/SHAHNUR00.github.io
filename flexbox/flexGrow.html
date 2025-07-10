@@ -3,18 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flex Shrink Accurate Visual Demo</title>
+    <title>Flex Grow Accurate Visual Demo</title>
     <style>
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important
         }
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
             color: #333;
             line-height: 1.6;
             padding: 20px;
@@ -45,7 +45,7 @@
             color: #2c3e50;
             font-size: 1.5rem;
             margin-bottom: 15px;
-            border-bottom: 3px solid #3498db;
+            border-bottom: 3px solid #11998e;
             padding-bottom: 10px;
         }
 
@@ -72,13 +72,14 @@
 
         .flex-container {
             display: flex;
-            border: 3px solid #3498db;
+            border: 3px solid #11998e;
             border-radius: 10px;
             padding: 15px;
             background: #f8f9fa;
             position: relative;
             height: 100px;
             align-items: center;
+            width: 600px; /* Fixed width to show growth clearly */
         }
 
         .flex-item {
@@ -118,7 +119,7 @@
             margin-bottom: 3px;
         }
 
-        .shrink-value {
+        .grow-value {
             font-size: 0.8rem;
             opacity: 0.9;
             background: rgba(255,255,255,0.3);
@@ -139,102 +140,95 @@
             font-weight: bold;
         }
 
-        /* BEFORE - Normal space */
+        /* BEFORE - No growth (content-based width) */
         .before .flex-item {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 0;
+            flex-basis: auto;
+            width: auto;
         }
 
-        /* AFTER - Limited space scenarios */
+        /* AFTER - Growth scenarios */
         .after .flex-container {
-            width: 400px; /* Force shrinking */
+            width: 600px; /* Plenty of space for growth */
         }
 
-        /* Scenario 1: Equal shrinking */
+        /* Scenario 1: Equal growth */
         .scenario1 .after .flex-item {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
-        /* Scenario 2: Unequal shrinking */
+        /* Scenario 2: Unequal growth */
         .scenario2 .after .item1 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
         .scenario2 .after .item2 {
-            flex-basis: 150px;
-            flex-shrink: 3; /* Shrinks 3x more */
+            flex-grow: 3; /* Grows 3x more */
+            flex-basis: 0;
         }
 
         .scenario2 .after .item3 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
-        /* Scenario 3: No shrinking */
+        /* Scenario 3: No growth */
         .scenario3 .after .item1 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
         .scenario3 .after .item2 {
-            flex-basis: 150px;
-            flex-shrink: 0; /* No shrinking */
+            flex-grow: 0; /* No growth */
+            flex-basis: auto;
         }
 
         .scenario3 .after .item3 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
-        /* Scenario 4: Extreme shrinking */
-        .scenario4 .after .flex-container {
-            width: 350px; /* Even more limited */
-        }
-
+        /* Scenario 4: Extreme growth */
         .scenario4 .after .item1 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
         .scenario4 .after .item2 {
-            flex-basis: 150px;
-            flex-shrink: 10; /* Extreme shrinking */
+            flex-grow: 10; /* Extreme growth */
+            flex-basis: 0;
         }
 
         .scenario4 .after .item3 {
-            flex-basis: 150px;
-            flex-shrink: 1;
+            flex-grow: 1;
+            flex-basis: 0;
         }
 
         /* Scenario 5: Mixed values */
-        .scenario5 .after .flex-container {
-            width: 300px; /* Very limited */
-        }
-
         .scenario5 .after .item1 {
-            flex-basis: 120px;
-            flex-shrink: 0; /* No shrinking */
+            flex-grow: 0; /* No growth */
+            flex-basis: auto;
         }
 
         .scenario5 .after .item2 {
-            flex-basis: 120px;
-            flex-shrink: 2; /* Medium shrinking */
+            flex-grow: 2; /* Medium growth */
+            flex-basis: 0;
         }
 
         .scenario5 .after .item3 {
-            flex-basis: 120px;
-            flex-shrink: 1; /* Default shrinking */
+            flex-grow: 1; /* Default growth */
+            flex-basis: 0;
         }
 
         .scenario5 .after .item4 {
-            flex-basis: 120px;
-            flex-shrink: 5; /* High shrinking */
+            flex-grow: 5; /* High growth */
+            flex-basis: 0;
         }
 
         .explanation {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #11998e, #38ef7d);
             color: white;
             padding: 15px;
             border-radius: 8px;
@@ -280,7 +274,7 @@
         }
 
         .reference-item {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            background: linear-gradient(135deg, #11998e, #38ef7d);
             color: white;
             padding: 15px;
             border-radius: 10px;
@@ -310,11 +304,46 @@
         }
 
         .measurement::before {
-            content: "📏 Actual measurements:";
+            content: "📏 Growth explanation:";
             font-weight: bold;
             color: #2c3e50;
             display: block;
             margin-bottom: 5px;
+        }
+
+        /* Visual growth indicators */
+        .growth-bar {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #11998e, #38ef7d);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .scenario1 .after .item1 .growth-bar,
+        .scenario1 .after .item2 .growth-bar,
+        .scenario1 .after .item3 .growth-bar {
+            width: 100%;
+        }
+
+        .scenario2 .after .item1 .growth-bar,
+        .scenario2 .after .item3 .growth-bar {
+            width: 50%;
+        }
+
+        .scenario2 .after .item2 .growth-bar {
+            width: 100%;
+        }
+
+        .scenario3 .after .item1 .growth-bar,
+        .scenario3 .after .item3 .growth-bar {
+            width: 100%;
+        }
+
+        .scenario3 .after .item2 .growth-bar {
+            width: 0%;
         }
 
         @media (max-width: 768px) {
@@ -323,7 +352,7 @@
                 gap: 20px;
             }
             
-            .after .flex-container {
+            .flex-container {
                 width: 100% !important;
             }
         }
@@ -331,198 +360,222 @@
 </head>
 <body>
     <div class="container">
-        <h1>🎯 Flex Shrink - Accurate Visual Demo</h1>
+        <h1>🌱 Flex Grow - Accurate Visual Demo</h1>
         
-        <!-- Scenario 1: Equal Shrinking -->
+        <!-- Scenario 1: Equal Growth -->
         <div class="demo-section scenario1">
-            <h2>📊 Scenario 1: Equal Shrinking (All flex-shrink: 1)</h2>
+            <h2>🌱 Scenario 1: Equal Growth (All flex-grow: 1)</h2>
             <div class="comparison-container">
                 <div class="before-after before">
-                    <h3>🔵 BEFORE (Normal Space)</h3>
+                    <h3>🔵 BEFORE (Content-based)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (Limited Space)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~117px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~117px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~117px</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="explanation">⚖️ All items shrink equally because they have the same flex-shrink value</p>
-        </div>
-
-        <!-- Scenario 2: Unequal Shrinking -->
-        <div class="demo-section scenario2">
-            <h2>🎭 Scenario 2: Unequal Shrinking (1, 3, 1)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Normal Space)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 3</span>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (Limited Space)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~140px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 3</span>
+                            <span class="grow-value">flex-grow: 0</span>
                             <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~140px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (With Growth)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~180px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~180px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~180px</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="explanation">🔄 Item 2 shrinks 3x more than Items 1 & 3 - Notice the dramatic size difference!</p>
+            <p class="explanation">🌱 All items grow equally and share the available space equally</p>
         </div>
 
-        <!-- Scenario 3: No Shrinking -->
+        <!-- Scenario 2: Unequal Growth -->
+        <div class="demo-section scenario2">
+            <h2>🚀 Scenario 2: Unequal Growth (1, 3, 1)</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (Content-based)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (With Growth)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~108px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="grow-value">flex-grow: 3</span>
+                            <div class="size-indicator">~324px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="growth-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~108px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">🚀 Item 2 grows 3x more than Items 1 & 3 - Gets 3x more space!</p>
+        </div>
+
+        <!-- Scenario 3: No Growth -->
         <div class="demo-section scenario3">
-            <h2>🚫 Scenario 3: Prevent Shrinking (1, 0, 1)</h2>
+            <h2>🚫 Scenario 3: Prevent Growth (1, 0, 1)</h2>
             <div class="comparison-container">
                 <div class="before-after before">
-                    <h3>🔵 BEFORE (Normal Space)</h3>
+                    <h3>🔵 BEFORE (Content-based)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 0</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                     </div>
                 </div>
                 <div class="before-after after">
-                    <h3>🔴 AFTER (Limited Space)</h3>
+                    <h3>🔴 AFTER (With Growth)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~100px</div>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~250px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 0</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~100px</div>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~250px</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="explanation">🚫 Item 2 stays the same size! Items 1 & 3 shrink more to compensate</p>
+            <p class="explanation">🚫 Item 2 stays same size! Items 1 & 3 grow to fill remaining space</p>
         </div>
 
-        <!-- Scenario 4: Extreme Shrinking -->
+        <!-- Scenario 4: Extreme Growth -->
         <div class="demo-section scenario4">
-            <h2>🔥 Scenario 4: Extreme Shrinking (1, 10, 1)</h2>
+            <h2>🔥 Scenario 4: Extreme Growth (1, 10, 1)</h2>
             <div class="comparison-container">
                 <div class="before-after before">
-                    <h3>🔵 BEFORE (Normal Space)</h3>
+                    <h3>🔵 BEFORE (Content-based)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 10</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">150px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~80px</div>
                         </div>
                     </div>
                 </div>
                 <div class="before-after after">
-                    <h3>🔴 AFTER (Very Limited Space)</h3>
+                    <h3>🔴 AFTER (With Growth)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~140px</div>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~45px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 10</span>
-                            <div class="size-indicator">~30px</div>
+                            <span class="grow-value">flex-grow: 10</span>
+                            <div class="size-indicator">~450px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~140px</div>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~45px</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="explanation">🔥 Item 2 becomes tiny! It shrinks 10x more than the others</p>
+            <p class="explanation">🔥 Item 2 takes most space! It grows 10x more than the others</p>
         </div>
 
         <!-- Scenario 5: Mixed Values -->
@@ -530,83 +583,97 @@
             <h2>🎪 Scenario 5: Mixed Values (0, 2, 1, 5)</h2>
             <div class="comparison-container">
                 <div class="before-after before">
-                    <h3>🔵 BEFORE (Normal Space)</h3>
+                    <h3>🔵 BEFORE (Content-based)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 0</span>
-                            <div class="size-indicator">120px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~60px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 2</span>
-                            <div class="size-indicator">120px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~60px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">120px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~60px</div>
                         </div>
                         <div class="flex-item item4">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 4</span>
-                            <span class="shrink-value">flex-shrink: 5</span>
-                            <div class="size-indicator">120px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~60px</div>
                         </div>
                     </div>
                 </div>
                 <div class="before-after after">
-                    <h3>🔴 AFTER (Very Limited Space)</h3>
+                    <h3>🔴 AFTER (With Growth)</h3>
                     <div class="flex-container">
                         <div class="flex-item item1">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 1</span>
-                            <span class="shrink-value">flex-shrink: 0</span>
-                            <div class="size-indicator">120px</div>
+                            <span class="grow-value">flex-grow: 0</span>
+                            <div class="size-indicator">~60px</div>
                         </div>
                         <div class="flex-item item2">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 2</span>
-                            <span class="shrink-value">flex-shrink: 2</span>
-                            <div class="size-indicator">~75px</div>
+                            <span class="grow-value">flex-grow: 2</span>
+                            <div class="size-indicator">~135px</div>
                         </div>
                         <div class="flex-item item3">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 3</span>
-                            <span class="shrink-value">flex-shrink: 1</span>
-                            <div class="size-indicator">~90px</div>
+                            <span class="grow-value">flex-grow: 1</span>
+                            <div class="size-indicator">~67px</div>
                         </div>
                         <div class="flex-item item4">
+                            <div class="growth-bar"></div>
                             <span class="label">Item 4</span>
-                            <span class="shrink-value">flex-shrink: 5</span>
-                            <div class="size-indicator">~35px</div>
+                            <span class="grow-value">flex-grow: 5</span>
+                            <div class="size-indicator">~338px</div>
                         </div>
                     </div>
                 </div>
             </div>
-            <p class="explanation">🎪 Complex shrinking! Item 1 stays same, Item 4 shrinks most, Item 2 shrinks 2x Item 3</p>
+            <p class="explanation">🎪 Complex growth! Item 1 stays same, Item 4 grows most (5x), Item 2 grows 2x Item 3</p>
         </div>
 
         <!-- Quick Reference -->
         <div class="reference-section">
-            <h2>📚 Quick Reference - Flex Shrink Values</h2>
+            <h2>📚 Quick Reference - Flex Grow Values</h2>
             <div class="reference-grid">
                 <div class="reference-item">
-                    <div class="ref-title">flex-shrink: 0</div>
-                    <div class="ref-desc">🚫 Never shrinks</div>
+                    <div class="ref-title">flex-grow: 0</div>
+                    <div class="ref-desc">🚫 Never grows (default)</div>
                 </div>
                 <div class="reference-item">
-                    <div class="ref-title">flex-shrink: 1</div>
-                    <div class="ref-desc">⚖️ Default behavior</div>
+                    <div class="ref-title">flex-grow: 1</div>
+                    <div class="ref-desc">🌱 Takes equal share</div>
                 </div>
                 <div class="reference-item">
-                    <div class="ref-title">flex-shrink: 2</div>
-                    <div class="ref-desc">📉 Shrinks 2x more</div>
+                    <div class="ref-title">flex-grow: 2</div>
+                    <div class="ref-desc">📈 Grows 2x more</div>
                 </div>
                 <div class="reference-item">
-                    <div class="ref-title">flex-shrink: 5</div>
-                    <div class="ref-desc">📉📉 Shrinks 5x more</div>
+                    <div class="ref-title">flex-grow: 5</div>
+                    <div class="ref-desc">📈📈 Grows 5x more</div>
                 </div>
                 <div class="reference-item">
-                    <div class="ref-title">flex-shrink: 10</div>
-                    <div class="ref-desc">🔥 Extreme shrinking</div>
+                    <div class="ref-title">flex-grow: 10</div>
+                    <div class="ref-desc">🚀 Extreme growth</div>
                 </div>
+            </div>
+            
+            <div class="measurement">
+                <strong>🎯 Key Concept:</strong> flex-grow controls how much of the REMAINING space an item should take up.<br>
+                <strong>Formula:</strong> Item's share = (item's flex-grow / total flex-grow) × remaining space<br>
+                <strong>Example:</strong> If items have flex-grow: 1, 2, 1 → Item 2 gets 2/4 = 50% of remaining space
             </div>
         </div>
     </div>
