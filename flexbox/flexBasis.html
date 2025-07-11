@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex Basis Accurate Visual Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .comparison-container {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .before-after {
+            flex: 1;
+        }
+
+        .before-after h3 {
+            color: #e74c3c;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: 1.2rem;
+        }
+
+        .before-after.after h3 {
+            color: #27ae60;
+        }
+
+        .flex-container {
+            display: flex;
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f8f9fa;
+            position: relative;
+            height: 100px;
+            align-items: center;
+            width: 600px; /* Fixed width for consistent comparison */
+        }
+
+        .flex-item {
+            color: white;
+            padding: 15px;
+            margin: 5px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 70px;
+            position: relative;
+            border: 2px solid rgba(0,0,0,0.1);
+        }
+
+        .item1 {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .item2 {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .item3 {
+            background: linear-gradient(135deg, #45b7d1, #96c93d);
+        }
+
+        .item4 {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .label {
+            font-size: 0.9rem;
+            margin-bottom: 3px;
+        }
+
+        .basis-value {
+            font-size: 0.8rem;
+            opacity: 0.9;
+            background: rgba(255,255,255,0.3);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+
+        .size-indicator {
+            position: absolute;
+            bottom: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #2c3e50;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 5px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        /* BEFORE - Default (no flex-basis) */
+        .before .flex-item {
+            flex-basis: auto;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        /* AFTER - With flex-basis */
+        .after .flex-container {
+            width: 600px;
+        }
+
+        /* Scenario 1: Equal flex-basis */
+        .scenario1 .after .flex-item {
+            flex-basis: 150px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        /* Scenario 2: Different flex-basis values */
+        .scenario2 .after .item1 {
+            flex-basis: 100px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario2 .after .item2 {
+            flex-basis: 200px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario2 .after .item3 {
+            flex-basis: 150px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        /* Scenario 3: flex-basis with flex-grow */
+        .scenario3 .after .item1 {
+            flex-basis: 100px;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        .scenario3 .after .item2 {
+            flex-basis: 50px;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        .scenario3 .after .item3 {
+            flex-basis: 100px;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        /* Scenario 4: flex-basis 0 vs auto */
+        .scenario4 .after .item1 {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        .scenario4 .after .item2 {
+            flex-basis: auto;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        .scenario4 .after .item3 {
+            flex-basis: 0;
+            flex-grow: 1;
+            flex-shrink: 1;
+        }
+
+        /* Scenario 5: Percentage flex-basis */
+        .scenario5 .after .item1 {
+            flex-basis: 20%;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario5 .after .item2 {
+            flex-basis: 50%;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario5 .after .item3 {
+            flex-basis: 30%;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        /* Scenario 6: Overflow scenario */
+        .scenario6 .after .item1 {
+            flex-basis: 250px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario6 .after .item2 {
+            flex-basis: 250px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .scenario6 .after .item3 {
+            flex-basis: 250px;
+            flex-grow: 0;
+            flex-shrink: 1;
+        }
+
+        .explanation {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 500;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        .reference-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            margin-top: 30px;
+        }
+
+        .reference-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .reference-item {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .ref-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .ref-desc {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .measurement {
+            position: relative;
+            margin-top: 20px;
+            padding: 15px;
+            background: #ecf0f1;
+            border-radius: 5px;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+
+        .measurement::before {
+            content: "📏 Flex-basis explanation:";
+            font-weight: bold;
+            color: #2c3e50;
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        /* Visual basis indicators */
+        .basis-bar {
+            position: absolute;
+            top: -8px;
+            left: 0;
+            height: 3px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+        }
+
+        .content-text {
+            font-size: 0.7rem;
+            margin-top: 5px;
+            opacity: 0.8;
+        }
+
+        @media (max-width: 768px) {
+            .comparison-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .flex-container {
+                width: 100% !important;
+            }
+        }
+
+        /* Highlight overflow */
+        .overflow-warning {
+            position: absolute;
+            top: -35px;
+            right: 10px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📏 Flex Basis - Accurate Visual Demo</h1>
+        
+        <!-- Scenario 1: Equal flex-basis -->
+        <div class="demo-section scenario1">
+            <h2>📐 Scenario 1: Equal Flex-Basis (All 150px)</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (flex-basis: 150px)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: 150px</span>
+                            <div class="content-text">Fixed width</div>
+                            <div class="size-indicator">150px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: 150px</span>
+                            <div class="content-text">Fixed width</div>
+                            <div class="size-indicator">150px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: 150px</span>
+                            <div class="content-text">Fixed width</div>
+                            <div class="size-indicator">150px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">📐 flex-basis sets the initial main size before free space is distributed</p>
+        </div>
+
+        <!-- Scenario 2: Different flex-basis values -->
+        <div class="demo-section scenario2">
+            <h2>🎯 Scenario 2: Different Flex-Basis Values</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content width</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (100px, 200px, 150px)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: 100px</span>
+                            <div class="content-text">Small</div>
+                            <div class="size-indicator">100px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: 200px</span>
+                            <div class="content-text">Large</div>
+                            <div class="size-indicator">200px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: 150px</span>
+                            <div class="content-text">Medium</div>
+                            <div class="size-indicator">150px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">🎯 Each item gets its specified flex-basis as starting size</p>
+        </div>
+
+        <!-- Scenario 3: flex-basis with flex-grow -->
+        <div class="demo-section scenario3">
+            <h2>🌱 Scenario 3: Flex-Basis + Flex-Grow</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (basis only)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: 100px</span>
+                            <div class="content-text">grow: 0</div>
+                            <div class="size-indicator">100px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: 50px</span>
+                            <div class="content-text">grow: 0</div>
+                            <div class="size-indicator">50px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: 100px</span>
+                            <div class="content-text">grow: 0</div>
+                            <div class="size-indicator">100px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (basis + grow: 1)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">basis: 100px</span>
+                            <div class="content-text">grow: 1</div>
+                            <div class="size-indicator">~217px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">basis: 50px</span>
+                            <div class="content-text">grow: 1</div>
+                            <div class="size-indicator">~167px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">basis: 100px</span>
+                            <div class="content-text">grow: 1</div>
+                            <div class="size-indicator">~217px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">🌱 flex-basis sets starting size, then flex-grow distributes remaining space</p>
+        </div>
+
+        <!-- Scenario 4: flex-basis 0 vs auto -->
+        <div class="demo-section scenario4">
+            <h2>🔄 Scenario 4: flex-basis: 0 vs auto</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Short</span>
+                            <span class="basis-value">basis: auto, grow: 1</span>
+                            <div class="content-text">Content size</div>
+                            <div class="size-indicator">~100px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Much Longer Text</span>
+                            <span class="basis-value">basis: auto, grow: 1</span>
+                            <div class="content-text">Content size</div>
+                            <div class="size-indicator">~200px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Medium</span>
+                            <span class="basis-value">basis: auto, grow: 1</span>
+                            <div class="content-text">Content size</div>
+                            <div class="size-indicator">~150px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (flex-basis: 0)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Short</span>
+                            <span class="basis-value">basis: 0, grow: 1</span>
+                            <div class="content-text">Equal share</div>
+                            <div class="size-indicator">~183px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Much Longer Text</span>
+                            <span class="basis-value">basis: 0, grow: 1</span>
+                            <div class="content-text">Equal share</div>
+                            <div class="size-indicator">~183px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Medium</span>
+                            <span class="basis-value">basis: 0, grow: 1</span>
+                            <div class="content-text">Equal share</div>
+                            <div class="size-indicator">~183px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">🔄 flex-basis: 0 ignores content size, auto uses content as starting point</p>
+        </div>
+
+        <!-- Scenario 5: Percentage flex-basis -->
+        <div class="demo-section scenario5">
+            <h2>📊 Scenario 5: Percentage Flex-Basis</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (20%, 50%, 30%)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: 20%</span>
+                            <div class="content-text">1/5 of container</div>
+                            <div class="size-indicator">~110px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: 50%</span>
+                            <div class="content-text">1/2 of container</div>
+                            <div class="size-indicator">~280px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: 30%</span>
+                            <div class="content-text">3/10 of container</div>
+                            <div class="size-indicator">~170px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">📊 Percentage flex-basis is relative to container size</p>
+        </div>
+
+        <!-- Scenario 6: Overflow scenario -->
+        <div class="demo-section scenario6">
+            <h2>⚠️ Scenario 6: Overflow (Total basis > Container)</h2>
+            <div class="comparison-container">
+                <div class="before-after before">
+                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
+                    <div class="flex-container">
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: auto</span>
+                            <div class="content-text">Content</div>
+                            <div class="size-indicator">~85px</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="before-after after">
+                    <h3>🔴 AFTER (Each 250px = 750px total)</h3>
+                    <div class="flex-container">
+                        <div class="overflow-warning">Overflow!</div>
+                        <div class="flex-item item1">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 1</span>
+                            <span class="basis-value">flex-basis: 250px</span>
+                            <div class="content-text">Shrinks!</div>
+                            <div class="size-indicator">~180px</div>
+                        </div>
+                        <div class="flex-item item2">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 2</span>
+                            <span class="basis-value">flex-basis: 250px</span>
+                            <div class="content-text">Shrinks!</div>
+                            <div class="size-indicator">~180px</div>
+                        </div>
+                        <div class="flex-item item3">
+                            <div class="basis-bar"></div>
+                            <span class="label">Item 3</span>
+                            <span class="basis-value">flex-basis: 250px</span>
+                            <div class="content-text">Shrinks!</div>
+                            <div class="size-indicator">~180px</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <p class="explanation">⚠️ When total flex-basis > container width, items shrink (flex-shrink applies)</p>
+        </div>
+
+        <!-- Quick Reference -->
+        <div class="reference-section">
+            <h2>📚 Quick Reference - Flex Basis Values</h2>
+            <div class="reference-grid">
+                <div class="reference-item">
+                    <div class="ref-title">flex-basis: auto</div>
+                    <div class="ref-desc">📏 Uses content size (default)</div>
+                </div>
+                <div class="reference-item">
+                    <div class="ref-title">flex-basis: 0</div>
+                    <div class="ref-desc">🔄 Ignores content size</div>
+                </div>
+                <div class="reference-item">
+                    <div class="ref-title">flex-basis: 200px</div>
+                    <div class="ref-desc">📐 Fixed pixel width</div>
+                </div>
+                <div class="reference-item">
+                    <div class="ref-title">flex-basis: 50%</div>
+                    <div class="ref-desc">📊 Percentage of container</div>
+                </div>
+                <div class="reference-item">
+                    <div class="ref-title">flex-basis: content</div>
+                    <div class="ref-desc">📝 Intrinsic content size</div>
+                </div>
+            </div>
+            
+            <div class="measurement">
+                <strong>🎯 Key Concept:</strong> flex-basis sets the initial main size before growing or shrinking.<br>
+                <strong>Priority:</strong> flex-basis overrides width/height in flex containers<br>
+                <strong>auto vs 0:</strong> auto uses content size as starting point, 0 ignores content<br>
+                <strong>With flex-grow:</strong> flex-basis + (remaining space ÷ total grow values)<br>
+                <strong>With flex-shrink:</strong> If total basis > container, items shrink proportionally
+            </div>
+        </div>
+    </div>
+</body>
+</html>
