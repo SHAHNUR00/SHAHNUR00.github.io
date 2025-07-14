@@ -1,781 +1,495 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CSS Grid Template Columns & Rows - Explained & Visualized</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CSS Grid Template Visualization</title>
+	<style>
+		:root {
+			/* Nord Color Palette */
+			--nord0: #2e3440;
+			--nord1: #3b4252;
+			--nord2: #434c5e;
+			--nord3: #4c566a;
+			--nord4: #d8dee9;
+			--nord5: #e5e9f0;
+			--nord6: #eceff4;
+			--nord7: #8fbcbb;
+			--nord8: #88c0d0;
+			--nord9: #81a1c1;
+			--nord10: #5e81ac;
+			--nord11: #bf616a;
+			--nord12: #d08770;
+			--nord13: #ebcb8b;
+			--nord14: #a3be8c;
+			--nord15: #b48ead;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
             font-family: 'Ubuntu Sans Mono', sans-serif !important;
-        }
-
-        body {
-            font-family: 'Ubuntu Sans Mono', sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
-            line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        h1 {
-            text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .demo-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .explanation-box {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            font-size: 1.1rem;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-
-        .explanation-box h3 {
-            margin-bottom: 10px;
-            font-size: 1.3rem;
-            color: white;
-        }
-
-        .comparison-container {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-
-        .before-after {
-            flex: 1;
-            min-width: 300px;
-        }
-
-        .before-after h3 {
-            color: #e74c3c;
-            margin-bottom: 10px;
-            text-align: center;
-            font-size: 1.2rem;
-        }
-
-        .before-after.after h3 {
-            color: #27ae60;
-        }
-
-        .grid-container {
-            display: grid;
-            gap: 10px;
-            border: 3px solid #667eea;
-            border-radius: 10px;
-            padding: 15px;
-            background: #f8f9fa;
-            position: relative;
-            min-height: 200px;
-        }
-
-        .grid-item {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 60px;
-            position: relative;
-            border: 2px solid rgba(0,0,0,0.1);
-            font-size: 0.9rem;
-        }
-
-        .grid-item:nth-child(1) { background: linear-gradient(135deg, #ff6b6b, #ee5a52); }
-        .grid-item:nth-child(2) { background: linear-gradient(135deg, #4ecdc4, #44a08d); }
-        .grid-item:nth-child(3) { background: linear-gradient(135deg, #45b7d1, #96c93d); }
-        .grid-item:nth-child(4) { background: linear-gradient(135deg, #f39c12, #e67e22); }
-        .grid-item:nth-child(5) { background: linear-gradient(135deg, #9b59b6, #8e44ad); }
-        .grid-item:nth-child(6) { background: linear-gradient(135deg, #1abc9c, #16a085); }
-        .grid-item:nth-child(7) { background: linear-gradient(135deg, #e74c3c, #c0392b); }
-        .grid-item:nth-child(8) { background: linear-gradient(135deg, #34495e, #2c3e50); }
-        .grid-item:nth-child(9) { background: linear-gradient(135deg, #f1c40f, #f39c12); }
-
-        .size-indicator {
-            position: absolute;
-            bottom: -20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c3e50;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        .grid-info {
-            position: absolute;
-            top: -30px;
-            left: 10px;
-            background: rgba(102, 126, 234, 0.9);
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
-            font-weight: bold;
-        }
-
-        /* GRID TEMPLATE COLUMNS SCENARIOS */
-
-        /* Scenario 1: Equal columns */
-        .scenario1 .before .grid-container {
-            grid-template-columns: auto auto auto;
-        }
-
-        .scenario1 .after .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-        }
-
-        /* Scenario 2: Different column sizes */
-        .scenario2 .before .grid-container {
-            grid-template-columns: auto auto auto;
-        }
-
-        .scenario2 .after .grid-container {
-            grid-template-columns: 100px 200px 150px;
-        }
-
-        /* Scenario 3: Fractional units */
-        .scenario3 .before .grid-container {
-            grid-template-columns: auto auto auto;
-        }
-
-        .scenario3 .after .grid-container {
-            grid-template-columns: 1fr 2fr 1fr;
-        }
-
-        /* Scenario 4: Mixed units */
-        .scenario4 .before .grid-container {
-            grid-template-columns: auto auto auto;
-        }
-
-        .scenario4 .after .grid-container {
-            grid-template-columns: 100px 1fr 20%;
-        }
-
-        /* Scenario 5: Percentage columns */
-        .scenario5 .before .grid-container {
-            grid-template-columns: auto auto auto;
-        }
-
-        .scenario5 .after .grid-container {
-            grid-template-columns: 25% 50% 25%;
-        }
-
-        /* Scenario 6: Repeat function */
-        .scenario6 .before .grid-container {
-            grid-template-columns: auto auto auto auto;
-        }
-
-        .scenario6 .after .grid-container {
-            grid-template-columns: repeat(4, 1fr);
-        }
-
-        /* GRID TEMPLATE ROWS SCENARIOS */
-
-        /* Scenario 7: Equal rows */
-        .scenario7 .before .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto auto;
-        }
-
-        .scenario7 .after .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 100px 100px 100px;
-        }
-
-        /* Scenario 8: Different row sizes */
-        .scenario8 .before .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto auto;
-        }
-
-        .scenario8 .after .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 60px 120px 80px;
-        }
-
-        /* Scenario 9: Fractional rows */
-        .scenario9 .before .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto auto;
-            height: 300px;
-        }
-
-        .scenario9 .after .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 1fr 2fr 1fr;
-            height: 300px;
-        }
-
-        /* Scenario 10: Mixed rows */
-        .scenario10 .before .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: auto auto auto;
-            height: 300px;
-        }
-
-        .scenario10 .after .grid-container {
-            grid-template-columns: 1fr 1fr 1fr;
-            grid-template-rows: 50px 1fr 20%;
-            height: 300px;
-        }
-
-        .final-explanation {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 500;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .reference-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 30px;
-        }
-
-        .reference-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .reference-item {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .ref-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .ref-desc {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        @media (max-width: 768px) {
-            .comparison-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .grid-container {
-                min-height: 150px;
-            }
-        }
-    </style>
+		}
+		
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: var(--nord0);
+			color: var(--nord4);
+			line-height: 1.6;
+			padding: 20px;
+		}
+		
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		h1 {
+			text-align: center;
+			color: var(--nord8);
+			margin-bottom: 30px;
+			font-size: 2.5em;
+		}
+		
+		.section {
+			margin-bottom: 40px;
+			background: var(--nord1);
+			padding: 30px;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+		}
+		
+		.section h2 {
+			color: var(--nord13);
+			margin-bottom: 20px;
+			font-size: 1.8em;
+		}
+		
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			margin-bottom: 30px;
+			align-items: center;
+		}
+		
+		.control-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+		
+		label {
+			color: var(--nord14);
+			font-weight: 600;
+			font-size: 0.9em;
+		}
+		
+		select, input {
+			padding: 8px 12px;
+			border: 2px solid var(--nord3);
+			border-radius: 5px;
+			background: var(--nord2);
+			color: var(--nord4);
+			font-size: 14px;
+			min-width: 140px;
+		}
+		
+		select:focus, input:focus {
+			outline: none;
+			border-color: var(--nord8);
+		}
+		
+		.grid-container {
+			display: grid;
+			gap: 3px;
+			background: var(--nord3);
+			padding: 10px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			transition: all 0.3s ease;
+		}
+		
+		.grid-item {
+			background: var(--nord9);
+			border: 2px solid var(--nord10);
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 600;
+			font-size: 16px;
+			color: var(--nord6);
+			min-height: 60px;
+			transition: all 0.3s ease;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			padding: 8px;
+		}
+		
+		.grid-item:nth-child(1) { background: var(--nord11); }
+		.grid-item:nth-child(2) { background: var(--nord12); }
+		.grid-item:nth-child(3) { background: var(--nord13); color: var(--nord0); }
+		.grid-item:nth-child(4) { background: var(--nord14); color: var(--nord0); }
+		.grid-item:nth-child(5) { background: var(--nord15); }
+		.grid-item:nth-child(6) { background: var(--nord7); color: var(--nord0); }
+		.grid-item:nth-child(7) { background: var(--nord8); color: var(--nord0); }
+		.grid-item:nth-child(8) { background: var(--nord9); }
+		.grid-item:nth-child(9) { background: var(--nord10); }
+		
+		.code-display {
+			background: var(--nord0);
+			border: 1px solid var(--nord3);
+			border-radius: 5px;
+			padding: 15px;
+			font-family: 'Courier New', monospace;
+			color: var(--nord14);
+			font-size: 14px;
+			overflow-x: auto;
+			white-space: pre;
+		}
+		
+		.explanation {
+			background: var(--nord2);
+			border-left: 4px solid var(--nord8);
+			padding: 15px;
+			margin-top: 15px;
+			border-radius: 0 5px 5px 0;
+		}
+		
+		.explanation h3 {
+			color: var(--nord8);
+			margin-bottom: 10px;
+		}
+		
+		.explanation ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.explanation li {
+			margin-bottom: 8px;
+			padding-left: 20px;
+			position: relative;
+		}
+		
+		.explanation li:before {
+			content: "•";
+			color: var(--nord8);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		
+		.fr-demo {
+			margin-top: 20px;
+		}
+		
+		.fr-example {
+			display: grid;
+			grid-template-columns: 1fr 2fr 1fr;
+			gap: 5px;
+			background: var(--nord3);
+			padding: 10px;
+			border-radius: 8px;
+			margin: 10px 0;
+		}
+		
+		.fr-item {
+			background: var(--nord15);
+			color: var(--nord0);
+			padding: 15px;
+			border-radius: 4px;
+			text-align: center;
+			font-weight: 600;
+			min-height: 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.preset-buttons {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 20px;
+			flex-wrap: wrap;
+		}
+		
+		.preset-btn {
+			padding: 8px 16px;
+			background: var(--nord10);
+			color: var(--nord6);
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: all 0.3s ease;
+		}
+		
+		.preset-btn:hover {
+			background: var(--nord9);
+			transform: translateY(-1px);
+		}
+		
+		.info-box {
+			background: linear-gradient(135deg, var(--nord1), var(--nord2));
+			border: 1px solid var(--nord3);
+			border-radius: 8px;
+			padding: 20px;
+			margin-top: 20px;
+		}
+		
+		.info-box h4 {
+			color: var(--nord13);
+			margin-bottom: 15px;
+		}
+		
+		.info-box ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.info-box li {
+			padding: 8px 0;
+			border-bottom: 1px solid var(--nord3);
+			position: relative;
+			padding-left: 20px;
+		}
+		
+		.info-box li:before {
+			content: "•";
+			color: var(--nord8);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 8px;
+		}
+		
+		.info-box li:last-child {
+			border-bottom: none;
+		}
+		
+		.info-box code {
+			background: var(--nord0);
+			color: var(--nord14);
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 0.9em;
+		}
+		
+		@media (max-width: 768px) {
+			.controls {
+				flex-direction: column;
+				align-items: stretch;
+			}
+			
+			.control-group {
+				width: 100%;
+			}
+			
+			select, input {
+				width: 100%;
+			}
+		}
+	</style>
 </head>
 <body>
-    <div class="container">
-        <h1>📊 CSS Grid Template Columns & Rows - Explained & Visualized</h1>
-        
-        <!-- GRID TEMPLATE COLUMNS SECTION -->
-        <div class="demo-section">
-            <h1 style="font-size: 2rem; margin-bottom: 20px; color: #2c3e50;">🔹 GRID TEMPLATE COLUMNS</h1>
-        </div>
+<div class="container">
+	<h1>CSS Grid Template Visualization</h1>
+	
+	<!-- Grid Template Columns Section -->
+	<div class="section">
+		<h2>grid-template-columns</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setColumnsPreset('1fr 1fr 1fr')">Equal Columns</button>
+			<button class="preset-btn" onclick="setColumnsPreset('1fr 2fr 1fr')">1:2:1 Ratio</button>
+			<button class="preset-btn" onclick="setColumnsPreset('100px 1fr 50px')">Fixed + Flexible</button>
+			<button class="preset-btn" onclick="setColumnsPreset('repeat(4, 1fr)')">Repeat 4 Equal</button>
+			<button class="preset-btn" onclick="setColumnsPreset('minmax(100px, 1fr) 200px')">Minmax + Fixed</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="columns">Grid Template Columns:</label>
+				<input type="text" id="columns" value="1fr 1fr 1fr" placeholder="e.g., 1fr 2fr 1fr">
+			</div>
+			<div class="control-group">
+				<label for="colItems">Number of Items:</label>
+				<select id="colItems">
+					<option value="3">3 items</option>
+					<option value="4">4 items</option>
+					<option value="5">5 items</option>
+					<option value="6" selected>6 items</option>
+					<option value="9">9 items</option>
+				</select>
+			</div>
+		</div>
+		
+		<div id="columnsGrid" class="grid-container"></div>
+		
+		<div class="code-display" id="columnsCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding grid-template-columns:</h3>
+			<p>This property defines the width of each column in your grid. You can use various units:</p>
+			<ul>
+				<li><strong>fr (fractional units):</strong> Distributes available space proportionally</li>
+				<li><strong>px, em, rem:</strong> Fixed sizes</li>
+				<li><strong>%:</strong> Percentage of container width</li>
+				<li><strong>auto:</strong> Size based on content</li>
+				<li><strong>minmax():</strong> Set minimum and maximum sizes</li>
+				<li><strong>repeat():</strong> Repeat a pattern</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- Grid Template Rows Section -->
+	<div class="section">
+		<h2>grid-template-rows</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setRowsPreset('1fr 1fr')">Equal Rows</button>
+			<button class="preset-btn" onclick="setRowsPreset('auto 1fr auto')">Header-Content-Footer</button>
+			<button class="preset-btn" onclick="setRowsPreset('100px 200px')">Fixed Heights</button>
+			<button class="preset-btn" onclick="setRowsPreset('repeat(3, 1fr)')">Repeat 3 Equal</button>
+			<button class="preset-btn" onclick="setRowsPreset('minmax(50px, auto) 1fr')">Minmax + Flexible</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="rows">Grid Template Rows:</label>
+				<input type="text" id="rows" value="1fr 1fr" placeholder="e.g., auto 1fr auto">
+			</div>
+			<div class="control-group">
+				<label for="rowItems">Number of Items:</label>
+				<select id="rowItems">
+					<option value="3">3 items</option>
+					<option value="4">4 items</option>
+					<option value="6" selected>6 items</option>
+					<option value="9">9 items</option>
+				</select>
+			</div>
+		</div>
+		
+		<div id="rowsGrid" class="grid-container"></div>
+		
+		<div class="code-display" id="rowsCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding grid-template-rows:</h3>
+			<p>This property defines the height of each row in your grid. Uses the same units as columns:</p>
+			<ul>
+				<li><strong>fr units:</strong> Distribute available vertical space</li>
+				<li><strong>auto:</strong> Height based on content</li>
+				<li><strong>Fixed units:</strong> px, em, rem for exact heights</li>
+				<li><strong>minmax():</strong> Set minimum and maximum row heights</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- FR Units Explanation -->
+	<div class="section">
+		<h2>Understanding 'fr' Units</h2>
+		
+		<div class="fr-demo">
+			<h3>Example: 1fr 2fr 1fr</h3>
+			<p>The 'fr' unit represents a fraction of the available space. In this example:</p>
+			<div class="fr-example">
+				<div class="fr-item">1fr<br>(25%)</div>
+				<div class="fr-item">2fr<br>(50%)</div>
+				<div class="fr-item">1fr<br>(25%)</div>
+			</div>
+			<p>Total: 1 + 2 + 1 = 4 fractions. Each 'fr' gets 1/4 of the space.</p>
+		</div>
+		
+		<div class="info-box">
+			<h4>Common Patterns:</h4>
+			<ul>
+				<li><code>1fr</code> - Single column takes all space</li>
+				<li><code>1fr 1fr</code> - Two equal columns (50% each)</li>
+				<li><code>1fr 2fr</code> - Second column is twice as wide</li>
+				<li><code>repeat(3, 1fr)</code> - Three equal columns</li>
+				<li><code>200px 1fr</code> - Fixed sidebar, flexible content</li>
+				<li><code>minmax(200px, 1fr) 1fr</code> - Responsive with minimum</li>
+			</ul>
+		</div>
+	</div>
+</div>
 
-        <!-- Scenario 1: Equal Columns -->
-        <div class="demo-section scenario1">
-            <h2>📏 1. Equal Columns with fr Units</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>fr (fractional unit)</strong> splits available space equally. <code>1fr 1fr 1fr</code> means 3 equal columns that share the container width.</p>
-                <p><strong>Think of it like:</strong> Dividing a pizza into 3 equal slices.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (1fr 1fr 1fr)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">1fr 1fr 1fr</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">📏 All columns are now exactly the same width!</div>
-        </div>
-
-        <!-- Scenario 2: Different Column Sizes -->
-        <div class="demo-section scenario2">
-            <h2>📐 2. Fixed Column Sizes with Pixels</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Pixel values</strong> create exact column widths. <code>100px 200px 150px</code> means first column is 100px, second is 200px, third is 150px.</p>
-                <p><strong>Think of it like:</strong> Building blocks with specific sizes.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (100px 200px 150px)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">100px 200px 150px</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">200px</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">150px</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">200px</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">150px</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">📐 Each column has its exact specified width!</div>
-        </div>
-
-        <!-- Scenario 3: Fractional Units -->
-        <div class="demo-section scenario3">
-            <h2>🔢 3. Proportional Columns with Different fr Values</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Different fr values</strong> create proportional columns. <code>1fr 2fr 1fr</code> means middle column gets 2x more space than the side columns.</p>
-                <p><strong>Think of it like:</strong> Splitting into 4 parts total (1+2+1), middle gets 2 parts, sides get 1 part each.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (1fr 2fr 1fr)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">1fr 2fr 1fr</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">2/4</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">2/4</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">1/4</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">🔢 Middle column is twice as wide as the side columns!</div>
-        </div>
-
-        <!-- Scenario 4: Mixed Units -->
-        <div class="demo-section scenario4">
-            <h2>🎛️ 4. Mixed Units (Fixed + Flexible + Percentage)</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Mixing different units</strong> combines fixed, flexible, and percentage widths. <code>100px 1fr 20%</code> means: 100px fixed, 20% of container, remaining space goes to middle.</p>
-                <p><strong>Think of it like:</strong> Reserving specific spaces, then filling the rest flexibly.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (100px 1fr 20%)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">100px 1fr 20%</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">remaining</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">20%</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">remaining</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">20%</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">🎛️ Column 1 is fixed 100px, Column 3 is 20% of container, Column 2 takes remaining space!</div>
-        </div>
-
-        <!-- Scenario 5: Percentage Columns -->
-        <div class="demo-section scenario5">
-            <h2>📊 5. Percentage Columns</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Percentage values</strong> are relative to container width. <code>25% 50% 25%</code> means first column is 1/4, middle is 1/2, last is 1/4 of container.</p>
-                <p><strong>Think of it like:</strong> Percentage of a pie chart.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (25% 50% 25%)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">25% 50% 25%</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">25%</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">50%</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">25%</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">25%</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">50%</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">25%</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">📊 Columns resize proportionally with container!</div>
-        </div>
-
-        <!-- Scenario 6: Repeat Function -->
-        <div class="demo-section scenario6">
-            <h2>🔄 6. Repeat Function (Shorthand)</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>repeat() function</strong> is shorthand for repeating patterns. <code>repeat(4, 1fr)</code> is same as <code>1fr 1fr 1fr 1fr</code>.</p>
-                <p><strong>Think of it like:</strong> Copy-paste shortcut for repetitive patterns.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">auto auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                        <div class="grid-item">Item 7</div>
-                        <div class="grid-item">Item 8</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (repeat(4, 1fr))</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">repeat(4, 1fr)</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 7<div class="size-indicator">1fr</div></div>
-                        <div class="grid-item">Item 8<div class="size-indicator">1fr</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">🔄 4 equal columns created with shorthand syntax!</div>
-        </div>
-
-        <!-- GRID TEMPLATE ROWS SECTION -->
-        <div class="demo-section">
-            <h1 style="font-size: 2rem; margin-bottom: 20px; color: #2c3e50;">🔸 GRID TEMPLATE ROWS</h1>
-        </div>
-
-        <!-- Scenario 7: Equal Rows -->
-        <div class="demo-section scenario7">
-            <h2>📏 7. Fixed Equal Row Heights</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Fixed row heights</strong> set exact vertical spacing. <code>100px 100px 100px</code> means all rows are exactly 100px tall.</p>
-                <p><strong>Think of it like:</strong> Stacking equal-height shelves.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                        <div class="grid-item">Item 7</div>
-                        <div class="grid-item">Item 8</div>
-                        <div class="grid-item">Item 9</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (100px 100px 100px)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: 100px 100px 100px</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 7<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 8<div class="size-indicator">100px</div></div>
-                        <div class="grid-item">Item 9<div class="size-indicator">100px</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">📏 All rows now have consistent 100px height!</div>
-        </div>
-
-        <!-- Scenario 8: Different Row Sizes -->
-        <div class="demo-section scenario8">
-            <h2>📐 8. Different Row Heights</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Different row heights</strong> create varied vertical spacing. <code>60px 120px 80px</code> means first row 60px, second row 120px, third row 80px.</p>
-                <p><strong>Think of it like:</strong> Shelves with different heights for different items.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                        <div class="grid-item">Item 7</div>
-                        <div class="grid-item">Item 8</div>
-                        <div class="grid-item">Item 9</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (60px 120px 80px)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: 60px 120px 80px</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">60px</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">60px</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">60px</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">120px</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">120px</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">120px</div></div>
-                        <div class="grid-item">Item 7<div class="size-indicator">80px</div></div>
-                        <div class="grid-item">Item 8<div class="size-indicator">80px</div></div>
-                        <div class="grid-item">Item 9<div class="size-indicator">80px</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">📐 Each row has its specific height: small, large, medium!</div>
-        </div>
-
-        <!-- Scenario 9: Fractional Rows -->
-        <div class="demo-section scenario9">
-            <h2>🔢 9. Proportional Row Heights with fr</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Fractional rows</strong> distribute vertical space proportionally. <code>1fr 2fr 1fr</code> means middle row gets 2x more height than top/bottom rows.</p>
-                <p><strong>Think of it like:</strong> Dividing vertical space into proportional sections.</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                        <div class="grid-item">Item 7</div>
-                        <div class="grid-item">Item 8</div>
-                        <div class="grid-item">Item 9</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (1fr 2fr 1fr)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: 1fr 2fr 1fr</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">2/4</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">2/4</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">2/4</div></div>
-                        <div class="grid-item">Item 7<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 8<div class="size-indicator">1/4</div></div>
-                        <div class="grid-item">Item 9<div class="size-indicator">1/4</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">🔢 Middle row takes up twice the vertical space!</div>
-        </div>
-
-        <!-- Scenario 10: Mixed Row Units -->
-        <div class="demo-section scenario10">
-            <h2>🎛️ 10. Mixed Row Units</h2>
-            
-            <div class="explanation-box">
-                <h3>💡 What it does:</h3>
-                <p><strong>Mixed row units</strong> combine fixed, flexible, and percentage heights. <code>50px 1fr 20%</code> means: 50px fixed, 20% of container, remaining height goes to middle.</p>
-                <p><strong>Think of it like:</strong> Header (fixed), content (flexible), footer (percentage).</p>
-            </div>
-
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (auto auto auto)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: auto auto auto</div>
-                        <div class="grid-item">Item 1</div>
-                        <div class="grid-item">Item 2</div>
-                        <div class="grid-item">Item 3</div>
-                        <div class="grid-item">Item 4</div>
-                        <div class="grid-item">Item 5</div>
-                        <div class="grid-item">Item 6</div>
-                        <div class="grid-item">Item 7</div>
-                        <div class="grid-item">Item 8</div>
-                        <div class="grid-item">Item 9</div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (50px 1fr 20%)</h3>
-                    <div class="grid-container">
-                        <div class="grid-info">rows: 50px 1fr 20%</div>
-                        <div class="grid-item">Item 1<div class="size-indicator">50px</div></div>
-                        <div class="grid-item">Item 2<div class="size-indicator">50px</div></div>
-                        <div class="grid-item">Item 3<div class="size-indicator">50px</div></div>
-                        <div class="grid-item">Item 4<div class="size-indicator">remaining</div></div>
-                        <div class="grid-item">Item 5<div class="size-indicator">remaining</div></div>
-                        <div class="grid-item">Item 6<div class="size-indicator">remaining</div></div>
-                        <div class="grid-item">Item 7<div class="size-indicator">20%</div></div>
-                        <div class="grid-item">Item 8<div class="size-indicator">20%</div></div>
-                        <div class="grid-item">Item 9<div class="size-indicator">20%</div></div>
-                    </div>
-                </div>
-            </div>
-            <div class="final-explanation">🎛️ Top row fixed, bottom row 20% of container, middle row takes remaining space!</div>
-        </div>
-
-        <!-- Quick Reference -->
-        <div class="reference-section">
-            <h2>📚 Quick Reference - Grid Template Values</h2>
-            <div class="reference-grid">
-                <div class="reference-item">
-                    <div class="ref-title">auto</div>
-                    <div class="ref-desc">📏 Size based on content</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">1fr</div>
-                    <div class="ref-desc">🔢 Equal share of available space</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">200px</div>
-                    <div class="ref-desc">📐 Fixed pixel size</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">50%</div>
-                    <div class="ref-desc">📊 Percentage of container</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">repeat(3, 1fr)</div>
-                    <div class="ref-desc">🔄 Shorthand for patterns</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">100px 1fr 20%</div>
-                    <div class="ref-desc">🎛️ Mix different units</div>
-                </div>
-            </div>
-        </div>
-    </div>
+<script>
+	// Initialize grids
+	function createGrid(containerId, items, isColumns = true) {
+		const container = document.getElementById(containerId);
+		container.innerHTML = '';
+		
+		for (let i = 1; i <= items; i++) {
+			const item = document.createElement('div');
+			item.className = 'grid-item';
+			item.textContent = `Item ${i}`;
+			container.appendChild(item);
+		}
+	}
+	
+	function updateColumnsGrid() {
+		const columnsValue = document.getElementById('columns').value;
+		const itemsCount = parseInt(document.getElementById('colItems').value);
+		const container = document.getElementById('columnsGrid');
+		const codeDisplay = document.getElementById('columnsCode');
+		
+		container.style.gridTemplateColumns = columnsValue;
+		container.style.gridTemplateRows = 'auto';
+		
+		createGrid('columnsGrid', itemsCount, true);
+		
+		codeDisplay.textContent = `.grid-container {
+  display: grid;
+  grid-template-columns: ${columnsValue};
+  gap: 3px;
+}`;
+	}
+	
+	function updateRowsGrid() {
+		const rowsValue = document.getElementById('rows').value;
+		const itemsCount = parseInt(document.getElementById('rowItems').value);
+		const container = document.getElementById('rowsGrid');
+		const codeDisplay = document.getElementById('rowsCode');
+		
+		container.style.gridTemplateRows = rowsValue;
+		container.style.gridTemplateColumns = 'repeat(3, 1fr)';
+		
+		createGrid('rowsGrid', itemsCount, false);
+		
+		codeDisplay.textContent = `.grid-container {
+  display: grid;
+  grid-template-rows: ${rowsValue};
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}`;
+	}
+	
+	function setColumnsPreset(value) {
+		document.getElementById('columns').value = value;
+		updateColumnsGrid();
+	}
+	
+	function setRowsPreset(value) {
+		document.getElementById('rows').value = value;
+		updateRowsGrid();
+	}
+	
+	// Event listeners
+	document.getElementById('columns').addEventListener('input', updateColumnsGrid);
+	document.getElementById('colItems').addEventListener('change', updateColumnsGrid);
+	document.getElementById('rows').addEventListener('input', updateRowsGrid);
+	document.getElementById('rowItems').addEventListener('change', updateRowsGrid);
+	
+	// Initialize on page load
+	updateColumnsGrid();
+	updateRowsGrid();
+</script>
 </body>
 </html>
