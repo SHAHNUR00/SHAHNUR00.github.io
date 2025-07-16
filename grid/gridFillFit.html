@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Grid Auto-fit, Auto-fill & Minmax Visualization</title>
+    <style>
+        :root {
+            /* Nord Dark Theme */
+            --nord0: #2e3440;
+            --nord1: #3b4252;
+            --nord2: #434c5e;
+            --nord3: #4c566a;
+            --nord4: #d8dee9;
+            --nord5: #e5e9f0;
+            --nord6: #eceff4;
+            --nord7: #8fbcbb;
+            --nord8: #88c0d0;
+            --nord9: #81a1c1;
+            --nord10: #5e81ac;
+            --nord11: #bf616a;
+            --nord12: #d08770;
+            --nord13: #ebcb8b;
+            --nord14: #a3be8c;
+            --nord15: #b48ead;
+            
+            /* Theme Variables */
+            --bg-primary: var(--nord0);
+            --bg-secondary: var(--nord1);
+            --bg-tertiary: var(--nord2);
+            --border-color: var(--nord3);
+            --text-primary: var(--nord4);
+            --text-secondary: var(--nord5);
+            --text-bright: var(--nord6);
+            --accent-primary: var(--nord8);
+            --accent-secondary: var(--nord13);
+            --accent-tertiary: var(--nord14);
+        }
+
+        [data-theme="light"] {
+            /* Nord Light Theme */
+            --bg-primary: #eceff4;
+            --bg-secondary: #e5e9f0;
+            --bg-tertiary: #d8dee9;
+            --border-color: #4c566a;
+            --text-primary: #2e3440;
+            --text-secondary: #3b4252;
+            --text-bright: #2e3440;
+            --accent-primary: #5e81ac;
+            --accent-secondary: #d08770;
+            --accent-tertiary: #a3be8c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            padding: 20px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        h1 {
+            color: var(--accent-primary);
+            font-size: 2.5em;
+            margin: 0;
+        }
+
+        .theme-toggle {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--bg-secondary);
+            padding: 8px 16px;
+            border-radius: 25px;
+            border: 2px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: var(--bg-tertiary);
+            transform: translateY(-1px);
+        }
+
+        .theme-toggle-icon {
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .theme-toggle-text {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .section {
+            margin-bottom: 40px;
+            background: var(--bg-secondary);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        .section h2 {
+            color: var(--accent-secondary);
+            margin-bottom: 20px;
+            font-size: 1.8em;
+        }
+
+        .controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        label {
+            color: var(--accent-tertiary);
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        select, input {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 5px;
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            min-width: 160px;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.1);
+        }
+
+        .demo-grid {
+            display: grid;
+            gap: 10px;
+            background: var(--border-color);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+            min-height: 250px;
+            overflow: visible;
+        }
+
+        .demo-item {
+            background: var(--nord12);
+            border: 2px solid var(--nord13);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--nord0);
+            transition: all 0.3s ease;
+            min-height: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-item:nth-child(2n) {
+            background: var(--nord14);
+            border-color: var(--nord7);
+        }
+
+        .demo-item:nth-child(3n) {
+            background: var(--nord15);
+            border-color: var(--nord9);
+        }
+
+        .code-display {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            color: var(--accent-tertiary);
+            font-size: 14px;
+            overflow-x: auto;
+            white-space: pre;
+            transition: all 0.3s ease;
+            line-height: 1.6;
+        }
+
+        .explanation {
+            background: var(--bg-tertiary);
+            border-left: 4px solid var(--accent-primary);
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 0 5px 5px 0;
+            transition: all 0.3s ease;
+        }
+
+        .explanation h3 {
+            color: var(--accent-primary);
+            margin-bottom: 10px;
+        }
+
+        .explanation ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .explanation li {
+            margin-bottom: 8px;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .explanation li:before {
+            content: "•";
+            color: var(--accent-primary);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+
+        .preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            padding: 8px 16px;
+            background: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .preset-btn:hover {
+            background: var(--nord9);
+            transform: translateY(-1px);
+        }
+
+        .width-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .width-slider {
+            width: 300px;
+        }
+
+        .width-display {
+            background: var(--bg-tertiary);
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: var(--accent-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 20px;
+        }
+
+        .comparison-item {
+            background: var(--bg-tertiary);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            overflow: visible;
+        }
+
+        .comparison-item h4 {
+            color: var(--accent-secondary);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .comparison-demo {
+            display: grid;
+            gap: 8px;
+            background: var(--border-color);
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            min-height: 200px;
+            overflow: visible;
+        }
+
+        .comparison-demo .demo-item {
+            min-height: 50px;
+            font-size: 14px;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .control-group {
+                width: 100%;
+            }
+            
+            select, input {
+                width: 100%;
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Grid Auto-fit, Auto-fill & Minmax</h1>
+            <div class="theme-toggle" onclick="toggleTheme()">
+                <span class="theme-toggle-icon" id="theme-icon">🌙</span>
+                <span class="theme-toggle-text" id="theme-text">Dark Mode</span>
+            </div>
+        </div>
+
+        <!-- Auto-fit vs Auto-fill Section -->
+        <div class="section">
+            <h2>Auto-fit vs Auto-fill</h2>
+            
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="setAutoPreset('auto-fit')">Auto-fit</button>
+                <button class="preset-btn" onclick="setAutoPreset('auto-fill')">Auto-fill</button>
+                <button class="preset-btn" onclick="setAutoPreset('compare')">Compare Both</button>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="autoType">Type:</label>
+                    <select id="autoType">
+                        <option value="auto-fit">auto-fit</option>
+                        <option value="auto-fill">auto-fill</option>
+                    </select>
+                </div>
+                <div class="control-group">
+                    <label for="minSize">Min Size:</label>
+                    <input type="text" id="minSize" value="180px" placeholder="180px">
+                </div>
+                <div class="control-group">
+                    <label for="maxSize">Max Size:</label>
+                    <input type="text" id="maxSize" value="1fr" placeholder="1fr">
+                </div>
+                <div class="control-group">
+                    <label for="itemCount">Items:</label>
+                    <input type="number" id="itemCount" value="4" min="1" max="20">
+                </div>
+            </div>
+
+            <div class="width-control">
+                <label for="containerWidth">Container Width:</label>
+                <input type="range" id="containerWidth" class="width-slider" min="400" max="1200" value="900">
+                <span class="width-display" id="widthDisplay">900px</span>
+            </div>
+
+            <div id="autoDemo" class="demo-grid">
+                <!-- Items will be created by JavaScript -->
+            </div>
+            
+            <div class="code-display" id="autoCode"></div>
+
+            <div class="explanation">
+                <h3>Understanding Auto-fit vs Auto-fill:</h3>
+                <ul>
+                    <li><strong>auto-fit:</strong> Collapses empty tracks, stretches items to fill space</li>
+                    <li><strong>auto-fill:</strong> Preserves empty tracks, maintains item sizes</li>
+                    <li><strong>minmax():</strong> Sets minimum and maximum size constraints</li>
+                    <li><strong>Responsive:</strong> Both adapt to container width changes</li>
+                    <li><strong>Use cases:</strong> auto-fit for flexible layouts, auto-fill for consistent sizing</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Minmax Function Section -->
+        <div class="section">
+            <h2>Minmax Function</h2>
+            
+            <div class="preset-buttons">
+                <button class="preset-btn" onclick="setMinmaxPreset('flexible')">Flexible</button>
+                <button class="preset-btn" onclick="setMinmaxPreset('fixed-min')">Fixed Min</button>
+                <button class="preset-btn" onclick="setMinmaxPreset('fixed-max')">Fixed Max</button>
+                <button class="preset-btn" onclick="setMinmaxPreset('content')">Content Based</button>
+            </div>
+
+            <div class="controls">
+                <div class="control-group">
+                    <label for="minmaxColumns">Columns:</label>
+                    <input type="text" id="minmaxColumns" value="repeat(3, minmax(200px, 1fr))" placeholder="repeat(3, minmax(200px, 1fr))">
+                </div>
+                <div class="control-group">
+                    <label for="minmaxRows">Rows:</label>
+                    <input type="text" id="minmaxRows" value="repeat(2, minmax(100px, auto))" placeholder="repeat(2, minmax(100px, auto))">
+                </div>
+            </div>
+
+            <div class="width-control">
+                <label for="minmaxContainerWidth">Container Width:</label>
+                <input type="range" id="minmaxContainerWidth" class="width-slider" min="600" max="1300" value="1000">
+                <span class="width-display" id="minmaxWidthDisplay">1000px</span>
+            </div>
+
+            <div id="minmaxDemo" class="demo-grid">
+                <!-- Items will be created by JavaScript -->
+            </div>
+            
+            <div class="code-display" id="minmaxCode"></div>
+
+            <div class="explanation">
+                <h3>Understanding Minmax:</h3>
+                <ul>
+                    <li><strong>Syntax:</strong> minmax(min, max) sets size constraints</li>
+                    <li><strong>Min value:</strong> Can be px, em, rem, %, min-content, max-content</li>
+                    <li><strong>Max value:</strong> Can be px, em, rem, %, fr, min-content, max-content, auto</li>
+                    <li><strong>Flexibility:</strong> Tracks grow/shrink between min and max values</li>
+                    <li><strong>Common use:</strong> Responsive layouts with size constraints</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Comparison Section -->
+        <div class="section">
+            <h2>Side-by-Side Comparison</h2>
+            
+            <div class="comparison-grid">
+                <div class="comparison-item">
+                    <h4>Auto-fit</h4>
+                    <div id="comparisonAutoFit" class="comparison-demo"></div>
+                    <div class="code-display" style="font-size: 12px; padding: 10px;">repeat(auto-fit, minmax(150px, 1fr))</div>
+                </div>
+                
+                <div class="comparison-item">
+                    <h4>Auto-fill</h4>
+                    <div id="comparisonAutoFill" class="comparison-demo"></div>
+                    <div class="code-display" style="font-size: 12px; padding: 10px;">repeat(auto-fill, minmax(150px, 1fr))</div>
+                </div>
+            </div>
+
+            <div class="width-control">
+                <label for="comparisonWidth">Comparison Width:</label>
+                <input type="range" id="comparisonWidth" class="width-slider" min="500" max="1100" value="750">
+                <span class="width-display" id="comparisonWidthDisplay">750px</span>
+            </div>
+
+            <div class="explanation">
+                <h3>Key Differences:</h3>
+                <ul>
+                    <li><strong>Empty space:</strong> auto-fit collapses it, auto-fill preserves it</li>
+                    <li><strong>Item stretching:</strong> auto-fit stretches items, auto-fill maintains size</li>
+                    <li><strong>Track count:</strong> auto-fit creates fewer tracks, auto-fill creates more</li>
+                    <li><strong>Flexibility:</strong> auto-fit is more flexible, auto-fill is more predictable</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            const currentTheme = body.getAttribute('data-theme');
+            
+            if (currentTheme === 'light') {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+                localStorage.setItem('theme', 'dark');
+            } else {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+                localStorage.setItem('theme', 'light');
+            }
+        }
+
+        // Load saved theme
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme');
+            const body = document.body;
+            const themeIcon = document.getElementById('theme-icon');
+            const themeText = document.getElementById('theme-text');
+            
+            if (savedTheme === 'light') {
+                body.setAttribute('data-theme', 'light');
+                themeIcon.textContent = '☀️';
+                themeText.textContent = 'Light Mode';
+            } else {
+                body.removeAttribute('data-theme');
+                themeIcon.textContent = '🌙';
+                themeText.textContent = 'Dark Mode';
+            }
+        }
+
+        // Update auto-fit/auto-fill demonstration
+        function updateAutoDemo() {
+            const autoType = document.getElementById('autoType').value;
+            const minSize = document.getElementById('minSize').value;
+            const maxSize = document.getElementById('maxSize').value;
+            const itemCount = parseInt(document.getElementById('itemCount').value);
+            const containerWidth = document.getElementById('containerWidth').value;
+            
+            const demo = document.getElementById('autoDemo');
+            const code = document.getElementById('autoCode');
+            
+            // Update container width
+            demo.style.width = containerWidth + 'px';
+            document.getElementById('widthDisplay').textContent = containerWidth + 'px';
+            
+            // Set grid template columns
+            demo.style.gridTemplateColumns = `repeat(${autoType}, minmax(${minSize}, ${maxSize}))`;
+            
+            // Clear and create items
+            demo.innerHTML = '';
+            for (let i = 1; i <= itemCount; i++) {
+                const item = document.createElement('div');
+                item.className = 'demo-item';
+                item.textContent = `Item ${i}`;
+                demo.appendChild(item);
+            }
+            
+            // Update code display
+            code.textContent = `.container {
+  display: grid;
+  grid-template-columns: repeat(${autoType}, minmax(${minSize}, ${maxSize}));
+  gap: 10px;
+  width: ${containerWidth}px;
+}
+
+.item {
+  background: #d08770;
+  padding: 15px;
+  border-radius: 6px;
+  min-height: 60px;
+}`;
+        }
+
+        // Update minmax demonstration
+        function updateMinmaxDemo() {
+            const columns = document.getElementById('minmaxColumns').value;
+            const rows = document.getElementById('minmaxRows').value;
+            const containerWidth = document.getElementById('minmaxContainerWidth').value;
+            
+            const demo = document.getElementById('minmaxDemo');
+            const code = document.getElementById('minmaxCode');
+            
+            // Update container width
+            demo.style.width = containerWidth + 'px';
+            document.getElementById('minmaxWidthDisplay').textContent = containerWidth + 'px';
+            
+            // Set grid template
+            demo.style.gridTemplateColumns = columns;
+            demo.style.gridTemplateRows = rows;
+            
+            // Create items (6 items for 3x2 grid)
+            demo.innerHTML = '';
+            for (let i = 1; i <= 6; i++) {
+                const item = document.createElement('div');
+                item.className = 'demo-item';
+                item.textContent = `Item ${i}`;
+                demo.appendChild(item);
+            }
+            
+            // Update code display
+            code.textContent = `.container {
+  display: grid;
+  grid-template-columns: ${columns};
+  grid-template-rows: ${rows};
+  gap: 10px;
+  width: ${containerWidth}px;
+}
+
+.item {
+  background: #d08770;
+  padding: 15px;
+  border-radius: 6px;
+}`;
+        }
+
+        // Update comparison demos
+        function updateComparison() {
+            const width = document.getElementById('comparisonWidth').value;
+            document.getElementById('comparisonWidthDisplay').textContent = width + 'px';
+            
+            const autoFitDemo = document.getElementById('comparisonAutoFit');
+            const autoFillDemo = document.getElementById('comparisonAutoFill');
+            
+            // Set widths
+            autoFitDemo.style.width = width + 'px';
+            autoFillDemo.style.width = width + 'px';
+            
+            // Set grid templates
+            autoFitDemo.style.gridTemplateColumns = 'repeat(auto-fit, minmax(150px, 1fr))';
+            autoFillDemo.style.gridTemplateColumns = 'repeat(auto-fill, minmax(150px, 1fr))';
+            
+            // Clear and create items
+            autoFitDemo.innerHTML = '';
+            autoFillDemo.innerHTML = '';
+            
+            for (let i = 1; i <= 3; i++) {
+                const fitItem = document.createElement('div');
+                fitItem.className = 'demo-item';
+                fitItem.textContent = `${i}`;
+                autoFitDemo.appendChild(fitItem);
+                
+                const fillItem = document.createElement('div');
+                fillItem.className = 'demo-item';
+                fillItem.textContent = `${i}`;
+                autoFillDemo.appendChild(fillItem);
+            }
+        }
+
+        // Preset functions
+        function setAutoPreset(preset) {
+            const autoType = document.getElementById('autoType');
+            const minSize = document.getElementById('minSize');
+            const maxSize = document.getElementById('maxSize');
+            const itemCount = document.getElementById('itemCount');
+            const containerWidth = document.getElementById('containerWidth');
+            
+            switch (preset) {
+                case 'auto-fit':
+                    autoType.value = 'auto-fit';
+                    minSize.value = '180px';
+                    maxSize.value = '1fr';
+                    itemCount.value = '4';
+                    containerWidth.value = '900';
+                    break;
+                case 'auto-fill':
+                    autoType.value = 'auto-fill';
+                    minSize.value = '180px';
+                    maxSize.value = '1fr';
+                    itemCount.value = '4';
+                    containerWidth.value = '900';
+                    break;
+                case 'compare':
+                    autoType.value = 'auto-fit';
+                    minSize.value = '150px';
+                    maxSize.value = '1fr';
+                    itemCount.value = '3';
+                    containerWidth.value = '650';
+                    break;
+            }
+            updateAutoDemo();
+        }
+
+        function setMinmaxPreset(preset) {
+            const columns = document.getElementById('minmaxColumns');
+            const rows = document.getElementById('minmaxRows');
+            const containerWidth = document.getElementById('minmaxContainerWidth');
+            
+            switch (preset) {
+                case 'flexible':
+                    columns.value = 'repeat(3, minmax(200px, 1fr))';
+                    rows.value = 'repeat(2, minmax(100px, auto))';
+                    containerWidth.value = '1000';
+                    break;
+                case 'fixed-min':
+                    columns.value = 'repeat(4, minmax(150px, 200px))';
+                    rows.value = 'repeat(2, minmax(80px, 120px))';
+                    containerWidth.value = '1200';
+                    break;
+                case 'fixed-max':
+                    columns.value = 'repeat(2, minmax(100px, 300px))';
+                    rows.value = 'repeat(3, minmax(60px, 100px))';
+                    containerWidth.value = '1000';
+                    break;
+                case 'content':
+                    columns.value = 'repeat(3, minmax(min-content, max-content))';
+                    rows.value = 'repeat(2, minmax(min-content, auto))';
+                    containerWidth.value = '900';
+                    break;
+            }
+            updateMinmaxDemo();
+        }
+
+        // Event listeners
+        document.getElementById('autoType').addEventListener('change', updateAutoDemo);
+        document.getElementById('minSize').addEventListener('input', updateAutoDemo);
+        document.getElementById('maxSize').addEventListener('input', updateAutoDemo);
+        document.getElementById('itemCount').addEventListener('input', updateAutoDemo);
+        document.getElementById('containerWidth').addEventListener('input', updateAutoDemo);
+        
+        document.getElementById('minmaxColumns').addEventListener('input', updateMinmaxDemo);
+        document.getElementById('minmaxRows').addEventListener('input', updateMinmaxDemo);
+        document.getElementById('minmaxContainerWidth').addEventListener('input', updateMinmaxDemo);
+        
+        document.getElementById('comparisonWidth').addEventListener('input', updateComparison);
+
+        // Initialize on page load
+        loadTheme();
+        
+        // Small delay to ensure DOM is ready
+        setTimeout(() => {
+            updateAutoDemo();
+            updateMinmaxDemo();
+            updateComparison();
+        }, 100);
+    </script>
+</body>
+</html>
