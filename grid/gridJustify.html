@@ -1,350 +1,351 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Interactive CSS Grid Alignment - Nord Theme</title>
-    <style>
-        /* Nord Color Palette */
-        :root {
-            --nord0: #2e3440;   /* Dark background */
-            --nord1: #3b4252;   /* Darker background */
-            --nord2: #434c5e;   /* Medium background */
-            --nord3: #4c566a;   /* Light background */
-            --nord4: #d8dee9;   /* Light text */
-            --nord5: #e5e9f0;   /* Lighter text */
-            --nord6: #eceff4;   /* Lightest text */
-            --nord7: #8fbcbb;   /* Teal */
-            --nord8: #88c0d0;   /* Light blue */
-            --nord9: #81a1c1;   /* Blue */
-            --nord10: #5e81ac;  /* Dark blue */
-            --nord11: #bf616a;  /* Red */
-            --nord12: #d08770;  /* Orange */
-            --nord13: #ebcb8b;  /* Yellow */
-            --nord14: #a3be8c;  /* Green */
-            --nord15: #b48ead;  /* Purple */
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--nord0);
-            color: var(--nord4);
-            padding: 2rem;
-            line-height: 1.6;
-        }
-
-        h1 {
-            text-align: center;
-            color: var(--nord8);
-            margin-bottom: 2rem;
-            font-size: 2.5rem;
-        }
-
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 3rem;
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .controls-panel {
-            background-color: var(--nord1);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 2px solid var(--nord3);
-            height: fit-content;
-            position: sticky;
-            top: 2rem;
-        }
-
-        .controls-title {
-            color: var(--nord13);
-            margin-bottom: 1.5rem;
-            font-size: 1.5rem;
-            text-align: center;
-        }
-
-        .control-group {
-            margin-bottom: 2rem;
-        }
-
-        .control-label {
-            display: block;
-            color: var(--nord8);
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-        }
-
-        .control-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 0.5rem;
-        }
-
-        .control-button {
-            background-color: var(--nord2);
-            color: var(--nord4);
-            border: 2px solid var(--nord3);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-            text-align: center;
-        }
-
-        .control-button:hover {
-            background-color: var(--nord3);
-            border-color: var(--nord7);
-        }
-
-        .control-button.active {
-            background-color: var(--nord7);
-            color: var(--nord0);
-            border-color: var(--nord7);
-        }
-
-        .visualization-panel {
-            background-color: var(--nord1);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 2px solid var(--nord3);
-        }
-
-        .demo-container {
-            position: relative;
-            margin-bottom: 2rem;
-        }
-
-        .container-label {
-            position: absolute;
-            top: -15px;
-            left: 20px;
-            background-color: var(--nord7);
-            color: var(--nord0);
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 10;
-        }
-
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(3, 120px);
-            grid-template-rows: repeat(2, 100px);
-            gap: 20px;
-            width: 700px;
-            height: 500px;
-            background-color: var(--nord2);
-            border: 3px dashed var(--nord7);
-            padding: 40px;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        .grid-container.stretch-justify {
-            grid-template-columns: repeat(3, 1fr);
-        }
-
-        .grid-container.stretch-align {
-            grid-template-rows: repeat(2, 1fr);
-        }
-
-        .grid-item {
-            background-color: var(--nord8);
-            color: var(--nord0);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            border-radius: 6px;
-            font-size: 14px;
-            position: relative;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-        }
-
-        .current-properties {
-            background-color: var(--nord0);
-            color: var(--nord4);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border-left: 4px solid var(--nord8);
-        }
-
-        .property-display {
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .property-name {
-            color: var(--nord13);
-            font-weight: bold;
-        }
-
-        .property-value {
-            color: var(--nord14);
-        }
-
-        .grid-info {
-            background-color: var(--nord2);
-            padding: 1rem;
-            border-radius: 6px;
-            margin-top: 1rem;
-        }
-
-        .grid-info h3 {
-            color: var(--nord15);
-            margin-bottom: 0.5rem;
-        }
-
-        .grid-info p {
-            color: var(--nord5);
-            font-size: 0.9rem;
-            margin-bottom: 0.5rem;
-        }
-
-        @media (max-width: 1200px) {
-            .main-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-            
-            .controls-panel {
-                position: static;
-            }
-        }
-    </style>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Interactive CSS Grid Alignment - Nord Theme</title>
+	<style>
+		/* Nord Color Palette */
+		:root {
+			--nord0: #2e3440;   /* Dark background */
+			--nord1: #3b4252;   /* Darker background */
+			--nord2: #434c5e;   /* Medium background */
+			--nord3: #4c566a;   /* Light background */
+			--nord4: #d8dee9;   /* Light text */
+			--nord5: #e5e9f0;   /* Lighter text */
+			--nord6: #eceff4;   /* Lightest text */
+			--nord7: #8fbcbb;   /* Teal */
+			--nord8: #88c0d0;   /* Light blue */
+			--nord9: #81a1c1;   /* Blue */
+			--nord10: #5e81ac;  /* Dark blue */
+			--nord11: #bf616a;  /* Red */
+			--nord12: #d08770;  /* Orange */
+			--nord13: #ebcb8b;  /* Yellow */
+			--nord14: #a3be8c;  /* Green */
+			--nord15: #b48ead;  /* Purple */
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: "Ubuntu Sans Mono", sans-serif !important;
+		}
+		
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: var(--nord0);
+			color: var(--nord4);
+			padding: 2rem;
+			line-height: 1.6;
+		}
+		
+		h1 {
+			text-align: center;
+			color: var(--nord8);
+			margin-bottom: 2rem;
+			font-size: 2.5rem;
+		}
+		
+		.main-container {
+			display: grid;
+			grid-template-columns: 1fr 2fr;
+			gap: 3rem;
+			max-width: 1400px;
+			margin: 0 auto;
+		}
+		
+		.controls-panel {
+			background-color: var(--nord1);
+			padding: 2rem;
+			border-radius: 12px;
+			border: 2px solid var(--nord3);
+			height: fit-content;
+			position: sticky;
+			top: 2rem;
+		}
+		
+		.controls-title {
+			color: var(--nord13);
+			margin-bottom: 1.5rem;
+			font-size: 1.5rem;
+			text-align: center;
+		}
+		
+		.control-group {
+			margin-bottom: 2rem;
+		}
+		
+		.control-label {
+			display: block;
+			color: var(--nord8);
+			font-weight: bold;
+			margin-bottom: 0.5rem;
+		}
+		
+		.control-buttons {
+			display: grid;
+			grid-template-columns: 1fr 1fr;
+			gap: 0.5rem;
+		}
+		
+		.control-button {
+			background-color: var(--nord2);
+			color: var(--nord4);
+			border: 2px solid var(--nord3);
+			padding: 0.5rem 1rem;
+			border-radius: 6px;
+			cursor: pointer;
+			transition: all 0.3s ease;
+			font-size: 0.9rem;
+			text-align: center;
+		}
+		
+		.control-button:hover {
+			background-color: var(--nord3);
+			border-color: var(--nord7);
+		}
+		
+		.control-button.active {
+			background-color: var(--nord7);
+			color: var(--nord0);
+			border-color: var(--nord7);
+		}
+		
+		.visualization-panel {
+			background-color: var(--nord1);
+			padding: 2rem;
+			border-radius: 12px;
+			border: 2px solid var(--nord3);
+		}
+		
+		.demo-container {
+			position: relative;
+			margin-bottom: 2rem;
+		}
+		
+		.container-label {
+			position: absolute;
+			top: -15px;
+			left: 20px;
+			background-color: var(--nord7);
+			color: var(--nord0);
+			padding: 4px 12px;
+			border-radius: 6px;
+			font-size: 12px;
+			font-weight: bold;
+			z-index: 10;
+		}
+		
+		.grid-container {
+			display: grid;
+			grid-template-columns: repeat(3, 120px);
+			grid-template-rows: repeat(2, 100px);
+			gap: 20px;
+			width: 700px;
+			height: 500px;
+			background-color: var(--nord2);
+			border: 3px dashed var(--nord7);
+			padding: 40px;
+			position: relative;
+			transition: all 0.3s ease;
+		}
+		
+		.grid-container.stretch-justify {
+			grid-template-columns: repeat(3, 1fr);
+		}
+		
+		.grid-container.stretch-align {
+			grid-template-rows: repeat(2, 1fr);
+		}
+		
+		.grid-item {
+			background-color: var(--nord8);
+			color: var(--nord0);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: bold;
+			border-radius: 6px;
+			font-size: 14px;
+			position: relative;
+			transition: all 0.3s ease;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+		}
+		
+		.current-properties {
+			background-color: var(--nord0);
+			color: var(--nord4);
+			padding: 1.5rem;
+			border-radius: 8px;
+			margin-bottom: 2rem;
+			border-left: 4px solid var(--nord8);
+		}
+		
+		.property-display {
+			font-family: 'Courier New', monospace;
+			font-size: 1.1rem;
+			margin-bottom: 0.5rem;
+		}
+		
+		.property-name {
+			color: var(--nord13);
+			font-weight: bold;
+		}
+		
+		.property-value {
+			color: var(--nord14);
+		}
+		
+		.grid-info {
+			background-color: var(--nord2);
+			padding: 1rem;
+			border-radius: 6px;
+			margin-top: 1rem;
+		}
+		
+		.grid-info h3 {
+			color: var(--nord15);
+			margin-bottom: 0.5rem;
+		}
+		
+		.grid-info p {
+			color: var(--nord5);
+			font-size: 0.9rem;
+			margin-bottom: 0.5rem;
+		}
+		
+		@media (max-width: 1200px) {
+			.main-container {
+				grid-template-columns: 1fr;
+				gap: 2rem;
+			}
+			
+			.controls-panel {
+				position: static;
+			}
+		}
+	</style>
 </head>
 <body>
-    <h1>Interactive CSS Grid Alignment Demo</h1>
-    
-    <div class="main-container">
-        <div class="controls-panel">
-            <h2 class="controls-title">Controls</h2>
-            
-            <div class="control-group">
-                <label class="control-label">Justify Content (Horizontal)</label>
-                <div class="control-buttons">
-                    <button class="control-button active" onclick="setJustifyContent('start')">start</button>
-                    <button class="control-button" onclick="setJustifyContent('end')">end</button>
-                    <button class="control-button" onclick="setJustifyContent('center')">center</button>
-                    <button class="control-button" onclick="setJustifyContent('stretch')">stretch</button>
-                    <button class="control-button" onclick="setJustifyContent('space-between')">space-between</button>
-                    <button class="control-button" onclick="setJustifyContent('space-around')">space-around</button>
-                    <button class="control-button" onclick="setJustifyContent('space-evenly')">space-evenly</button>
-                </div>
-            </div>
+<h1>Interactive CSS Grid Alignment Demo</h1>
 
-            <div class="control-group">
-                <label class="control-label">Align Content (Vertical)</label>
-                <div class="control-buttons">
-                    <button class="control-button active" onclick="setAlignContent('start')">start</button>
-                    <button class="control-button" onclick="setAlignContent('end')">end</button>
-                    <button class="control-button" onclick="setAlignContent('center')">center</button>
-                    <button class="control-button" onclick="setAlignContent('stretch')">stretch</button>
-                    <button class="control-button" onclick="setAlignContent('space-between')">space-between</button>
-                    <button class="control-button" onclick="setAlignContent('space-around')">space-around</button>
-                    <button class="control-button" onclick="setAlignContent('space-evenly')">space-evenly</button>
-                </div>
-            </div>
-        </div>
+<div class="main-container">
+	<div class="controls-panel">
+		<h2 class="controls-title">Controls</h2>
+		
+		<div class="control-group">
+			<label class="control-label">Justify Content (Horizontal)</label>
+			<div class="control-buttons">
+				<button class="control-button active" onclick="setJustifyContent('start')">start</button>
+				<button class="control-button" onclick="setJustifyContent('end')">end</button>
+				<button class="control-button" onclick="setJustifyContent('center')">center</button>
+				<button class="control-button" onclick="setJustifyContent('stretch')">stretch</button>
+				<button class="control-button" onclick="setJustifyContent('space-between')">space-between</button>
+				<button class="control-button" onclick="setJustifyContent('space-around')">space-around</button>
+				<button class="control-button" onclick="setJustifyContent('space-evenly')">space-evenly</button>
+			</div>
+		</div>
+		
+		<div class="control-group">
+			<label class="control-label">Align Content (Vertical)</label>
+			<div class="control-buttons">
+				<button class="control-button active" onclick="setAlignContent('start')">start</button>
+				<button class="control-button" onclick="setAlignContent('end')">end</button>
+				<button class="control-button" onclick="setAlignContent('center')">center</button>
+				<button class="control-button" onclick="setAlignContent('stretch')">stretch</button>
+				<button class="control-button" onclick="setAlignContent('space-between')">space-between</button>
+				<button class="control-button" onclick="setAlignContent('space-around')">space-around</button>
+				<button class="control-button" onclick="setAlignContent('space-evenly')">space-evenly</button>
+			</div>
+		</div>
+	</div>
+	
+	<div class="visualization-panel">
+		<div class="current-properties">
+			<div class="property-display">
+				<span class="property-name">justify-content:</span>
+				<span class="property-value" id="currentJustify">start</span>
+			</div>
+			<div class="property-display">
+				<span class="property-name">align-content:</span>
+				<span class="property-value" id="currentAlign">start</span>
+			</div>
+		</div>
+		
+		<div class="demo-container">
+			<div class="container-label">Grid Container</div>
+			<div class="grid-container" id="gridContainer">
+				<div class="grid-item">Item 1</div>
+				<div class="grid-item">Item 2</div>
+				<div class="grid-item">Item 3</div>
+				<div class="grid-item">Item 4</div>
+				<div class="grid-item">Item 5</div>
+				<div class="grid-item">Item 6</div>
+			</div>
+		</div>
+		
+		<div class="grid-info">
+			<h3>Understanding the Properties:</h3>
+			<p><strong>justify-content</strong> controls horizontal alignment of the entire grid within its container.</p>
+			<p><strong>align-content</strong> controls vertical alignment of the entire grid within its container.</p>
+			<p><strong>stretch</strong> makes grid tracks expand to fill available space.</p>
+			<p>Use the controls to see how different values affect grid positioning.</p>
+		</div>
+	</div>
+</div>
 
-        <div class="visualization-panel">
-            <div class="current-properties">
-                <div class="property-display">
-                    <span class="property-name">justify-content:</span> 
-                    <span class="property-value" id="currentJustify">start</span>
-                </div>
-                <div class="property-display">
-                    <span class="property-name">align-content:</span> 
-                    <span class="property-value" id="currentAlign">start</span>
-                </div>
-            </div>
-
-            <div class="demo-container">
-                <div class="container-label">Grid Container</div>
-                <div class="grid-container" id="gridContainer">
-                    <div class="grid-item">Item 1</div>
-                    <div class="grid-item">Item 2</div>
-                    <div class="grid-item">Item 3</div>
-                    <div class="grid-item">Item 4</div>
-                    <div class="grid-item">Item 5</div>
-                    <div class="grid-item">Item 6</div>
-                </div>
-            </div>
-
-            <div class="grid-info">
-                <h3>Understanding the Properties:</h3>
-                <p><strong>justify-content</strong> controls horizontal alignment of the entire grid within its container.</p>
-                <p><strong>align-content</strong> controls vertical alignment of the entire grid within its container.</p>
-                <p><strong>stretch</strong> makes grid tracks expand to fill available space.</p>
-                <p>Use the controls to see how different values affect grid positioning.</p>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let currentJustifyContent = 'start';
-        let currentAlignContent = 'start';
-
-        function setJustifyContent(value) {
-            currentJustifyContent = value;
-            updateGrid();
-            updateActiveButton('justify', value);
-            document.getElementById('currentJustify').textContent = value;
-        }
-
-        function setAlignContent(value) {
-            currentAlignContent = value;
-            updateGrid();
-            updateActiveButton('align', value);
-            document.getElementById('currentAlign').textContent = value;
-        }
-
-        function updateGrid() {
-            const container = document.getElementById('gridContainer');
-            
-            if (currentJustifyContent === 'stretch') {
-                container.classList.add('stretch-justify');
-                container.style.justifyContent = 'stretch';
-            } else {
-                container.classList.remove('stretch-justify');
-                container.style.justifyContent = currentJustifyContent;
-            }
-
-            if (currentAlignContent === 'stretch') {
-                container.classList.add('stretch-align');
-                container.style.alignContent = 'stretch';
-            } else {
-                container.classList.remove('stretch-align');
-                container.style.alignContent = currentAlignContent;
-            }
-        }
-
-        function updateActiveButton(type, value) {
-            const controlGroups = document.querySelectorAll('.control-group');
-            const targetGroup = type === 'justify' ? controlGroups[0] : controlGroups[1];
-            
-            targetGroup.querySelectorAll('.control-button').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            
-            targetGroup.querySelector(`[onclick*="${value}"]`).classList.add('active');
-        }
-
-        // Initialize
-        updateGrid();
-    </script>
+<script>
+	let currentJustifyContent = 'start';
+	let currentAlignContent = 'start';
+	
+	function setJustifyContent(value) {
+		currentJustifyContent = value;
+		updateGrid();
+		updateActiveButton('justify', value);
+		document.getElementById('currentJustify').textContent = value;
+	}
+	
+	function setAlignContent(value) {
+		currentAlignContent = value;
+		updateGrid();
+		updateActiveButton('align', value);
+		document.getElementById('currentAlign').textContent = value;
+	}
+	
+	function updateGrid() {
+		const container = document.getElementById('gridContainer');
+		
+		if (currentJustifyContent === 'stretch') {
+			container.classList.add('stretch-justify');
+			container.style.justifyContent = 'stretch';
+		} else {
+			container.classList.remove('stretch-justify');
+			container.style.justifyContent = currentJustifyContent;
+		}
+		
+		if (currentAlignContent === 'stretch') {
+			container.classList.add('stretch-align');
+			container.style.alignContent = 'stretch';
+		} else {
+			container.classList.remove('stretch-align');
+			container.style.alignContent = currentAlignContent;
+		}
+	}
+	
+	function updateActiveButton(type, value) {
+		const controlGroups = document.querySelectorAll('.control-group');
+		const targetGroup = type === 'justify' ? controlGroups[0] : controlGroups[1];
+		
+		targetGroup.querySelectorAll('.control-button').forEach(btn => {
+			btn.classList.remove('active');
+		});
+		
+		targetGroup.querySelector(`[onclick*="${value}"]`).classList.add('active');
+	}
+	
+	// Initialize
+	updateGrid();
+</script>
 </body>
 </html>
