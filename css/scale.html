@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Transform Scale Visualization</title>
+    <style>
+        /* Nord Theme Color Variables */
+        :root {
+            /* Polar Night */
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            
+            /* Snow Storm */
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            
+            /* Frost */
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            
+            /* Aurora */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+        }
+        
+        /* Base styles */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu Sans Mono', monospace !important;
+        }
+        
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1, h2 {
+            text-align: center;
+            color: var(--nord8);
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 2.2rem;
+            margin-top: 20px;
+            margin-bottom: 30px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-top: 30px;
+        }
+        
+        .card {
+            background-color: var(--nord1);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Controls styles */
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .control-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        label {
+            color: var(--nord8);
+            font-weight: bold;
+            min-width: 70px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 10px;
+            background: var(--nord3);
+            outline: none;
+            border-radius: 5px;
+            accent-color: var(--nord9);
+        }
+        
+        input[type="number"] {
+            width: 60px;
+            background: var(--nord2);
+            color: var(--nord6);
+            border: 1px solid var(--nord3);
+            border-radius: 4px;
+            padding: 5px;
+            font-family: 'Ubuntu Mono', monospace;
+            text-align: center;
+        }
+        
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            font-family: 'Ubuntu Mono', monospace;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: var(--nord9);
+        }
+        
+        /* Visualization styles */
+        .visualization {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
+            border-radius: 8px;
+            background-color: var(--nord2);
+            margin-bottom: 30px;
+        }
+        
+        .axis {
+            position: absolute;
+            background-color: var(--nord4);
+            opacity: 0.3;
+            z-index: 1;
+        }
+        
+        .x-axis {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+            left: 0;
+        }
+        
+        .y-axis {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+        }
+        
+        .original-container, .transformed-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .box {
+            width: 150px;
+            height: 150px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.3s;
+            position: relative;
+        }
+        
+        .original-box {
+            background-color: var(--nord15);
+            border: 2px solid var(--nord4);
+            opacity: 0.4;
+            z-index: 1;
+        }
+        
+        .transformed-box {
+            background-color: var(--nord7);
+            border: 2px solid var(--nord4);
+            z-index: 2;
+        }
+        
+        .box-content {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            width: 80%;
+            height: 80%;
+            gap: 2px;
+        }
+        
+        .grid-cell {
+            background-color: var(--nord4);
+            opacity: 0.5;
+        }
+        
+        .box-label {
+            position: absolute;
+            bottom: -25px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            font-weight: bold;
+            color: var(--nord6);
+            background-color: var(--nord3);
+            padding: 2px 5px;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+        
+        /* Code output styles */
+        .code-output {
+            background-color: var(--nord2);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Ubuntu Mono', monospace;
+            color: var(--nord6);
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        
+        .code-property {
+            color: var(--nord9);
+        }
+        
+        .code-value {
+            color: var(--nord14);
+        }
+        
+        .code-function {
+            color: var(--nord13);
+        }
+        
+        .code-number {
+            color: var(--nord15);
+        }
+        
+        /* Info section */
+        .info {
+            color: var(--nord4);
+            line-height: 1.6;
+        }
+        
+        .info strong {
+            color: var(--nord8);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Animation */
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+    </style>
+    <!-- Loading Ubuntu Mono font -->
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>CSS Transform Scale Visualization</h1>
+        
+        <div class="card">
+            <h2>Controls</h2>
+            <div class="controls">
+                <div class="control-group">
+                    <div class="control-row">
+                        <label for="scaleX">scaleX():</label>
+                        <input type="range" id="scaleX" min="-2" max="2" step="0.1" value="1">
+                        <input type="number" id="scaleXValue" min="-2" max="2" step="0.1" value="1">
+                    </div>
+                    <div class="control-row">
+                        <label for="scaleY">scaleY():</label>
+                        <input type="range" id="scaleY" min="-2" max="2" step="0.1" value="1">
+                        <input type="number" id="scaleYValue" min="-2" max="2" step="0.1" value="1">
+                    </div>
+                </div>
+                <div class="control-group">
+                    <div class="control-row">
+                        <label>Combined:</label>
+                        <input type="checkbox" id="useShorthand" checked>
+                        <label for="useShorthand">Use scale() shorthand</label>
+                    </div>
+                    <div class="control-row">
+                        <button id="resetBtn">Reset to Default (1, 1)</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>Visualization</h2>
+            <div class="visualization">
+                <!-- Axes for reference -->
+                <div class="axis x-axis"></div>
+                <div class="axis y-axis"></div>
+                
+                <!-- Original element (shown as ghost) -->
+                <div class="original-container">
+                    <div class="box original-box">
+                        <div class="box-content">
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                        </div>
+                        <div class="box-label">Original</div>
+                    </div>
+                </div>
+                
+                <!-- Transformed element -->
+                <div class="transformed-container">
+                    <div class="box transformed-box" id="transformedBox">
+                        <div class="box-content">
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                            <div class="grid-cell"></div>
+                        </div>
+                        <div class="box-label">Transformed</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h2>CSS Code</h2>
+            <pre class="code-output" id="codeOutput"><span class="code-property">transform:</span> <span class="code-function">scale</span>(<span class="code-number">1</span>, <span class="code-number">1</span>);</pre>
+        </div>
+        
+        <div class="card">
+            <h2>About Scale Transforms</h2>
+            <div class="info">
+                <p><strong>scaleX(n)</strong> - Scales the element along the X-axis by the given factor. Values greater than 1 make it wider, values less than 1 make it narrower, and negative values flip it horizontally.</p>
+                <p><strong>scaleY(n)</strong> - Scales the element along the Y-axis by the given factor. Values greater than 1 make it taller, values less than 1 make it shorter, and negative values flip it vertically.</p>
+                <p><strong>scale(x, y)</strong> - Shorthand for applying both scaleX and scaleY at once. If only one value is provided, it applies to both axes equally.</p>
+                <p><strong>Transform Origin</strong> - By default, scaling happens from the center of the element. This can be changed using the transform-origin property.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get elements
+            const scaleXSlider = document.getElementById('scaleX');
+            const scaleYSlider = document.getElementById('scaleY');
+            const scaleXInput = document.getElementById('scaleXValue');
+            const scaleYInput = document.getElementById('scaleYValue');
+            const useShorthandCheckbox = document.getElementById('useShorthand');
+            const resetBtn = document.getElementById('resetBtn');
+            const transformedBox = document.getElementById('transformedBox');
+            const codeOutput = document.getElementById('codeOutput');
+            
+            // Function to update the transform
+            function updateTransform() {
+                const scaleXValue = parseFloat(scaleXSlider.value);
+                const scaleYValue = parseFloat(scaleYSlider.value);
+                
+                // Apply transform to the element
+                transformedBox.style.transform = `scaleX(${scaleXValue}) scaleY(${scaleYValue})`;
+                
+                // Update code output
+                updateCodeOutput(scaleXValue, scaleYValue);
+            }
+            
+            // Function to update the code display
+            function updateCodeOutput(x, y) {
+                if (useShorthandCheckbox.checked) {
+                    // When x and y are the same, we can use the single-value shorthand
+                    if (x === y) {
+                        codeOutput.innerHTML = `<span class="code-property">transform:</span> <span class="code-function">scale</span>(<span class="code-number">${x}</span>);`;
+                    } else {
+                        codeOutput.innerHTML = `<span class="code-property">transform:</span> <span class="code-function">scale</span>(<span class="code-number">${x}</span>, <span class="code-number">${y}</span>);`;
+                    }
+                } else {
+                    codeOutput.innerHTML = `<span class="code-property">transform:</span> <span class="code-function">scaleX</span>(<span class="code-number">${x}</span>) <span class="code-function">scaleY</span>(<span class="code-number">${y}</span>);`;
+                }
+            }
+            
+            // Event listeners for sliders
+            scaleXSlider.addEventListener('input', function() {
+                scaleXInput.value = this.value;
+                updateTransform();
+            });
+            
+            scaleYSlider.addEventListener('input', function() {
+                scaleYInput.value = this.value;
+                updateTransform();
+            });
+            
+            // Event listeners for number inputs
+            scaleXInput.addEventListener('input', function() {
+                // Clamp values to min/max range
+                let value = parseFloat(this.value);
+                if (value < -2) value = -2;
+                if (value > 2) value = 2;
+                
+                scaleXSlider.value = value;
+                updateTransform();
+            });
+            
+            scaleYInput.addEventListener('input', function() {
+                // Clamp values to min/max range
+                let value = parseFloat(this.value);
+                if (value < -2) value = -2;
+                if (value > 2) value = 2;
+                
+                scaleYSlider.value = value;
+                updateTransform();
+            });
+            
+            // Event listener for shorthand checkbox
+            useShorthandCheckbox.addEventListener('change', function() {
+                updateTransform();
+            });
+            
+            // Event listener for reset button
+            resetBtn.addEventListener('click', function() {
+                scaleXSlider.value = 1;
+                scaleYSlider.value = 1;
+                scaleXInput.value = 1;
+                scaleYInput.value = 1;
+                updateTransform();
+            });
+            
+            // Initial update
+            updateTransform();
+        });
+    </script>
+</body>
+</html>
