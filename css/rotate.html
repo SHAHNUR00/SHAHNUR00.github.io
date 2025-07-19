@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Transform Origin Visualization</title>
+    <style>
+        /* Nord Theme Color Variables */
+        :root {
+            /* Polar Night */
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            
+            /* Snow Storm */
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            
+            /* Frost */
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            
+            /* Aurora */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+        }
+
+        *{
+            font-family: 'Ubuntu Sans Mono', monospace !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 2rem;
+            text-align: center;
+            font-size: 2.2rem;
+        }
+
+        .visualization-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 2rem;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        .controls {
+            background-color: var(--nord1);
+            padding: 1.5rem;
+            border-radius: 12px;
+            width: 100%;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .control-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .control-row {
+            display: flex;
+            flex-direction: column;
+            margin-bottom: 1rem;
+        }
+
+        label {
+            color: var(--nord8);
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        select, input[type="range"], input[type="number"] {
+            background-color: var(--nord2);
+            color: var(--nord6);
+            border: 1px solid var(--nord3);
+            border-radius: 4px;
+            padding: 8px;
+            font-family: 'Ubuntu Mono', monospace;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            accent-color: var(--nord9);
+        }
+
+        .range-with-value {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            width: 60px;
+            text-align: center;
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 10px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Ubuntu Mono', monospace;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            margin-top: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .animation-toggle {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            background-color: var(--nord1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Grid and Axes */
+        .grid-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: repeat(20, 1fr);
+            grid-template-rows: repeat(20, 1fr);
+        }
+
+        .grid-cell {
+            border: 1px solid rgba(216, 222, 233, 0.1); /* nord4 with opacity */
+        }
+
+        .x-axis, .y-axis {
+            position: absolute;
+            background-color: var(--nord4);
+            opacity: 0.4;
+            z-index: 2;
+        }
+
+        .x-axis {
+            width: 100%;
+            height: 1px;
+            top: 50%;
+            left: 0;
+        }
+
+        .y-axis {
+            width: 1px;
+            height: 100%;
+            top: 0;
+            left: 50%;
+        }
+
+        /* Boxes */
+        .box-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 200px;
+            height: 200px;
+        }
+
+        .box {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            gap: 2px;
+        }
+
+        .reference-box {
+            border: 2px solid var(--nord9);
+            background-color: transparent;
+            z-index: 2;
+        }
+
+        .reference-box .box-grid-cell {
+            border: 1px dashed var(--nord9);
+            opacity: 0.3;
+        }
+
+        .rotating-box {
+            border: 2px solid var(--nord14);
+            background-color: var(--nord7);
+            opacity: 0.7;
+            z-index: 3;
+            transition: transform 0.5s ease;
+        }
+
+        .rotating-box.animate {
+            animation: rotate 4s infinite linear;
+        }
+
+        .rotating-box .box-grid-cell {
+            border: 1px dashed var(--nord6);
+            opacity: 0.3;
+        }
+
+        /* Origin marker */
+        .origin-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--nord11);
+            border: 2px solid var(--nord6);
+            border-radius: 50%;
+            z-index: 10;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 8px rgba(191, 97, 106, 0.8);
+        }
+
+        /* Animations */
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); }
+            50% { transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        .pulse {
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        /* Code display */
+        .code-display {
+            background-color: var(--nord2);
+            border-radius: 8px;
+            padding: 1rem;
+            font-family: 'Ubuntu Mono', monospace;
+            width: 100%;
+            margin-top: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-property { color: var(--nord9); }
+        .code-value { color: var(--nord14); }
+        .code-number { color: var(--nord13); }
+        .code-unit { color: var(--nord7); }
+
+        /* Info section */
+        .info {
+            background-color: var(--nord1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .info h2 {
+            color: var(--nord8);
+            margin-top: 0;
+        }
+
+        .info p {
+            color: var(--nord4);
+            line-height: 1.6;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .control-group {
+                grid-template-columns: 1fr;
+            }
+            
+            .visualization {
+                height: 300px;
+            }
+            
+            .box-container {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>Interactive Transform Origin Visualization</h1>
+
+    <div class="visualization-container">
+        <div class="controls">
+            <div class="control-group">
+                <div class="control-row">
+                    <label for="originPreset">Transform Origin Preset:</label>
+                    <select id="originPreset">
+                        <option value="center">center</option>
+                        <option value="top left">top left</option>
+                        <option value="top">top</option>
+                        <option value="top right">top right</option>
+                        <option value="left">left</option>
+                        <option value="right">right</option>
+                        <option value="bottom left">bottom left</option>
+                        <option value="bottom">bottom</option>
+                        <option value="bottom right">bottom right</option>
+                        <option value="custom">custom (x,y)</option>
+                    </select>
+                </div>
+                <div class="control-row" id="customControls" style="display: none;">
+                    <label>Custom Origin (%):</label>
+                    <div class="range-with-value">
+                        <label>X:</label>
+                        <input type="range" id="originX" min="0" max="100" value="50">
+                        <input type="number" id="originXValue" min="0" max="100" value="50">
+                    </div>
+                    <div class="range-with-value">
+                        <label>Y:</label>
+                        <input type="range" id="originY" min="0" max="100" value="50">
+                        <input type="number" id="originYValue" min="0" max="100" value="50">
+                    </div>
+                </div>
+            </div>
+            
+            <div class="control-row">
+                <label for="rotation">Rotation Angle:</label>
+                <div class="range-with-value">
+                    <input type="range" id="rotation" min="0" max="360" value="45">
+                    <input type="number" id="rotationValue" min="0" max="360" value="45">
+                    <span>degrees</span>
+                </div>
+            </div>
+            
+            <div class="animation-toggle">
+                <button id="toggleAnimation">Start Auto-Rotation</button>
+                <button id="resetButton">Reset</button>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <!-- Grid background -->
+            <div class="grid-container" id="gridContainer"></div>
+            
+            <!-- Coordinate axes -->
+            <div class="x-axis"></div>
+            <div class="y-axis"></div>
+            
+            <!-- Boxes -->
+            <div class="box-container">
+                <div class="box reference-box">
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                </div>
+                
+                <div class="box rotating-box" id="rotatingBox">
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                    <div class="box-grid-cell"></div>
+                </div>
+                
+                <!-- Origin marker (red dot) -->
+                <div class="origin-marker" id="originMarker"></div>
+            </div>
+        </div>
+
+        <div class="code-display" id="codeDisplay">
+            <span class="code-property">transform-origin:</span> <span class="code-value">center</span>;<br>
+            <span class="code-property">transform:</span> <span class="code-value">rotate</span>(<span class="code-number">45</span><span class="code-unit">deg</span>);
+        </div>
+    </div>
+
+    <div class="info">
+        <h2>About Transform Origin</h2>
+        <p>The <strong>transform-origin</strong> property defines the point around which a transformation is applied. By default, this point is the center of the element (50% 50%).</p>
+        
+        <p>When rotating an element:</p>
+        <ul>
+            <li>The transform origin point (red dot) stays fixed in space</li>
+            <li>The rest of the element rotates around this point</li>
+            <li>This can create the appearance of both rotation and movement</li>
+        </ul>
+        
+        <p>Try different preset positions or custom values to see how the rotation behavior changes. Notice how moving the origin point away from the center creates more dramatic movement during rotation.</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get DOM elements
+            const originPresetSelect = document.getElementById('originPreset');
+            const customControlsDiv = document.getElementById('customControls');
+            const originXSlider = document.getElementById('originX');
+            const originYSlider = document.getElementById('originY');
+            const originXValue = document.getElementById('originXValue');
+            const originYValue = document.getElementById('originYValue');
+            const rotationSlider = document.getElementById('rotation');
+            const rotationValue = document.getElementById('rotationValue');
+            const toggleAnimationButton = document.getElementById('toggleAnimation');
+            const resetButton = document.getElementById('resetButton');
+            const rotatingBox = document.getElementById('rotatingBox');
+            const originMarker = document.getElementById('originMarker');
+            const codeDisplay = document.getElementById('codeDisplay');
+            const gridContainer = document.getElementById('gridContainer');
+            
+            let isAnimating = false;
+            
+            // Create grid cells for the background
+            for (let i = 0; i < 400; i++) {
+                const cell = document.createElement('div');
+                cell.classList.add('grid-cell');
+                gridContainer.appendChild(cell);
+            }
+            
+            // Function to update transform origin position
+            function updateOriginPosition() {
+                let originValue;
+                
+                if (originPresetSelect.value === 'custom') {
+                    const xPercent = originXSlider.value;
+                    const yPercent = originYSlider.value;
+                    originValue = `${xPercent}% ${yPercent}%`;
+                    
+                    // Update the marker position
+                    originMarker.style.left = `${xPercent}%`;
+                    originMarker.style.top = `${yPercent}%`;
+                } else {
+                    originValue = originPresetSelect.value;
+                    
+                    // Update the marker position based on preset
+                    switch (originValue) {
+                        case 'center':
+                            originMarker.style.left = '50%';
+                            originMarker.style.top = '50%';
+                            break;
+                        case 'top left':
+                            originMarker.style.left = '0%';
+                            originMarker.style.top = '0%';
+                            break;
+                        case 'top':
+                            originMarker.style.left = '50%';
+                            originMarker.style.top = '0%';
+                            break;
+                        case 'top right':
+                            originMarker.style.left = '100%';
+                            originMarker.style.top = '0%';
+                            break;
+                        case 'left':
+                            originMarker.style.left = '0%';
+                            originMarker.style.top = '50%';
+                            break;
+                        case 'right':
+                            originMarker.style.left = '100%';
+                            originMarker.style.top = '50%';
+                            break;
+                        case 'bottom left':
+                            originMarker.style.left = '0%';
+                            originMarker.style.top = '100%';
+                            break;
+                        case 'bottom':
+                            originMarker.style.left = '50%';
+                            originMarker.style.top = '100%';
+                            break;
+                        case 'bottom right':
+                            originMarker.style.left = '100%';
+                            originMarker.style.top = '100%';
+                            break;
+                    }
+                }
+                
+                // Apply transform origin to the rotating box
+                rotatingBox.style.transformOrigin = originValue;
+                
+                // Update code display
+                updateCodeDisplay();
+            }
+            
+            // Function to update rotation
+            function updateRotation() {
+                const angle = rotationSlider.value;
+                
+                // Only set transform if not animating
+                if (!isAnimating) {
+                    rotatingBox.style.transform = `rotate(${angle}deg)`;
+                }
+                
+                // Update code display
+                updateCodeDisplay();
+            }
+            
+            // Function to update code display
+            function updateCodeDisplay() {
+                let originValue;
+                
+                if (originPresetSelect.value === 'custom') {
+                    originValue = `${originXSlider.value}% ${originYSlider.value}%`;
+                } else {
+                    originValue = originPresetSelect.value;
+                }
+                
+                const rotationAngle = rotationSlider.value;
+                
+                codeDisplay.innerHTML = `<span class="code-property">transform-origin:</span> <span class="code-value">${originValue}</span>;<br>
+<span class="code-property">transform:</span> <span class="code-value">rotate</span>(<span class="code-number">${rotationAngle}</span><span class="code-unit">deg</span>);`;
+            }
+            
+            // Function to toggle animation
+            function toggleAnimation() {
+                isAnimating = !isAnimating;
+                
+                if (isAnimating) {
+                    rotatingBox.classList.add('animate');
+                    originMarker.classList.add('pulse');
+                    toggleAnimationButton.textContent = 'Stop Auto-Rotation';
+                } else {
+                    rotatingBox.classList.remove('animate');
+                    originMarker.classList.remove('pulse');
+                    toggleAnimationButton.textContent = 'Start Auto-Rotation';
+                    // Restore the manual rotation
+                    updateRotation();
+                }
+            }
+            
+            // Function to reset all controls
+            function resetControls() {
+                // Stop animation if it's running
+                if (isAnimating) {
+                    toggleAnimation();
+                }
+                
+                // Reset controls to default values
+                originPresetSelect.value = 'center';
+                customControlsDiv.style.display = 'none';
+                
+                originXSlider.value = 50;
+                originYSlider.value = 50;
+                originXValue.value = 50;
+                originYValue.value = 50;
+                
+                rotationSlider.value = 45;
+                rotationValue.value = 45;
+                
+                // Update the visualization
+                updateOriginPosition();
+                updateRotation();
+            }
+            
+            // Event listeners
+            originPresetSelect.addEventListener('change', function() {
+                if (this.value === 'custom') {
+                    customControlsDiv.style.display = 'block';
+                } else {
+                    customControlsDiv.style.display = 'none';
+                }
+                
+                updateOriginPosition();
+            });
+            
+            originXSlider.addEventListener('input', function() {
+                originXValue.value = this.value;
+                updateOriginPosition();
+            });
+            
+            originYSlider.addEventListener('input', function() {
+                originYValue.value = this.value;
+                updateOriginPosition();
+            });
+            
+            originXValue.addEventListener('input', function() {
+                originXSlider.value = this.value;
+                updateOriginPosition();
+            });
+            
+            originYValue.addEventListener('input', function() {
+                originYSlider.value = this.value;
+                updateOriginPosition();
+            });
+            
+            rotationSlider.addEventListener('input', function() {
+                rotationValue.value = this.value;
+                updateRotation();
+            });
+            
+            rotationValue.addEventListener('input', function() {
+                rotationSlider.value = this.value;
+                updateRotation();
+            });
+            
+            toggleAnimationButton.addEventListener('click', toggleAnimation);
+            resetButton.addEventListener('click', resetControls);
+            
+            // Initialize
+            updateOriginPosition();
+            updateRotation();
+        });
+    </script>
+</body>
+</html>
