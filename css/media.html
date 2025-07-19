@@ -1,667 +1,484 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Media Queries Visualization</title>
-    <style>
-        /* Nord Theme Color Variables */
-        :root {
-            /* Polar Night */
-            --nord0: #2E3440;
-            --nord1: #3B4252;
-            --nord2: #434C5E;
-            --nord3: #4C566A;
-            
-            /* Snow Storm */
-            --nord4: #D8DEE9;
-            --nord5: #E5E9F0;
-            --nord6: #ECEFF4;
-            
-            /* Frost */
-            --nord7: #8FBCBB;
-            --nord8: #88C0D0;
-            --nord9: #81A1C1;
-            --nord10: #5E81AC;
-            
-            /* Aurora */
-            --nord11: #BF616A; /* Red */
-            --nord12: #D08770; /* Orange */
-            --nord13: #EBCB8B; /* Yellow */
-            --nord14: #A3BE8C; /* Green */
-            --nord15: #B48EAD; /* Purple */
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Media Query Visualizer - Nord Theme</title>
+  <style>
+    /* Nord Theme Color Variables */
+    :root {
+      /* Polar Night */
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      
+      /* Snow Storm */
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      
+      /* Frost */
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      
+      /* Aurora */
+      --nord11: #BF616A; /* Red */
+      --nord12: #D08770; /* Orange */
+      --nord13: #EBCB8B; /* Yellow */
+      --nord14: #A3BE8C; /* Green */
+      --nord15: #B48EAD; /* Purple */
+    }
 
-        *{
-          font-family: 'Ubuntu Sans Mono', monospace !important;
-        }
+    *{
+        font-family: 'Ubuntu Sans Mono', monospace !important;
+    }
 
-        body {
-            font-family: 'Ubuntu Mono', monospace;
-            background-color: var(--nord0);
-            color: var(--nord6);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            min-height: 100vh;
-        }
+    body {
+      background-color: var(--nord0);
+      color: var(--nord6);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
 
-        header {
-            background-color: var(--nord1);
-            padding: 1rem;
-            text-align: center;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-        }
+    header {
+      background-color: var(--nord1);
+      padding: 1rem;
+      text-align: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
 
-        h1 {
-            color: var(--nord8);
-            margin: 0;
-        }
+    h1, h2 {
+      color: var(--nord8);
+      margin: 0;
+    }
 
-        main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
+    main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
 
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
+    .container {
+      width: 100%;
+      max-width: 1150px;
+      margin: 0 auto;
+      padding: 1rem;
+    }
 
-        .control-panel {
-            background-color: var(--nord1);
-            padding: 1.5rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        }
+    .control-panel {
+      background-color: var(--nord1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
 
-        .slider-container {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
+    .slider-container {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
 
-        .width-slider {
-            flex: 1;
-            height: 10px;
-            background-color: var(--nord3);
-            border-radius: 5px;
-            appearance: none;
-            outline: none;
-        }
+    .width-slider {
+      flex: 1;
+      height: 10px;
+      background-color: var(--nord3);
+      border-radius: 5px;
+      appearance: none;
+      outline: none;
+    }
 
-        .width-slider::-webkit-slider-thumb {
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background-color: var(--nord8);
-            border-radius: 50%;
-            cursor: pointer;
-        }
+    .width-slider::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      background-color: var(--nord8);
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
-        .width-slider::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background-color: var(--nord8);
-            border-radius: 50%;
-            cursor: pointer;
-        }
+    .width-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      background-color: var(--nord8);
+      border-radius: 50%;
+      cursor: pointer;
+    }
 
-        .breakpoints {
-            position: relative;
-            height: 30px;
-            margin-top: 1rem;
-            margin-bottom: 1rem;
-            background-color: var(--nord2);
-            border-radius: 4px;
-        }
+    .breakpoints {
+      position: relative;
+      height: 30px;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      background-color: var(--nord2);
+      border-radius: 4px;
+    }
 
-        .breakpoint-marker {
-            position: absolute;
-            top: 0;
-            width: 2px;
-            height: 100%;
-            background-color: var(--nord4);
-        }
+    .breakpoint-marker {
+      position: absolute;
+      top: 0;
+      width: 2px;
+      height: 100%;
+      background-color: var(--nord4);
+    }
 
-        .breakpoint-label {
-            position: absolute;
-            top: -20px;
-            transform: translateX(-50%);
-            color: var(--nord4);
-            font-size: 0.8rem;
-        }
+    .breakpoint-label {
+      position: absolute;
+      top: -20px;
+      transform: translateX(-50%);
+      color: var(--nord4);
+      font-size: 0.8rem;
+    }
 
-        .active-query {
-            background-color: var(--nord2);
-            padding: 1rem;
-            border-radius: 8px;
-            margin-top: 1rem;
-            border-left: 4px solid var(--nord8);
-        }
+    .breakpoint-range {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      background-color: var(--nord3);
+      opacity: 0.5;
+    }
 
-        .query-title {
-            color: var(--nord8);
-            margin-bottom: 0.5rem;
-        }
+    .active-query {
+      background-color: var(--nord2);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      border-left: 4px solid var(--nord8);
+    }
 
-        .media-query-code {
-            font-family: 'Ubuntu Mono', monospace;
-            color: var(--nord4);
-            white-space: nowrap;
-            overflow-x: auto;
-        }
+    .query-title {
+      color: var(--nord8);
+      margin-bottom: 0.5rem;
+    }
 
-        .highlight-property {
-            color: var(--nord9);
-        }
+    .media-query-code {
+      font-family: 'Ubuntu Mono', monospace;
+      color: var(--nord4);
+      white-space: pre-wrap;
+      overflow-x: auto;
+      background-color: var(--nord0);
+      padding: 1rem;
+      border-radius: 4px;
+    }
 
-        .highlight-value {
-            color: var(--nord14);
-        }
+    .highlight-property {
+      color: var(--nord9);
+    }
 
-        .highlight-selector {
-            color: var(--nord13);
-        }
+    .highlight-value {
+      color: var(--nord14);
+    }
 
-        .highlight-operator {
-            color: var(--nord13);
-        }
+    .highlight-selector {
+      color: var(--nord13);
+    }
 
-        .demo-section {
-            margin-top: 2rem;
-            background-color: var(--nord1);
-            border-radius: 8px;
-            overflow: hidden;
-            position: relative;
-        }
+    .highlight-operator {
+      color: var(--nord13);
+    }
 
-        .viewport-simulator {
-            width: 100%;
-            overflow: hidden;
-            position: relative;
-            border: 2px solid var(--nord3);
-            border-radius: 8px;
-            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.2);
-            transition: width 0.3s ease;
-        }
+    .demo-section {
+      margin-top: 2rem;
+      background-color: var(--nord1);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 1.5rem;
+    }
 
-        .demo-content {
-            padding: 1.5rem;
-            background-color: var(--nord2);
-            transition: all 0.3s ease;
-        }
+    .viewport-simulator {
+      width: 100%;
+      overflow: hidden;
+      border: 2px solid var(--nord3);
+      border-radius: 8px;
+      transition: width 0.3s ease;
+      background-color: var(--nord2);
+      padding: 1.5rem;
+      position: relative;
+    }
 
-        /* Demo Layout */
-        .layout {
-            display: grid;
-            gap: 1rem;
-            transition: all 0.3s ease;
-        }
+    /* Default styling for example div */
+    .example {
+      font-size: 24px;
+      padding: 20px;
+      border: 2px solid var(--nord3);
+      background-color: var(--nord2);
+      margin: 20px 0;
+      color: var(--nord6);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
 
-        .card {
-            background-color: var(--nord1);
-            border-radius: 8px;
-            padding: 1rem;
-            border-top: 4px solid;
-        }
+    /* Media query styling - Changed yellow to Nord green */
+    .example.query-active {
+      font-size: 50px;
+      padding: 50px;
+      border: 8px solid black;
+      background-color: var(--nord14);
+      color: black;
+    }
 
-        /* Style changes based on breakpoints */
+    .status-indicator {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      padding: 5px 10px;
+      border-radius: 4px;
+      font-weight: bold;
+      transition: background-color 0.3s ease;
+    }
 
-        /* Mobile First Approach */
-        .layout {
-            grid-template-columns: 1fr;
-        }
+    .status-inactive {
+      background-color: var(--nord11);
+      color: var(--nord6);
+    }
 
-        .card:nth-child(1) {
-            border-top-color: var(--nord11);
-        }
+    .status-active {
+      background-color: var(--nord14);
+      color: var(--nord0);
+    }
 
-        .card:nth-child(2) {
-            border-top-color: var(--nord13);
-        }
+    .visual-guide {
+      display: flex;
+      justify-content: space-between;
+      margin: 1rem 0;
+    }
 
-        .card:nth-child(3) {
-            border-top-color: var(--nord14);
-        }
+    .range-visualization {
+      height: 20px;
+      width: 100%;
+      background-color: var(--nord3);
+      position: relative;
+      border-radius: 4px;
+      margin-top: 20px;
+    }
 
-        .card:nth-child(4) {
-            border-top-color: var(--nord15);
-        }
+    .active-range {
+      position: absolute;
+      height: 100%;
+      background-color: var(--nord14);
+      opacity: 0.6;
+    }
 
-        .card-title {
-            color: var(--nord8);
-            margin-top: 0;
-        }
+    .current-position {
+      position: absolute;
+      width: 3px;
+      height: 30px;
+      background-color: var(--nord11);
+      top: -5px;
+      transform: translateX(-50%);
+    }
 
-        .card-content {
-            color: var(--nord4);
-        }
+    .button {
+      background-color: var(--nord10);
+      color: var(--nord6);
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-family: 'Ubuntu Mono', monospace;
+      transition: all 0.3s;
+      margin: 0.25rem;
+    }
 
-        .hidden-mobile {
-            display: none;
-        }
+    .button:hover {
+      background-color: var(--nord9);
+    }
 
-        .device-indicator {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            font-weight: bold;
-            background-color: var(--nord11);
-            color: var(--nord6);
-        }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin: 1rem 0;
+    }
 
-        /* Code display section */
-        .code-display-section {
-            margin-top: 1.5rem;
-            padding: 1.5rem;
-            background-color: var(--nord2);
-            border-radius: 8px;
-            border-left: 4px solid var(--nord14);
-        }
+    .code-explanation {
+      background-color: var(--nord2);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-top: 1rem;
+      border-left: 4px solid var(--nord10);
+    }
 
-        .code-display-title {
-            color: var(--nord8);
-            margin-top: 0;
-            margin-bottom: 1rem;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .code-toggle-btn {
-            background-color: var(--nord10);
-            border: none;
-            color: var(--nord6);
-            padding: 0.3rem 0.8rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Ubuntu Mono', monospace;
-            font-size: 0.8rem;
-        }
-
-        .code-toggle-btn:hover {
-            background-color: var(--nord9);
-        }
-
-        .code-block {
-            background-color: var(--nord0);
-            padding: 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            overflow-x: auto;
-            font-family: 'Ubuntu Mono', monospace;
-        }
-
-        .code-comment {
-            color: var(--nord3);
-            font-style: italic;
-        }
-
-        .button {
-            background-color: var(--nord10);
-            color: var(--nord6);
-            border: none;
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            cursor: pointer;
-            font-family: 'Ubuntu Mono', monospace;
-            transition: all 0.3s;
-        }
-
-        .button:hover {
-            background-color: var(--nord9);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 0.5rem;
-            flex-wrap: wrap;
-            margin-top: 1rem;
-        }
-
-        /* Media Queries for the simulator */
-        @media (min-width: 576px) {
-            .demo-content.viewport-576 .device-indicator {
-                background-color: var(--nord13);
-            }
-            
-            .demo-content.viewport-576 .hidden-mobile {
-                display: block;
-            }
-            
-            .demo-content.viewport-576 .card-title {
-                font-size: 1.4rem;
-            }
-        }
-
-        @media (min-width: 768px) {
-            .demo-content.viewport-768 .device-indicator {
-                background-color: var(--nord14);
-            }
-            
-            .demo-content.viewport-768 .layout {
-                grid-template-columns: 1fr 1fr;
-            }
-            
-            .demo-content.viewport-768 .font-size {
-                font-size: 1rem;
-            }
-        }
-
-        @media (min-width: 992px) {
-            .demo-content.viewport-992 .device-indicator {
-                background-color: var(--nord10);
-            }
-            
-            .demo-content.viewport-992 .layout {
-                grid-template-columns: repeat(3, 1fr);
-            }
-            
-            .demo-content.viewport-992 .card:nth-child(4) {
-                grid-column: span 3;
-            }
-        }
-
-        @media (min-width: 1200px) {
-            .demo-content.viewport-1200 .device-indicator {
-                background-color: var(--nord15);
-            }
-            
-            .demo-content.viewport-1200 .layout {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            .demo-content.viewport-1200 .card:nth-child(4) {
-                grid-column: auto;
-            }
-        }
-
-        footer {
-            background-color: var(--nord1);
-            padding: 1rem;
-            text-align: center;
-            margin-top: auto;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+    footer {
+      background-color: var(--nord1);
+      padding: 1rem;
+      text-align: center;
+      margin-top: 2rem;
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <header>
-        <h1>CSS Media Queries Visualizer</h1>
-    </header>
+  <header>
+    <h1>Media Query Visualizer</h1>
+  </header>
 
-    <main>
-        <div class="container">
-            <div class="control-panel">
-                <h2>Viewport Width Control</h2>
-                <div class="slider-container">
-                    <span>320px</span>
-                    <input type="range" id="widthSlider" class="width-slider" min="320" max="1200" step="1" value="375">
-                    <span>1200px</span>
-                </div>
-                <div>Current width: <span id="currentWidth">375</span>px</div>
-                
-                <div class="breakpoints">
-                    <div class="breakpoint-marker" style="left: 25%">
-                        <div class="breakpoint-label">576px</div>
-                    </div>
-                    <div class="breakpoint-marker" style="left: 50%">
-                        <div class="breakpoint-label">768px</div>
-                    </div>
-                    <div class="breakpoint-marker" style="left: 75%">
-                        <div class="breakpoint-label">992px</div>
-                    </div>
-                    <div class="breakpoint-marker" style="left: 100%">
-                        <div class="breakpoint-label">1200px</div>
-                    </div>
-                </div>
-                
-                <div class="button-group">
-                    <button class="button" data-width="375">Mobile (375px)</button>
-                    <button class="button" data-width="576">Small (576px)</button>
-                    <button class="button" data-width="768">Medium (768px)</button>
-                    <button class="button" data-width="992">Large (992px)</button>
-                    <button class="button" data-width="1200">XL (1200px)</button>
-                </div>
-
-                <div class="active-query">
-                    <div class="query-title">Active Media Query:</div>
-                    <div class="media-query-code" id="activeQueryDisplay">
-                        Base styles (no query)
-                    </div>
-                </div>
-            </div>
-
-            <div class="demo-section">
-                <div class="viewport-simulator" id="viewportSimulator" style="width: 375px;">
-                    <div class="demo-content" id="demoContent">
-                        <div class="device-indicator" id="deviceIndicator">Mobile</div>
-                        <h2>Responsive Layout Example</h2>
-                        
-                        <div class="layout">
-                            <div class="card">
-                                <h3 class="card-title">Card 1</h3>
-                                <p class="card-content">This card changes layout based on screen width.</p>
-                                <p class="hidden-mobile">This text is hidden on mobile screens.</p>
-                            </div>
-                            <div class="card">
-                                <h3 class="card-title">Card 2</h3>
-                                <p class="card-content">As the viewport grows, the layout adjusts.</p>
-                                <p class="hidden-mobile">This text is hidden on mobile screens.</p>
-                            </div>
-                            <div class="card">
-                                <h3 class="card-title">Card 3</h3>
-                                <p class="card-content">Notice how columns and spacing change.</p>
-                                <p class="hidden-mobile">This text is hidden on mobile screens.</p>
-                            </div>
-                            <div class="card">
-                                <h3 class="card-title">Card 4</h3>
-                                <p class="card-content">This card has special behavior at certain breakpoints.</p>
-                                <p class="hidden-mobile">This text is hidden on mobile screens.</p>
-                            </div>
-                        </div>
-                        
-                        <!-- Code Display Section -->
-                        <div class="code-display-section">
-                            <div class="code-display-title">
-                                <span>Applied CSS Code</span>
-                                <button class="code-toggle-btn" id="codeToggleBtn">Show All</button>
-                            </div>
-                            <div class="code-block" id="currentCodeBlock">
-                                <span class="code-comment">/* Base styles - Mobile first approach */</span>
-                                <br>
-                                <span class="highlight-selector">.layout</span> {
-                                <br>&nbsp;&nbsp;<span class="highlight-property">display</span>: <span class="highlight-value">grid</span>;
-                                <br>&nbsp;&nbsp;<span class="highlight-property">grid-template-columns</span>: <span class="highlight-value">1fr</span>;
-                                <br>&nbsp;&nbsp;<span class="highlight-property">gap</span>: <span class="highlight-value">1rem</span>;
-                                <br>}
-                                <br>
-                                <span class="highlight-selector">.hidden-mobile</span> {
-                                <br>&nbsp;&nbsp;<span class="highlight-property">display</span>: <span class="highlight-value">none</span>;
-                                <br>}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+  <main>
+    <div class="container">
+      <div class="control-panel">
+        <h2>Viewport Width Control</h2>
+        <div class="slider-container">
+          <span>300px</span>
+          <input type="range" id="widthSlider" class="width-slider" min="300" max="1150" step="1" value="500">
+          <span>1150px</span>
         </div>
-    </main>
+        <div>Current width: <span id="currentWidth">500</span>px</div>
+        
+        <div class="visual-guide">
+          <div class="range-visualization">
+            <!-- Correctly positioned range indicators -->
+            <div class="active-range" id="range600to900" style="left: 35.3%; width: 35.3%;"></div>
+            <div class="active-range" id="range1100plus" style="left: 94.1%; width: 5.9%;"></div>
+            <div class="current-position" id="currentPosition" style="left: 23.5%"></div>
+            <div class="breakpoint-marker" style="left: 35.3%">
+              <div class="breakpoint-label">600px</div>
+            </div>
+            <div class="breakpoint-marker" style="left: 70.6%">
+              <div class="breakpoint-label">900px</div>
+            </div>
+            <div class="breakpoint-marker" style="left: 94.1%">
+              <div class="breakpoint-label">1100px</div>
+            </div>
+          </div>
+        </div>
+        
+        <div class="button-group">
+          <button class="button" data-width="400">400px</button>
+          <button class="button" data-width="600">600px</button>
+          <button class="button" data-width="750">750px</button>
+          <button class="button" data-width="900">900px</button>
+          <button class="button" data-width="1000">1000px</button>
+          <button class="button" data-width="1100">1100px</button>
+        </div>
 
-    <footer>
-        CSS Media Queries Visualizer using Nord Theme
-    </footer>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const widthSlider = document.getElementById('widthSlider');
-            const currentWidthDisplay = document.getElementById('currentWidth');
-            const viewportSimulator = document.getElementById('viewportSimulator');
-            const demoContent = document.getElementById('demoContent');
-            const deviceIndicator = document.getElementById('deviceIndicator');
-            const activeQueryDisplay = document.getElementById('activeQueryDisplay');
-            const presetButtons = document.querySelectorAll('.button');
-            const currentCodeBlock = document.getElementById('currentCodeBlock');
-            const codeToggleBtn = document.getElementById('codeToggleBtn');
-            
-            let showAllCode = false;
-            
-            // Breakpoints
-            const breakpoints = [
-                { 
-                    width: 0, 
-                    name: 'Mobile', 
-                    color: 'var(--nord11)', 
-                    query: 'Base styles (no query)',
-                    code: `<span class="code-comment">/* Base styles - Mobile first approach */</span>
-<span class="highlight-selector">.layout</span> {
-  <span class="highlight-property">display</span>: <span class="highlight-value">grid</span>;
-  <span class="highlight-property">grid-template-columns</span>: <span class="highlight-value">1fr</span>;
-  <span class="highlight-property">gap</span>: <span class="highlight-value">1rem</span>;
+        <div class="active-query">
+          <div class="query-title">Media Query:</div>
+          <div class="media-query-code">
+<span class="highlight-property">@media</span> screen <span class="highlight-operator">and</span> (max-width: <span class="highlight-value">900px</span>) <span class="highlight-operator">and</span> (min-width: <span class="highlight-value">600px</span>), (min-width: <span class="highlight-value">1100px</span>) {
+  <span class="highlight-selector">div.example</span> {
+    <span class="highlight-property">font-size</span>: <span class="highlight-value">50px</span>;
+    <span class="highlight-property">padding</span>: <span class="highlight-value">50px</span>;
+    <span class="highlight-property">border</span>: <span class="highlight-value">8px solid black</span>;
+    <span class="highlight-property">background</span>: <span class="highlight-value">yellow</span>;
+  }
 }
+          </div>
+        </div>
 
-<span class="highlight-selector">.hidden-mobile</span> {
-  <span class="highlight-property">display</span>: <span class="highlight-value">none</span>;
-}`
-                },
-                { 
-                    width: 576, 
-                    name: 'Small', 
-                    color: 'var(--nord13)', 
-                    query: '<span class="highlight-property">@media</span> <span class="highlight-operator">(</span><span class="highlight-property">min-width</span>: <span class="highlight-value">576px</span><span class="highlight-operator">)</span>',
-                    code: `<span class="highlight-property">@media</span> <span class="highlight-operator">(min-width: 576px)</span> {
-  <span class="highlight-selector">.hidden-mobile</span> {
-    <span class="highlight-property">display</span>: <span class="highlight-value">block</span>;
-  }
-  
-  <span class="highlight-selector">.card-title</span> {
-    <span class="highlight-property">font-size</span>: <span class="highlight-value">1.4rem</span>;
-  }
-}`
-                },
-                { 
-                    width: 768, 
-                    name: 'Medium', 
-                    color: 'var(--nord14)', 
-                    query: '<span class="highlight-property">@media</span> <span class="highlight-operator">(</span><span class="highlight-property">min-width</span>: <span class="highlight-value">768px</span><span class="highlight-operator">)</span>',
-                    code: `<span class="highlight-property">@media</span> <span class="highlight-operator">(min-width: 768px)</span> {
-  <span class="highlight-selector">.layout</span> {
-    <span class="highlight-property">grid-template-columns</span>: <span class="highlight-value">1fr 1fr</span>;
-  }
-  
-  <span class="highlight-selector">.font-size</span> {
-    <span class="highlight-property">font-size</span>: <span class="highlight-value">1rem</span>;
-  }
-}`
-                },
-                { 
-                    width: 992, 
-                    name: 'Large', 
-                    color: 'var(--nord10)', 
-                    query: '<span class="highlight-property">@media</span> <span class="highlight-operator">(</span><span class="highlight-property">min-width</span>: <span class="highlight-value">992px</span><span class="highlight-operator">)</span>',
-                    code: `<span class="highlight-property">@media</span> <span class="highlight-operator">(min-width: 992px)</span> {
-  <span class="highlight-selector">.layout</span> {
-    <span class="highlight-property">grid-template-columns</span>: <span class="highlight-value">repeat(3, 1fr)</span>;
-  }
-  
-  <span class="highlight-selector">.card:nth-child(4)</span> {
-    <span class="highlight-property">grid-column</span>: <span class="highlight-value">span 3</span>;
-  }
-}`
-                },
-                { 
-                    width: 1200, 
-                    name: 'XLarge', 
-                    color: 'var(--nord15)', 
-                    query: '<span class="highlight-property">@media</span> <span class="highlight-operator">(</span><span class="highlight-property">min-width</span>: <span class="highlight-value">1200px</span><span class="highlight-operator">)</span>',
-                    code: `<span class="highlight-property">@media</span> <span class="highlight-operator">(min-width: 1200px)</span> {
-  <span class="highlight-selector">.layout</span> {
-    <span class="highlight-property">grid-template-columns</span>: <span class="highlight-value">repeat(4, 1fr)</span>;
-  }
-  
-  <span class="highlight-selector">.card:nth-child(4)</span> {
-    <span class="highlight-property">grid-column</span>: <span class="highlight-value">auto</span>;
-  }
-}`
-                }
-            ];
-            
-            // Function to update the viewport size
-            function updateViewportSize(width) {
-                // Update the width display
-                currentWidthDisplay.textContent = width;
-                
-                // Update the simulator width
-                viewportSimulator.style.width = width + 'px';
-                
-                // Determine active breakpoint
-                let activeBreakpoint = breakpoints[0];
-                
-                // Remove all viewport classes
-                demoContent.className = 'demo-content';
-                
-                // Array to store all applicable code blocks
-                let applicableCode = [breakpoints[0].code];
-                
-                for (let i = 1; i < breakpoints.length; i++) {
-                    if (width >= breakpoints[i].width) {
-                        activeBreakpoint = breakpoints[i];
-                        demoContent.classList.add('viewport-' + breakpoints[i].width);
-                        applicableCode.push(breakpoints[i].code);
-                    }
-                }
-                
-                // Update the device indicator
-                deviceIndicator.textContent = activeBreakpoint.name;
-                deviceIndicator.style.backgroundColor = activeBreakpoint.color;
-                
-                // Update the active query display
-                activeQueryDisplay.innerHTML = activeBreakpoint.query;
-                
-                // Update code display
-                if (showAllCode) {
-                    currentCodeBlock.innerHTML = applicableCode.join('<br><br>');
-                } else {
-                    currentCodeBlock.innerHTML = activeBreakpoint.code;
-                }
-            }
-            
-            // Event listener for the slider
-            widthSlider.addEventListener('input', function() {
-                updateViewportSize(parseInt(this.value, 10));
-            });
-            
-            // Event listeners for preset buttons
-            presetButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const width = parseInt(this.dataset.width, 10);
-                    widthSlider.value = width;
-                    updateViewportSize(width);
-                });
-            });
-            
-            // Event listener for code toggle button
-            codeToggleBtn.addEventListener('click', function() {
-                showAllCode = !showAllCode;
-                this.textContent = showAllCode ? 'Show Active Only' : 'Show All';
-                updateViewportSize(parseInt(widthSlider.value, 10));
-            });
-            
-            // Initial setup
-            updateViewportSize(parseInt(widthSlider.value, 10));
+        <div id="queryStatus" class="code-explanation">
+          <span id="queryStatusText">Media query is not active at 500px width</span>
+        </div>
+      </div>
+
+      <div class="demo-section">
+        <h2>Visual Demonstration</h2>
+        <p>Resize the viewport width using the slider to see how the div appears at different screen sizes.</p>
+        
+        <div class="viewport-simulator" id="viewportSimulator" style="width: 500px;">
+          <div class="status-indicator status-inactive" id="statusIndicator">Query Inactive</div>
+          
+          <div class="example" id="exampleDiv">Example DIV.</div>
+          
+          <p style="color: var(--nord4);">
+            This DIV changes styles when the width is:
+            <br>- Between 600px and 900px, OR
+            <br>- Above 1100px
+          </p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    Media Query Visualizer with Nord Theme • Interactive Example
+  </footer>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const widthSlider = document.getElementById('widthSlider');
+      const currentWidthDisplay = document.getElementById('currentWidth');
+      const viewportSimulator = document.getElementById('viewportSimulator');
+      const exampleDiv = document.getElementById('exampleDiv');
+      const statusIndicator = document.getElementById('statusIndicator');
+      const currentPosition = document.getElementById('currentPosition');
+      const queryStatusText = document.getElementById('queryStatusText');
+      const presetButtons = document.querySelectorAll('.button');
+      
+      const minWidth = 300;
+      const maxWidth = 1150;
+      const range = maxWidth - minWidth;
+      
+      // Function to check if the media query would be active
+      function isMediaQueryActive(width) {
+        return (width >= 600 && width <= 900) || (width >= 1100);
+      }
+      
+      // Function to update the viewport size and styles
+      function updateViewport(width) {
+        // Update the width display
+        currentWidthDisplay.textContent = width;
+        
+        // Update the simulator width - scaled for demonstration
+        viewportSimulator.style.width = Math.min(width, 1000) + 'px';
+        
+        // Update the position indicator on the range visualization (correctly positioned)
+        const positionPercent = ((width - minWidth) / range) * 100;
+        currentPosition.style.left = positionPercent + '%';
+        
+        // Check if the media query would be active
+        const queryActive = isMediaQueryActive(width);
+        
+        // Update the example div styling
+        if (queryActive) {
+          exampleDiv.classList.add('query-active');
+          statusIndicator.textContent = 'Query Active';
+          statusIndicator.classList.remove('status-inactive');
+          statusIndicator.classList.add('status-active');
+          
+          // Update status text
+          if (width >= 600 && width <= 900) {
+            queryStatusText.innerHTML = `<strong style="color: var(--nord14);">Media query is active</strong> at ${width}px width because:<br>• Width is between 600px and 900px (first condition)`;
+          } else {
+            queryStatusText.innerHTML = `<strong style="color: var(--nord14);">Media query is active</strong> at ${width}px width because:<br>• Width is greater than or equal to 1100px (second condition)`;
+          }
+        } else {
+          exampleDiv.classList.remove('query-active');
+          statusIndicator.textContent = 'Query Inactive';
+          statusIndicator.classList.remove('status-active');
+          statusIndicator.classList.add('status-inactive');
+          
+          // Update status text
+          queryStatusText.innerHTML = `<strong style="color: var(--nord11);">Media query is not active</strong> at ${width}px width because:<br>• Width is not between 600px and 900px AND<br>• Width is not greater than or equal to 1100px`;
+        }
+      }
+      
+      // Event listener for the slider
+      widthSlider.addEventListener('input', function() {
+        updateViewport(parseInt(this.value, 10));
+      });
+      
+      // Event listeners for preset buttons
+      presetButtons.forEach(button => {
+        button.addEventListener('click', function() {
+          const width = parseInt(this.dataset.width, 10);
+          widthSlider.value = width;
+          updateViewport(width);
         });
-    </script>
+      });
+      
+      // Initial setup
+      updateViewport(parseInt(widthSlider.value, 10));
+    });
+  </script>
 </body>
 </html>
