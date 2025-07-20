@@ -158,10 +158,12 @@
       animation-play-state: paused;
     }
     
+    /* Modified backwards box to be red originally */
     .backwards-box {
       animation: move 3s linear 1s;
       animation-fill-mode: backwards;
       animation-play-state: paused;
+      background-color: var(--nord11); /* Set the original color to red */
     }
     
     .both-box {
@@ -213,6 +215,14 @@
       color: var(--nord8);
       margin-top: 0;
     }
+    
+    .note {
+      background-color: var(--nord1);
+      border-left: 4px solid var(--nord11);
+      padding: 10px 15px;
+      margin-top: 15px;
+      border-radius: 0 4px 4px 0;
+    }
   </style>
 </head>
 <body>
@@ -255,7 +265,7 @@
         </div>
       </div>
       
-      <!-- Backwards fill-mode -->
+      <!-- Backwards fill-mode (modified to remain red) -->
       <div class="demo-box">
         <div class="title">fill-mode: backwards</div>
         <div class="description">Applies first keyframe styles before animation</div>
