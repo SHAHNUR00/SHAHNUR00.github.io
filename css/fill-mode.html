@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>animation-fill-mode Visualizer</title>
+  <style>
+    /* Nord Theme Colors */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A; /* Red */
+      --nord12: #D08770; /* Orange */
+      --nord13: #EBCB8B; /* Yellow */
+      --nord14: #A3BE8C; /* Green */
+      --nord15: #B48EAD; /* Purple */
+    }
+
+    *{
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+    
+    body {
+      margin: 0;
+      padding: 20px;
+      background-color: var(--nord0);
+      color: var(--nord6);
+    }
+    
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+    }
+    
+    .demo-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 20px;
+      margin-bottom: 30px;
+    }
+    
+    .demo-box {
+      background-color: var(--nord1);
+      border-radius: 8px;
+      padding: 15px;
+      position: relative;
+    }
+    
+    .title {
+      color: var(--nord7);
+      font-size: 18px;
+      margin-bottom: 5px;
+      font-family: monospace;
+      font-weight: bold;
+    }
+    
+    .description {
+      color: var(--nord4);
+      margin-bottom: 15px;
+      font-size: 14px;
+    }
+    
+    .animation-stage {
+      height: 100px;
+      position: relative;
+      background-color: var(--nord2);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    
+    .timeline {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 20px;
+      background-color: var(--nord3);
+      display: flex;
+    }
+    
+    .time-marker {
+      flex: 1;
+      text-align: center;
+      color: var(--nord4);
+      font-size: 12px;
+      padding-top: 2px;
+      position: relative;
+    }
+    
+    .time-marker::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 4px;
+      width: 100%;
+    }
+    
+    .time-before::before {
+      background-color: var(--nord9);
+    }
+    
+    .time-during::before {
+      background-color: var(--nord13);
+    }
+    
+    .time-after::before {
+      background-color: var(--nord11);
+    }
+    
+    .box {
+      width: 50px;
+      height: 50px;
+      background-color: var(--nord3); /* Default color */
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      border-radius: 5px;
+    }
+    
+    @keyframes move {
+      0% {
+        left: 20px;
+        background-color: var(--nord11); /* Red */
+        transform: rotate(0deg);
+      }
+      100% {
+        left: calc(100% - 70px);
+        background-color: var(--nord14); /* Green */
+        transform: rotate(360deg);
+      }
+    }
+    
+    /* Animation settings for each fill-mode */
+    .none-box {
+      animation: move 3s linear 1s;
+      animation-fill-mode: none;
+      animation-play-state: paused;
+    }
+    
+    .forwards-box {
+      animation: move 3s linear 1s;
+      animation-fill-mode: forwards;
+      animation-play-state: paused;
+    }
+    
+    .backwards-box {
+      animation: move 3s linear 1s;
+      animation-fill-mode: backwards;
+      animation-play-state: paused;
+    }
+    
+    .both-box {
+      animation: move 3s linear 1s;
+      animation-fill-mode: both;
+      animation-play-state: paused;
+    }
+    
+    .controls {
+      text-align: center;
+      margin: 20px 0;
+    }
+    
+    button {
+      background-color: var(--nord10);
+      color: var(--nord6);
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      margin: 0 10px;
+    }
+    
+    button:hover {
+      background-color: var(--nord9);
+    }
+    
+    .phase-indicator {
+      position: absolute;
+      top: 5px;
+      right: 10px;
+      font-size: 14px;
+      color: var(--nord5);
+      background-color: var(--nord0);
+      padding: 3px 8px;
+      border-radius: 4px;
+    }
+    
+    .info-panel {
+      background-color: var(--nord2);
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 30px;
+      border-left: 4px solid var(--nord8);
+    }
+    
+    .info-panel h2 {
+      color: var(--nord8);
+      margin-top: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>CSS animation-fill-mode Visualizer</h1>
+    
+    <div class="controls">
+      <button id="playBtn">Play Animation</button>
+      <button id="resetBtn">Reset</button>
+    </div>
+    
+    <div class="demo-container">
+      <!-- None fill-mode -->
+      <div class="demo-box">
+        <div class="title">fill-mode: none</div>
+        <div class="description">No styles applied before or after animation</div>
+        <div class="animation-stage">
+          <div class="box none-box" id="noneBox"></div>
+          <div class="phase-indicator" id="nonePhase">Before</div>
+          <div class="timeline">
+            <div class="time-marker time-before">Before</div>
+            <div class="time-marker time-during">During</div>
+            <div class="time-marker time-after">After</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Forwards fill-mode -->
+      <div class="demo-box">
+        <div class="title">fill-mode: forwards</div>
+        <div class="description">Retains end styles after animation</div>
+        <div class="animation-stage">
+          <div class="box forwards-box" id="forwardsBox"></div>
+          <div class="phase-indicator" id="forwardsPhase">Before</div>
+          <div class="timeline">
+            <div class="time-marker time-before">Before</div>
+            <div class="time-marker time-during">During</div>
+            <div class="time-marker time-after">After</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Backwards fill-mode -->
+      <div class="demo-box">
+        <div class="title">fill-mode: backwards</div>
+        <div class="description">Applies first keyframe styles before animation</div>
+        <div class="animation-stage">
+          <div class="box backwards-box" id="backwardsBox"></div>
+          <div class="phase-indicator" id="backwardsPhase">Before</div>
+          <div class="timeline">
+            <div class="time-marker time-before">Before</div>
+            <div class="time-marker time-during">During</div>
+            <div class="time-marker time-after">After</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Both fill-mode -->
+      <div class="demo-box">
+        <div class="title">fill-mode: both</div>
+        <div class="description">Applies both forwards and backwards behaviors</div>
+        <div class="animation-stage">
+          <div class="box both-box" id="bothBox"></div>
+          <div class="phase-indicator" id="bothPhase">Before</div>
+          <div class="timeline">
+            <div class="time-marker time-before">Before</div>
+            <div class="time-marker time-during">During</div>
+            <div class="time-marker time-after">After</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="info-panel">
+      <h2>How animation-fill-mode works</h2>
+      <p>The <code>animation-fill-mode</code> property defines how styles are applied to elements before and after the animation execution:</p>
+      <ul>
+        <li><strong>none</strong>: The element will not retain any animation styles before or after execution</li>
+        <li><strong>forwards</strong>: The element will retain the style values from the last keyframe (100%) when the animation ends</li>
+        <li><strong>backwards</strong>: The element will get the style values from the first keyframe (0%) before the animation starts (during delay)</li>
+        <li><strong>both</strong>: The animation will follow both forwards and backwards rules, applying both behaviors</li>
+      </ul>
+      <p>In this demo, all animations have a 1 second delay to clearly show the "before" state.</p>
+    </div>
+  </div>
+  
+  <script>
+    const playBtn = document.getElementById('playBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    
+    const noneBox = document.getElementById('noneBox');
+    const forwardsBox = document.getElementById('forwardsBox');
+    const backwardsBox = document.getElementById('backwardsBox');
+    const bothBox = document.getElementById('bothBox');
+    
+    const nonePhase = document.getElementById('nonePhase');
+    const forwardsPhase = document.getElementById('forwardsPhase');
+    const backwardsPhase = document.getElementById('backwardsPhase');
+    const bothPhase = document.getElementById('bothPhase');
+    
+    // Play all animations
+    playBtn.addEventListener('click', function() {
+      // Start animations
+      noneBox.style.animationPlayState = 'running';
+      forwardsBox.style.animationPlayState = 'running';
+      backwardsBox.style.animationPlayState = 'running';
+      bothBox.style.animationPlayState = 'running';
+      
+      // Disable play button
+      playBtn.disabled = true;
+      
+      // Update phases - Before (0s)
+      nonePhase.textContent = 'Before';
+      forwardsPhase.textContent = 'Before';
+      backwardsPhase.textContent = 'Before';
+      bothPhase.textContent = 'Before';
+      
+      // Update phases - During Animation (after 1s delay)
+      setTimeout(() => {
+        nonePhase.textContent = 'During';
+        forwardsPhase.textContent = 'During';
+        backwardsPhase.textContent = 'During';
+        bothPhase.textContent = 'During';
+      }, 1000);
+      
+      // Update phases - After Animation (after 4s total - 1s delay + 3s duration)
+      setTimeout(() => {
+        nonePhase.textContent = 'After';
+        forwardsPhase.textContent = 'After';
+        backwardsPhase.textContent = 'After';
+        bothPhase.textContent = 'After';
+        
+        // Re-enable play button
+        playBtn.disabled = false;
+      }, 4000);
+    });
+    
+    // Reset all animations
+    resetBtn.addEventListener('click', function() {
+      location.reload(); // Simple reload to reset everything
+    });
+  </script>
+</body>
+</html>
