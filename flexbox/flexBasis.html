@@ -3,761 +3,791 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flex Basis Accurate Visual Demo</title>
+    <title>Flex-Basis Visualization - Nord Theme</title>
     <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Polar Night (darkest) */
+            --nord1: #3B4252;  /* Polar Night */
+            --nord2: #434C5E;  /* Polar Night */
+            --nord3: #4C566A;  /* Polar Night */
+            --nord4: #D8DEE9;  /* Snow Storm */
+            --nord5: #E5E9F0;  /* Snow Storm */
+            --nord6: #ECEFF4;  /* Snow Storm (lightest) */
+            --nord7: #8FBCBB;  /* Frost */
+            --nord8: #88C0D0;  /* Frost */
+            --nord9: #81A1C1;  /* Frost */
+            --nord10: #5E81AC; /* Frost */
+            --nord11: #BF616A; /* Aurora (red) */
+            --nord12: #D08770; /* Aurora (orange) */
+            --nord13: #EBCB8B; /* Aurora (yellow) */
+            --nord14: #A3BE8C; /* Aurora (green) */
+            --nord15: #B48EAD; /* Aurora (purple) */
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Ubuntu Sans Mono', sans-serif !important
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: #333;
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         h1 {
+            color: var(--nord8);
+            margin-bottom: 1rem;
             text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .demo-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #667eea;
-            padding-bottom: 10px;
-        }
-
-        .comparison-container {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .before-after {
-            flex: 1;
-        }
-
-        .before-after h3 {
-            color: #e74c3c;
-            margin-bottom: 10px;
+        p {
+            color: var(--nord4);
+            margin-bottom: 2rem;
+            max-width: 800px;
             text-align: center;
-            font-size: 1.2rem;
         }
 
-        .before-after.after h3 {
-            color: #27ae60;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 2rem;
+            background: var(--nord1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Graph paper grid */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord2) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord2) 1px, transparent 1px);
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .flex-container {
-            display: flex;
-            border: 3px solid #667eea;
-            border-radius: 10px;
-            padding: 15px;
-            background: #f8f9fa;
+            height: 100%;
+            width: 100%;
             position: relative;
-            height: 100px;
-            align-items: center;
-            width: 600px; /* Fixed width for consistent comparison */
+            z-index: 2;
+            display: flex;
         }
 
         .flex-item {
-            color: white;
-            padding: 15px;
-            margin: 5px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 70px;
+            flex-direction: column;
+            height: 100%;
+            font-weight: bold;
             position: relative;
-            border: 2px solid rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-width: 20px;
         }
 
-        .item1 {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
+        .flex-item:nth-child(1) { background-color: var(--nord7); color: var(--nord0); }
+        .flex-item:nth-child(2) { background-color: var(--nord8); color: var(--nord0); }
+        .flex-item:nth-child(3) { background-color: var(--nord9); color: var(--nord0); }
+        .flex-item:nth-child(4) { background-color: var(--nord10); color: var(--nord0); }
 
-        .item2 {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        }
-
-        .item3 {
-            background: linear-gradient(135deg, #45b7d1, #96c93d);
-        }
-
-        .item4 {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-        }
-
-        .label {
+        .flex-item-label {
+            margin-bottom: 8px;
+            text-align: center;
             font-size: 0.9rem;
-            margin-bottom: 3px;
         }
 
-        .basis-value {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.3);
-            padding: 3px 8px;
-            border-radius: 10px;
-        }
-
-        .size-indicator {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c3e50;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-size: 0.7rem;
-            font-weight: bold;
-        }
-
-        /* BEFORE - Default (no flex-basis) */
-        .before .flex-item {
-            flex-basis: auto;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        /* AFTER - With flex-basis */
-        .after .flex-container {
-            width: 600px;
-        }
-
-        /* Scenario 1: Equal flex-basis */
-        .scenario1 .after .flex-item {
-            flex-basis: 150px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        /* Scenario 2: Different flex-basis values */
-        .scenario2 .after .item1 {
-            flex-basis: 100px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario2 .after .item2 {
-            flex-basis: 200px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario2 .after .item3 {
-            flex-basis: 150px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        /* Scenario 3: flex-basis with flex-grow */
-        .scenario3 .after .item1 {
-            flex-basis: 100px;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        .scenario3 .after .item2 {
-            flex-basis: 50px;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        .scenario3 .after .item3 {
-            flex-basis: 100px;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        /* Scenario 4: flex-basis 0 vs auto */
-        .scenario4 .after .item1 {
-            flex-basis: 0;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        .scenario4 .after .item2 {
-            flex-basis: auto;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        .scenario4 .after .item3 {
-            flex-basis: 0;
-            flex-grow: 1;
-            flex-shrink: 1;
-        }
-
-        /* Scenario 5: Percentage flex-basis */
-        .scenario5 .after .item1 {
-            flex-basis: 20%;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario5 .after .item2 {
-            flex-basis: 50%;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario5 .after .item3 {
-            flex-basis: 30%;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        /* Scenario 6: Overflow scenario */
-        .scenario6 .after .item1 {
-            flex-basis: 250px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario6 .after .item2 {
-            flex-basis: 250px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .scenario6 .after .item3 {
-            flex-basis: 250px;
-            flex-grow: 0;
-            flex-shrink: 1;
-        }
-
-        .explanation {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
+        .flex-item-value {
             font-size: 1.1rem;
-            font-weight: 500;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .reference-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 30px;
-        }
-
-        .reference-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
-        }
-
-        .reference-item {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
-        }
-
-        .ref-title {
-            font-size: 1.1rem;
-            font-weight: bold;
             margin-bottom: 8px;
         }
 
-        .ref-desc {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        .measurement {
-            position: relative;
-            margin-top: 20px;
-            padding: 15px;
-            background: #ecf0f1;
-            border-radius: 5px;
-            font-family: monospace;
+        .content-size {
             font-size: 0.9rem;
         }
 
-        .measurement::before {
-            content: "📏 Flex-basis explanation:";
-            font-weight: bold;
-            color: #2c3e50;
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            background-color: var(--nord1);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-label {
             display: block;
-            margin-bottom: 10px;
-        }
-
-        /* Visual basis indicators */
-        .basis-bar {
-            position: absolute;
-            top: -8px;
-            left: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #667eea, #764ba2);
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        .content-text {
-            font-size: 0.7rem;
-            margin-top: 5px;
-            opacity: 0.8;
-        }
-
-        @media (max-width: 768px) {
-            .comparison-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .flex-container {
-                width: 100% !important;
-            }
-        }
-
-        /* Highlight overflow */
-        .overflow-warning {
-            position: absolute;
-            top: -35px;
-            right: 10px;
-            background: #e74c3c;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 5px;
-            font-size: 0.8rem;
+            margin-bottom: 0.5rem;
+            color: var(--nord8);
             font-weight: bold;
+        }
+
+        .control-value {
+            display: inline-block;
+            width: 60px;
+            text-align: center;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .control-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: var(--nord3);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]:nth-of-type(1)::-webkit-slider-thumb {
+            background: var(--nord7);
+        }
+        input[type="range"]:nth-of-type(2)::-webkit-slider-thumb {
+            background: var(--nord8);
+        }
+        input[type="range"]:nth-of-type(3)::-webkit-slider-thumb {
+            background: var(--nord9);
+        }
+        input[type="range"]:nth-of-type(4)::-webkit-slider-thumb {
+            background: var(--nord10);
+        }
+
+        select {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .info-panel {
+            background-color: var(--nord1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            color: var(--nord13);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .calculation {
+            font-family: monospace;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 4px;
+            color: var(--nord6);
+            margin: 1rem 0;
+            white-space: pre-wrap;
+        }
+
+        .space-distribution {
+            display: flex;
+            height: 40px;
+            margin-top: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .space-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--nord0);
+            min-width: 20px;
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .reset-button {
+            background-color: var(--nord11);
+        }
+
+        .reset-button:hover {
+            background-color: var(--nord12);
+        }
+
+        .overflow-button {
+            background-color: var(--nord12);
+        }
+
+        .overflow-button:hover {
+            background-color: var(--nord11);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .auto-basis {
+            border: 2px solid var(--nord14);
+            box-shadow: 0 0 10px var(--nord14);
+        }
+
+        .fixed-basis {
+            border: 2px solid var(--nord13);
+            box-shadow: 0 0 10px var(--nord13);
+        }
+
+        .overflow-warning {
+            background-color: var(--nord11);
+            color: var(--nord6);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .container-width-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .container-width-control label {
+            margin-right: 1rem;
+            color: var(--nord13);
+            font-weight: bold;
+        }
+
+        .container-width-control input {
+            flex-grow: 1;
+        }
+
+        .width-value {
+            margin-left: 1rem;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <h1>Understanding Flex-Basis</h1>
+    <p>
+        The <code>flex-basis</code> property defines the initial main size of a flex item before free space is distributed. 
+        It can be set to a specific size (px, %, em) or 'auto' to use the item's content size. When total basis exceeds container width, items shrink proportionally.
+    </p>
+
     <div class="container">
-        <h1>📏 Flex Basis - Accurate Visual Demo</h1>
-        
-        <!-- Scenario 1: Equal flex-basis -->
-        <div class="demo-section scenario1">
-            <h2>📐 Scenario 1: Equal Flex-Basis (All 150px)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (flex-basis: 150px)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: 150px</span>
-                            <div class="content-text">Fixed width</div>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: 150px</span>
-                            <div class="content-text">Fixed width</div>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: 150px</span>
-                            <div class="content-text">Fixed width</div>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="explanation">📐 flex-basis sets the initial main size before free space is distributed</p>
+        <div class="container-width-control">
+            <label for="containerWidth">Container Width:</label>
+            <input type="range" id="containerWidth" min="300" max="900" value="900" step="50">
+            <span class="width-value" id="containerWidthValue">900px</span>
         </div>
 
-        <!-- Scenario 2: Different flex-basis values -->
-        <div class="demo-section scenario2">
-            <h2>🎯 Scenario 2: Different Flex-Basis Values</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content width</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (100px, 200px, 150px)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: 100px</span>
-                            <div class="content-text">Small</div>
-                            <div class="size-indicator">100px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: 200px</span>
-                            <div class="content-text">Large</div>
-                            <div class="size-indicator">200px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: 150px</span>
-                            <div class="content-text">Medium</div>
-                            <div class="size-indicator">150px</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <p class="explanation">🎯 Each item gets its specified flex-basis as starting size</p>
+        <div id="overflowWarning" class="overflow-warning" style="display: none;">
+            ⚠️ Overflow Detected: Total flex-basis exceeds container width!
         </div>
 
-        <!-- Scenario 3: flex-basis with flex-grow -->
-        <div class="demo-section scenario3">
-            <h2>🌱 Scenario 3: Flex-Basis + Flex-Grow</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (basis only)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: 100px</span>
-                            <div class="content-text">grow: 0</div>
-                            <div class="size-indicator">100px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: 50px</span>
-                            <div class="content-text">grow: 0</div>
-                            <div class="size-indicator">50px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: 100px</span>
-                            <div class="content-text">grow: 0</div>
-                            <div class="size-indicator">100px</div>
-                        </div>
-                    </div>
+        <div class="visualization">
+            <div class="grid-background"></div>
+            <div class="flex-container" id="flexContainer">
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 1</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size1">25%</div>
                 </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (basis + grow: 1)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">basis: 100px</span>
-                            <div class="content-text">grow: 1</div>
-                            <div class="size-indicator">~217px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">basis: 50px</span>
-                            <div class="content-text">grow: 1</div>
-                            <div class="size-indicator">~167px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">basis: 100px</span>
-                            <div class="content-text">grow: 1</div>
-                            <div class="size-indicator">~217px</div>
-                        </div>
-                    </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 2</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size2">25%</div>
+                </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 3</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size3">25%</div>
+                </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 4</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size4">25%</div>
                 </div>
             </div>
-            <p class="explanation">🌱 flex-basis sets starting size, then flex-grow distributes remaining space</p>
         </div>
 
-        <!-- Scenario 4: flex-basis 0 vs auto -->
-        <div class="demo-section scenario4">
-            <h2>🔄 Scenario 4: flex-basis: 0 vs auto</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Short</span>
-                            <span class="basis-value">basis: auto, grow: 1</span>
-                            <div class="content-text">Content size</div>
-                            <div class="size-indicator">~100px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Much Longer Text</span>
-                            <span class="basis-value">basis: auto, grow: 1</span>
-                            <div class="content-text">Content size</div>
-                            <div class="size-indicator">~200px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Medium</span>
-                            <span class="basis-value">basis: auto, grow: 1</span>
-                            <div class="content-text">Content size</div>
-                            <div class="size-indicator">~150px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (flex-basis: 0)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Short</span>
-                            <span class="basis-value">basis: 0, grow: 1</span>
-                            <div class="content-text">Equal share</div>
-                            <div class="size-indicator">~183px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Much Longer Text</span>
-                            <span class="basis-value">basis: 0, grow: 1</span>
-                            <div class="content-text">Equal share</div>
-                            <div class="size-indicator">~183px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Medium</span>
-                            <span class="basis-value">basis: 0, grow: 1</span>
-                            <div class="content-text">Equal share</div>
-                            <div class="size-indicator">~183px</div>
-                        </div>
-                    </div>
+        <div class="controls">
+            <div class="control-group">
+                <label class="control-label">
+                    Item 1 flex-basis
+                    <span class="control-value" id="item1Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item1Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item1Slider" disabled>
                 </div>
             </div>
-            <p class="explanation">🔄 flex-basis: 0 ignores content size, auto uses content as starting point</p>
-        </div>
-
-        <!-- Scenario 5: Percentage flex-basis -->
-        <div class="demo-section scenario5">
-            <h2>📊 Scenario 5: Percentage Flex-Basis</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (20%, 50%, 30%)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: 20%</span>
-                            <div class="content-text">1/5 of container</div>
-                            <div class="size-indicator">~110px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: 50%</span>
-                            <div class="content-text">1/2 of container</div>
-                            <div class="size-indicator">~280px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: 30%</span>
-                            <div class="content-text">3/10 of container</div>
-                            <div class="size-indicator">~170px</div>
-                        </div>
-                    </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 2 flex-basis
+                    <span class="control-value" id="item2Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item2Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item2Slider" disabled>
                 </div>
             </div>
-            <p class="explanation">📊 Percentage flex-basis is relative to container size</p>
-        </div>
-
-        <!-- Scenario 6: Overflow scenario -->
-        <div class="demo-section scenario6">
-            <h2>⚠️ Scenario 6: Overflow (Total basis > Container)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (flex-basis: auto)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: auto</span>
-                            <div class="content-text">Content</div>
-                            <div class="size-indicator">~85px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (Each 250px = 750px total)</h3>
-                    <div class="flex-container">
-                        <div class="overflow-warning">Overflow!</div>
-                        <div class="flex-item item1">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="basis-value">flex-basis: 250px</span>
-                            <div class="content-text">Shrinks!</div>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="basis-value">flex-basis: 250px</span>
-                            <div class="content-text">Shrinks!</div>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="basis-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="basis-value">flex-basis: 250px</span>
-                            <div class="content-text">Shrinks!</div>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                    </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 3 flex-basis
+                    <span class="control-value" id="item3Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item3Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item3Slider" disabled>
                 </div>
             </div>
-            <p class="explanation">⚠️ When total flex-basis > container width, items shrink (flex-shrink applies)</p>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 4 flex-basis
+                    <span class="control-value" id="item4Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item4Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item4Slider" disabled>
+                </div>
+            </div>
         </div>
 
-        <!-- Quick Reference -->
-        <div class="reference-section">
-            <h2>📚 Quick Reference - Flex Basis Values</h2>
-            <div class="reference-grid">
-                <div class="reference-item">
-                    <div class="ref-title">flex-basis: auto</div>
-                    <div class="ref-desc">📏 Uses content size (default)</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-basis: 0</div>
-                    <div class="ref-desc">🔄 Ignores content size</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-basis: 200px</div>
-                    <div class="ref-desc">📐 Fixed pixel width</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-basis: 50%</div>
-                    <div class="ref-desc">📊 Percentage of container</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-basis: content</div>
-                    <div class="ref-desc">📝 Intrinsic content size</div>
-                </div>
+        <div class="info-panel">
+            <h3 class="info-title">How Flex-Basis Works</h3>
+            <p>
+                The <code>flex-basis</code> property sets the initial main size of a flex item. It defines the size of the item before any remaining space is distributed according to the flex factors. When the total flex-basis exceeds the container width, items shrink proportionally based on their flex-shrink values.
+            </p>
+            
+            <div class="calculation" id="calculation">
+Flex-basis determines the starting size of each item:
+- auto: Uses the item's content size as the basis
+- <length>: Uses the specified size (px, %, em, etc.)
+- 0: Item has no inherent size, relies entirely on flex-grow
+
+After flex-basis is applied, remaining space is distributed based on flex-grow values.
+When total basis > container width, items shrink based on flex-shrink values.
             </div>
             
-            <div class="measurement">
-                <strong>🎯 Key Concept:</strong> flex-basis sets the initial main size before growing or shrinking.<br>
-                <strong>Priority:</strong> flex-basis overrides width/height in flex containers<br>
-                <strong>auto vs 0:</strong> auto uses content size as starting point, 0 ignores content<br>
-                <strong>With flex-grow:</strong> flex-basis + (remaining space ÷ total grow values)<br>
-                <strong>With flex-shrink:</strong> If total basis > container, items shrink proportionally
+            <p>Size distribution:</p>
+            <div class="space-distribution" id="spaceDistribution">
+                <div class="space-segment" style="background-color: var(--nord7); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord8); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord9); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord10); width: 25%;">25%</div>
+            </div>
+            
+            <div class="button-container">
+                <button id="autoButton">All Auto (auto:auto:auto:auto)</button>
+                <button id="mixedButton">Mixed Basis (100px:auto:30%:auto)</button>
+                <button id="fixedButton">Fixed Sizes (150px:100px:200px:50px)</button>
+                <button id="zeroButton">Zero Basis (0:0:0:0)</button>
+                <button class="overflow-button" id="overflowButton">Overflow Scenario (250px:200px:300px:180px)</button>
+                <button class="reset-button" id="resetButton">Reset All</button>
             </div>
         </div>
     </div>
+
+    <div class="footer">
+        <p>Created by shanur00 | Nordic-themed Flex-Basis Visualization | &copy; 2025-07-24 21:09:37</p>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const flexContainer = document.getElementById('flexContainer');
+        const flexItems = Array.from(flexContainer.querySelectorAll('.flex-item'));
+        const flexItemValues = Array.from(document.querySelectorAll('.flex-item-value'));
+        const contentSizes = Array.from(document.querySelectorAll('.content-size'));
+        
+        const containerWidthSlider = document.getElementById('containerWidth');
+        const containerWidthValue = document.getElementById('containerWidthValue');
+        const overflowWarning = document.getElementById('overflowWarning');
+        
+        const typeSelects = [
+            document.getElementById('item1Type'),
+            document.getElementById('item2Type'),
+            document.getElementById('item3Type'),
+            document.getElementById('item4Type')
+        ];
+        
+        const sliders = [
+            document.getElementById('item1Slider'),
+            document.getElementById('item2Slider'),
+            document.getElementById('item3Slider'),
+            document.getElementById('item4Slider')
+        ];
+        
+        const valueDisplays = [
+            document.getElementById('item1Value'),
+            document.getElementById('item2Value'),
+            document.getElementById('item3Value'),
+            document.getElementById('item4Value')
+        ];
+        
+        const calculationDisplay = document.getElementById('calculation');
+        const spaceDistribution = document.getElementById('spaceDistribution');
+        const spaceSegments = Array.from(spaceDistribution.querySelectorAll('.space-segment'));
+        
+        const autoButton = document.getElementById('autoButton');
+        const mixedButton = document.getElementById('mixedButton');
+        const fixedButton = document.getElementById('fixedButton');
+        const zeroButton = document.getElementById('zeroButton');
+        const overflowButton = document.getElementById('overflowButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // Initialize flex-basis values
+        let flexBasisValues = [
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 }
+        ];
+        
+        let containerWidth = 900;
+        
+        // Function to calculate basis size in pixels
+        function calculateBasisSize(basis, containerWidthPx) {
+            if (basis.type === 'auto') {
+                return 120; // Assume 120px content size for auto
+            } else if (basis.type === '%') {
+                return (basis.value / 100) * containerWidthPx;
+            } else {
+                return basis.value;
+            }
+        }
+        
+        // Function to update the visualization
+        function updateVisualization() {
+            // Update container width
+            flexContainer.style.width = `${containerWidth}px`;
+            containerWidthValue.textContent = `${containerWidth}px`;
+            
+            // Calculate basis sizes
+            const basisSizes = flexBasisValues.map(basis => 
+                calculateBasisSize(basis, containerWidth)
+            );
+            const totalBasisSize = basisSizes.reduce((sum, size) => sum + size, 0);
+            
+            // Check for overflow
+            const isOverflow = totalBasisSize > containerWidth;
+            overflowWarning.style.display = isOverflow ? 'block' : 'none';
+            
+            // Apply flex properties
+            flexItems.forEach((item, index) => {
+                const basis = flexBasisValues[index];
+                
+                // Update visual indicators
+                item.classList.remove('auto-basis', 'fixed-basis');
+                if (basis.type === 'auto') {
+                    item.classList.add('auto-basis');
+                } else {
+                    item.classList.add('fixed-basis');
+                }
+                
+                // Apply flex-basis
+                if (basis.type === 'auto') {
+                    item.style.flexBasis = 'auto';
+                    flexItemValues[index].textContent = 'auto';
+                } else {
+                    const basisValue = `${basis.value}${basis.type}`;
+                    item.style.flexBasis = basisValue;
+                    flexItemValues[index].textContent = basisValue;
+                }
+                
+                // Set flex-grow and flex-shrink
+                item.style.flexGrow = '1';
+                item.style.flexShrink = '1';
+            });
+            
+            // Update control values
+            typeSelects.forEach((select, index) => {
+                select.value = flexBasisValues[index].type;
+                sliders[index].value = flexBasisValues[index].value;
+                sliders[index].disabled = flexBasisValues[index].type === 'auto';
+                
+                if (flexBasisValues[index].type === 'auto') {
+                    valueDisplays[index].textContent = 'auto';
+                } else {
+                    valueDisplays[index].textContent = `${flexBasisValues[index].value}${flexBasisValues[index].type}`;
+                }
+            });
+            
+            // Calculate and display results
+            setTimeout(() => {
+                let calcText = 'Flex-basis calculation:\n\n';
+                calcText += `Container width: ${containerWidth}px\n\n`;
+                
+                // Show basis calculations
+                basisSizes.forEach((size, index) => {
+                    const basis = flexBasisValues[index];
+                    if (basis.type === 'auto') {
+                        calcText += `Item ${index + 1}: flex-basis auto (≈${size}px content)\n`;
+                    } else if (basis.type === '%') {
+                        calcText += `Item ${index + 1}: flex-basis ${basis.value}% = ${size.toFixed(0)}px\n`;
+                    } else {
+                        calcText += `Item ${index + 1}: flex-basis ${basis.value}px\n`;
+                    }
+                });
+                
+                calcText += `\nTotal basis size: ${totalBasisSize.toFixed(0)}px\n`;
+                
+                if (isOverflow) {
+                    const overflow = totalBasisSize - containerWidth;
+                    calcText += `⚠️  OVERFLOW: ${overflow.toFixed(0)}px exceeds container!\n`;
+                    calcText += `Items will shrink proportionally (flex-shrink: 1)\n\n`;
+                    
+                    // Calculate shrinking
+                    const shrinkFactor = containerWidth / totalBasisSize;
+                    calcText += `Shrink factor: ${containerWidth}px ÷ ${totalBasisSize.toFixed(0)}px = ${shrinkFactor.toFixed(3)}\n\n`;
+                    
+                    flexItems.forEach((item, index) => {
+                        const actualWidth = item.offsetWidth;
+                        const percentage = (actualWidth / containerWidth) * 100;
+                        const expectedWidth = basisSizes[index] * shrinkFactor;
+                        
+                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
+                        spaceSegments[index].style.width = `${percentage}%`;
+                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
+                        
+                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px × ${shrinkFactor.toFixed(3)} = ${expectedWidth.toFixed(0)}px\n`;
+                    });
+                } else {
+                    const remainingSpace = containerWidth - totalBasisSize;
+                    calcText += `Remaining space: ${remainingSpace.toFixed(0)}px\n\n`;
+                    
+                    if (remainingSpace > 0) {
+                        calcText += `Positive space distributed equally (flex-grow: 1):\n`;
+                        calcText += `Each item gets: +${(remainingSpace / 4).toFixed(0)}px extra\n\n`;
+                    } else if (remainingSpace === 0) {
+                        calcText += `Perfect fit: no extra space to distribute\n\n`;
+                    }
+                    
+                    // Update displays for normal case
+                    flexItems.forEach((item, index) => {
+                        const actualWidth = item.offsetWidth;
+                        const percentage = (actualWidth / containerWidth) * 100;
+                        const finalSize = basisSizes[index] + (remainingSpace / 4);
+                        
+                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
+                        spaceSegments[index].style.width = `${percentage}%`;
+                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
+                        
+                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px + ${(remainingSpace / 4).toFixed(0)}px = ${finalSize.toFixed(0)}px\n`;
+                    });
+                }
+                
+                calculationDisplay.textContent = calcText;
+            }, 50);
+        }
+        
+        // Add event listener to container width slider
+        containerWidthSlider.addEventListener('input', () => {
+            containerWidth = parseInt(containerWidthSlider.value);
+            updateVisualization();
+        });
+        
+        // Add event listeners to type selects
+        typeSelects.forEach((select, index) => {
+            select.addEventListener('change', () => {
+                flexBasisValues[index].type = select.value;
+                if (select.value === 'auto') {
+                    flexBasisValues[index].value = 0;
+                    sliders[index].disabled = true;
+                } else {
+                    sliders[index].disabled = false;
+                    if (select.value === '%') {
+                        sliders[index].max = 100;
+                        sliders[index].step = 5;
+                        flexBasisValues[index].value = 25;
+                        sliders[index].value = 25;
+                    } else {
+                        sliders[index].max = 400;
+                        sliders[index].step = 10;
+                        flexBasisValues[index].value = 100;
+                        sliders[index].value = 100;
+                    }
+                }
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to sliders
+        sliders.forEach((slider, index) => {
+            slider.addEventListener('input', () => {
+                flexBasisValues[index].value = parseInt(slider.value);
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to buttons
+        autoButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        mixedButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 100 },
+                { type: 'auto', value: 0 },
+                { type: '%', value: 30 },
+                { type: 'auto', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        fixedButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 150 },
+                { type: 'px', value: 100 },
+                { type: 'px', value: 200 },
+                { type: 'px', value: 50 }
+            ];
+            updateVisualization();
+        });
+        
+        zeroButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        overflowButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 250 },
+                { type: 'px', value: 200 },
+                { type: 'px', value: 300 },
+                { type: 'px', value: 180 }
+            ];
+            containerWidth = 600;
+            containerWidthSlider.value = 600;
+            updateVisualization();
+        });
+        
+        resetButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 }
+            ];
+            containerWidth = 900;
+            containerWidthSlider.value = 900;
+            updateVisualization();
+        });
+        
+        // Initialize the visualization
+        updateVisualization();
+    </script>
 </body>
 </html>
