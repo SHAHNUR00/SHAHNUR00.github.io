@@ -1,0 +1,1060 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Space Between Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px; /* Set to 1550px as requested */
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option-row input {
+      cursor: pointer;
+    }
+
+    /* Item count control */
+    .item-count {
+      margin-bottom: 20px;
+    }
+
+    .count-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .count-input {
+      width: 60px;
+      background-color: var(--nord2);
+      border: 1px solid var(--nord3);
+      color: var(--nord4);
+      padding: 5px;
+      border-radius: 4px;
+      font-size: 14px;
+    }
+
+    .count-button {
+      background-color: var(--nord10);
+      border: none;
+      color: var(--nord6);
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+    }
+
+    .count-button:hover {
+      background-color: var(--nord9);
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      padding: 20px;
+      min-height: 400px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Container for items with space-x */
+    .space-x-container {
+      position: relative;
+      background-color: rgba(136, 192, 208, 0.1); /* Light version of nord8 */
+      border-radius: 6px;
+      padding: 16px;
+      margin-bottom: 16px;
+      transition: all 0.3s ease;
+    }
+
+    /* Container for items with space-y */
+    .space-y-container {
+      position: relative;
+      background-color: rgba(163, 190, 140, 0.1); /* Light version of nord14 */
+      border-radius: 6px;
+      padding: 16px;
+      transition: all 0.3s ease;
+    }
+
+    /* Flex container for space-x items */
+    .space-x-wrapper {
+      display: flex;
+      flex-wrap: nowrap;
+    }
+    
+    /* Flex container for space-y items */
+    .space-y-wrapper {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Reverse direction */
+    .space-x-wrapper.space-x-reverse {
+      flex-direction: row-reverse;
+    }
+    
+    .space-y-wrapper.space-y-reverse {
+      flex-direction: column-reverse;
+    }
+
+    /* Items in the containers */
+    .item {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 60px;
+      height: 60px;
+      background-color: var(--nord10);
+      border-radius: 4px;
+      color: var(--nord0);
+      font-weight: 500;
+      font-size: 14px;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Space visualization - FIXED TO NOT OVERLAP */
+    .space-highlight {
+      position: absolute;
+      background-color: var(--nord11);
+      opacity: 0.5;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* Spacing labels - positioned outside the space */
+    .space-label {
+      position: absolute;
+      background-color: var(--nord1);
+      color: var(--nord4);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      z-index: 4;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* Actual space-x classes implementation */
+    .space-x-0 > * + * {
+      margin-left: 0px;
+    }
+    .space-x-0\.5 > * + * {
+      margin-left: 0.125rem; /* 2px */
+    }
+    .space-x-1 > * + * {
+      margin-left: 0.25rem; /* 4px */
+    }
+    .space-x-1\.5 > * + * {
+      margin-left: 0.375rem; /* 6px */
+    }
+    .space-x-2 > * + * {
+      margin-left: 0.5rem; /* 8px */
+    }
+    .space-x-2\.5 > * + * {
+      margin-left: 0.625rem; /* 10px */
+    }
+    .space-x-3 > * + * {
+      margin-left: 0.75rem; /* 12px */
+    }
+    .space-x-4 > * + * {
+      margin-left: 1rem; /* 16px */
+    }
+    .space-x-5 > * + * {
+      margin-left: 1.25rem; /* 20px */
+    }
+    .space-x-6 > * + * {
+      margin-left: 1.5rem; /* 24px */
+    }
+    .space-x-8 > * + * {
+      margin-left: 2rem; /* 32px */
+    }
+    .space-x-10 > * + * {
+      margin-left: 2.5rem; /* 40px */
+    }
+    .space-x-12 > * + * {
+      margin-left: 3rem; /* 48px */
+    }
+    .space-x-16 > * + * {
+      margin-left: 4rem; /* 64px */
+    }
+    
+    /* Reverse space-x */
+    .space-x-reverse > * + * {
+      margin-left: 0;
+      margin-right: 1rem; /* Default 16px */
+    }
+
+    /* Actual space-y classes implementation */
+    .space-y-0 > * + * {
+      margin-top: 0px;
+    }
+    .space-y-0\.5 > * + * {
+      margin-top: 0.125rem; /* 2px */
+    }
+    .space-y-1 > * + * {
+      margin-top: 0.25rem; /* 4px */
+    }
+    .space-y-1\.5 > * + * {
+      margin-top: 0.375rem; /* 6px */
+    }
+    .space-y-2 > * + * {
+      margin-top: 0.5rem; /* 8px */
+    }
+    .space-y-2\.5 > * + * {
+      margin-top: 0.625rem; /* 10px */
+    }
+    .space-y-3 > * + * {
+      margin-top: 0.75rem; /* 12px */
+    }
+    .space-y-4 > * + * {
+      margin-top: 1rem; /* 16px */
+    }
+    .space-y-5 > * + * {
+      margin-top: 1.25rem; /* 20px */
+    }
+    .space-y-6 > * + * {
+      margin-top: 1.5rem; /* 24px */
+    }
+    .space-y-8 > * + * {
+      margin-top: 2rem; /* 32px */
+    }
+    .space-y-10 > * + * {
+      margin-top: 2.5rem; /* 40px */
+    }
+    .space-y-12 > * + * {
+      margin-top: 3rem; /* 48px */
+    }
+    .space-y-16 > * + * {
+      margin-top: 4rem; /* 64px */
+    }
+    
+    /* Reverse space-y */
+    .space-y-reverse > * + * {
+      margin-top: 0;
+      margin-bottom: 1rem; /* Default 16px */
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Explanation box */
+    .explanation {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+      margin-top: 15px;
+    }
+
+    .explanation h3 {
+      color: var(--nord8);
+      margin-bottom: 10px;
+    }
+
+    .explanation p {
+      margin-bottom: 10px;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Space Between Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides space-x and space-y utilities for adding horizontal and vertical spacing between child elements. This visualizer demonstrates how these utilities work and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Space Between Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="horizontal">Horizontal (space-x)</button>
+          <button class="tab-button" data-category="vertical">Vertical (space-y)</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- Horizontal spacing values -->
+          <div class="value-group" id="horizontal-values">
+            <div class="value-grid">
+              <button class="value-button" data-class="space-x-0">space-x-0</button>
+              <button class="value-button" data-class="space-x-0.5">space-x-0.5</button>
+              <button class="value-button" data-class="space-x-1">space-x-1</button>
+              <button class="value-button" data-class="space-x-1.5">space-x-1.5</button>
+              <button class="value-button" data-class="space-x-2">space-x-2</button>
+              <button class="value-button selected" data-class="space-x-8">space-x-8</button>
+              <button class="value-button" data-class="space-x-10">space-x-10</button>
+              <button class="value-button" data-class="space-x-12">space-x-12</button>
+              <button class="value-button" data-class="space-x-16">space-x-16</button>
+              <button class="value-button" data-class="space-x-reverse">space-x-reverse</button>
+            </div>
+          </div>
+
+          <!-- Vertical spacing values -->
+          <div class="value-group" id="vertical-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="space-y-0">space-y-0</button>
+              <button class="value-button" data-class="space-y-0.5">space-y-0.5</button>
+              <button class="value-button" data-class="space-y-1">space-y-1</button>
+              <button class="value-button" data-class="space-y-1.5">space-y-1.5</button>
+              <button class="value-button" data-class="space-y-2">space-y-2</button>
+              <button class="value-button selected" data-class="space-y-8">space-y-8</button>
+              <button class="value-button" data-class="space-y-10">space-y-10</button>
+              <button class="value-button" data-class="space-y-12">space-y-12</button>
+              <button class="value-button" data-class="space-y-16">space-y-16</button>
+              <button class="value-button" data-class="space-y-reverse">space-y-reverse</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="item-count">
+          <h2>Item Count</h2>
+          <div class="count-row">
+            <input type="number" id="item-count" class="count-input" value="4" min="2" max="12">
+            <button id="update-count" class="count-button">Update</button>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-labels" checked>
+            <label for="show-labels" class="option-label">Show spacing labels</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="highlight-space" checked>
+            <label for="highlight-space" class="option-label">Highlight spacing</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container" id="demo-container">
+          <div class="grid-background"></div>
+          
+          <div class="space-x-container" id="space-x-container">
+            <div class="space-x-wrapper space-x-8" id="space-x-wrapper">
+              <!-- Items will be generated via JavaScript -->
+            </div>
+          </div>
+
+          <div class="space-y-container" id="space-y-container" style="display: none;">
+            <div class="space-y-wrapper space-y-8" id="space-y-wrapper">
+              <!-- Items will be generated via JavaScript -->
+            </div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">space-x-8</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">.space-x-8 > * + * {
+  margin-left:</span> <span class="css-value">2rem</span>; <span class="comment">/* 32px */</span>
+}</code></pre>
+        </div>
+
+        <div class="explanation">
+          <h3>How space-x and space-y work</h3>
+          <p>The <code>space-x-*</code> and <code>space-y-*</code> utilities use the CSS adjacent sibling combinator (<code>+</code>) to add margin to all elements except the first child.</p>
+          <p>For <code>space-x-*</code>, this adds <code>margin-left</code> to create horizontal spacing. For <code>space-y-*</code>, this adds <code>margin-top</code> to create vertical spacing.</p>
+          <p>The <code>*-reverse</code> variants reverse the direction of spacing, using <code>margin-right</code> or <code>margin-bottom</code> instead.</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Current Time: 2025-07-24 18:07:41
+    </div>
+  </div>
+
+  <script>
+    // Space value mappings (in rem units)
+    const spaceValues = {
+      // Horizontal spacing
+      'space-x-0': '0px',
+      'space-x-0.5': '0.125rem', // 2px
+      'space-x-1': '0.25rem',    // 4px
+      'space-x-1.5': '0.375rem', // 6px
+      'space-x-2': '0.5rem',     // 8px
+      'space-x-2.5': '0.625rem', // 10px
+      'space-x-3': '0.75rem',    // 12px
+      'space-x-4': '1rem',       // 16px
+      'space-x-5': '1.25rem',    // 20px
+      'space-x-6': '1.5rem',     // 24px
+      'space-x-8': '2rem',       // 32px
+      'space-x-10': '2.5rem',    // 40px
+      'space-x-12': '3rem',      // 48px
+      'space-x-16': '4rem',      // 64px
+      'space-x-reverse': '1rem', // Default reverse spacing
+      
+      // Vertical spacing
+      'space-y-0': '0px',
+      'space-y-0.5': '0.125rem',
+      'space-y-1': '0.25rem',
+      'space-y-1.5': '0.375rem',
+      'space-y-2': '0.5rem',
+      'space-y-2.5': '0.625rem',
+      'space-y-3': '0.75rem',
+      'space-y-4': '1rem',
+      'space-y-5': '1.25rem',
+      'space-y-6': '1.5rem',
+      'space-y-8': '2rem',
+      'space-y-10': '2.5rem',
+      'space-y-12': '3rem',
+      'space-y-16': '4rem',
+      'space-y-reverse': '1rem'  // Default reverse spacing
+    };
+
+    // Pixel equivalents for display purposes (1rem = 16px)
+    const pixelEquivalents = {
+      '0px': '0px',
+      '0.125rem': '2px',
+      '0.25rem': '4px',
+      '0.375rem': '6px',
+      '0.5rem': '8px',
+      '0.625rem': '10px',
+      '0.75rem': '12px',
+      '1rem': '16px',
+      '1.25rem': '20px',
+      '1.5rem': '24px',
+      '2rem': '32px',
+      '2.5rem': '40px',
+      '3rem': '48px',
+      '4rem': '64px'
+    };
+
+    // DOM elements
+    const demoContainer = document.getElementById('demo-container');
+    const spaceXContainer = document.getElementById('space-x-container');
+    const spaceYContainer = document.getElementById('space-y-container');
+    const spaceXWrapper = document.getElementById('space-x-wrapper');
+    const spaceYWrapper = document.getElementById('space-y-wrapper');
+    const codeDisplay = document.getElementById('code-display');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const showLabels = document.getElementById('show-labels');
+    const highlightSpace = document.getElementById('highlight-space');
+    const itemCountInput = document.getElementById('item-count');
+    const updateCountButton = document.getElementById('update-count');
+
+    // Initial state
+    let currentClass = 'space-x-8'; // Starting with space-x-8 to match the UI
+    let currentDirection = 'horizontal';
+    let itemCount = 4;
+    let spaceHighlights = [];
+    let spaceLabels = [];
+
+    // Create items based on count
+    function createItems(container, count) {
+      // Clear container
+      container.innerHTML = '';
+      
+      // Create new items
+      for (let i = 1; i <= count; i++) {
+        const item = document.createElement('div');
+        item.className = 'item';
+        item.textContent = i;
+        container.appendChild(item);
+      }
+    }
+
+    // Set the space between based on selected class
+    function setSpaceBetween(className) {
+      currentClass = className;
+      
+      // Determine direction
+      currentDirection = className.startsWith('space-x') ? 'horizontal' : 'vertical';
+      
+      // Show appropriate container
+      spaceXContainer.style.display = currentDirection === 'horizontal' ? 'block' : 'none';
+      spaceYContainer.style.display = currentDirection === 'vertical' ? 'block' : 'none';
+      
+      // Apply the class to the container - first remove all space classes
+      if (currentDirection === 'horizontal') {
+        // Remove all space-x classes
+        spaceXWrapper.className = 'space-x-wrapper';
+        // Add the selected class
+        spaceXWrapper.classList.add(className);
+      } else {
+        // Remove all space-y classes
+        spaceYWrapper.className = 'space-y-wrapper';
+        // Add the selected class
+        spaceYWrapper.classList.add(className);
+      }
+      
+      // Update space visualization
+      setTimeout(() => {
+        updateSpaceVisualization();
+      }, 50);
+      
+      // Update code display
+      updateCodeDisplay(className);
+    }
+
+    // Update space visualization with highlights and labels
+    function updateSpaceVisualization() {
+      // Remove existing highlights and labels
+      removeSpaceVisualizations();
+      
+      // Get container and items
+      const wrapper = currentDirection === 'horizontal' ? spaceXWrapper : spaceYWrapper;
+      const container = currentDirection === 'horizontal' ? spaceXContainer : spaceYContainer;
+      const items = wrapper.querySelectorAll('.item');
+      
+      // Skip visualization if there are not enough items
+      if (items.length < 2) {
+        return;
+      }
+      
+      // Get spacing value
+      const spaceValue = spaceValues[currentClass];
+      const pxValue = pixelEquivalents[spaceValue] || '16px'; // Default to 16px for reverse
+      
+      // Is this a reverse class?
+      const isReverse = currentClass.endsWith('reverse');
+      
+      // Skip further visualization if there's no space and it's not reverse
+      if (currentClass.endsWith('-0') && !isReverse) {
+        return;
+      }
+      
+      // For reverse direction, we need to manually visualize the spacing
+      // because the DOM layout doesn't reflect the actual visual spacing
+      if (isReverse) {
+        if (currentDirection === 'horizontal') {
+          // Horizontal reverse - Space is added to the right of each item
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const itemRect = item.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Create highlight for the reverse margin
+            const highlight = document.createElement('div');
+            highlight.className = 'space-highlight';
+            
+            // Position to the right of the item
+            highlight.style.left = `${itemRect.right - containerRect.left}px`;
+            highlight.style.top = `${itemRect.top - containerRect.top}px`;
+            highlight.style.width = '16px'; // Default 16px for reverse
+            highlight.style.height = `${itemRect.height}px`;
+            
+            // Create label
+            const label = document.createElement('div');
+            label.className = 'space-label';
+            label.textContent = '16px'; // Default for reverse
+            
+            // Position label
+            label.style.left = `${itemRect.right - containerRect.left + 8}px`;
+            label.style.top = `${itemRect.top - containerRect.top - 25}px`;
+            label.style.transform = 'translateX(-50%)';
+            
+            // Add highlight if enabled
+            if (highlightSpace.checked) {
+              container.appendChild(highlight);
+              spaceHighlights.push(highlight);
+            }
+            
+            // Add label if enabled
+            if (showLabels.checked) {
+              container.appendChild(label);
+              spaceLabels.push(label);
+            }
+          }
+        } else {
+          // Vertical reverse - Space is added below each item
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const itemRect = item.getBoundingClientRect();
+            const containerRect = container.getBoundingClientRect();
+            
+            // Create highlight for the reverse margin
+            const highlight = document.createElement('div');
+            highlight.className = 'space-highlight';
+            
+            // Position below the item
+            highlight.style.left = `${itemRect.left - containerRect.left}px`;
+            highlight.style.top = `${itemRect.bottom - containerRect.top}px`;
+            highlight.style.width = `${itemRect.width}px`;
+            highlight.style.height = '16px'; // Default 16px for reverse
+            
+            // Create label
+            const label = document.createElement('div');
+            label.className = 'space-label';
+            label.textContent = '16px'; // Default for reverse
+            
+            // Position label
+            label.style.left = `${itemRect.right - containerRect.left + 10}px`;
+            label.style.top = `${itemRect.bottom - containerRect.top + 8}px`;
+            label.style.transform = 'translateY(-50%)';
+            
+            // Add highlight if enabled
+            if (highlightSpace.checked) {
+              container.appendChild(highlight);
+              spaceHighlights.push(highlight);
+            }
+            
+            // Add label if enabled
+            if (showLabels.checked) {
+              container.appendChild(label);
+              spaceLabels.push(label);
+            }
+          }
+        }
+        
+        return; // Return early since we've manually handled the reverse case
+      }
+      
+      // Normal (non-reverse) case - visualize spacing between elements
+      for (let i = 0; i < items.length - 1; i++) {
+        const currentItem = items[i];
+        const nextItem = items[i + 1];
+        
+        if (!currentItem || !nextItem) continue;
+        
+        const currentRect = currentItem.getBoundingClientRect();
+        const nextRect = nextItem.getBoundingClientRect();
+        const containerRect = container.getBoundingClientRect();
+        
+        // Create space highlight element
+        const highlight = document.createElement('div');
+        highlight.className = 'space-highlight';
+        
+        // Create space label element
+        const label = document.createElement('div');
+        label.className = 'space-label';
+        label.textContent = pxValue;
+        
+        if (currentDirection === 'horizontal') {
+          // Calculate positions for horizontal spacing
+          const spaceLeft = currentRect.right - containerRect.left;
+          const spaceWidth = nextRect.left - currentRect.right;
+          const spaceTop = currentRect.top - containerRect.top;
+          const spaceHeight = currentRect.height;
+          
+          // Position highlight
+          highlight.style.left = `${spaceLeft}px`;
+          highlight.style.top = `${spaceTop}px`;
+          highlight.style.width = `${spaceWidth}px`;
+          highlight.style.height = `${spaceHeight}px`;
+          
+          // Position label
+          label.style.left = `${spaceLeft + spaceWidth / 2}px`;
+          label.style.top = `${spaceTop - 25}px`;
+          label.style.transform = 'translateX(-50%)';
+        } else {
+          // Calculate positions for vertical spacing
+          const spaceTop = currentRect.bottom - containerRect.top;
+          const spaceHeight = nextRect.top - currentRect.bottom;
+          const spaceLeft = currentRect.left - containerRect.left;
+          const spaceWidth = currentRect.width;
+          
+          // Position highlight
+          highlight.style.left = `${spaceLeft}px`;
+          highlight.style.top = `${spaceTop}px`;
+          highlight.style.width = `${spaceWidth}px`;
+          highlight.style.height = `${spaceHeight}px`;
+          
+          // Position label
+          label.style.left = `${spaceLeft + spaceWidth + 10}px`;
+          label.style.top = `${spaceTop + spaceHeight / 2}px`;
+          label.style.transform = 'translateY(-50%)';
+        }
+        
+        // Add highlight if enabled
+        if (highlightSpace.checked) {
+          container.appendChild(highlight);
+          spaceHighlights.push(highlight);
+        }
+        
+        // Add label if enabled
+        if (showLabels.checked) {
+          container.appendChild(label);
+          spaceLabels.push(label);
+        }
+      }
+    }
+
+    // Remove space visualization elements
+    function removeSpaceVisualizations() {
+      // Remove highlights
+      spaceHighlights.forEach(highlight => {
+        if (highlight.parentNode) {
+          highlight.parentNode.removeChild(highlight);
+        }
+      });
+      spaceHighlights = [];
+      
+      // Remove labels
+      spaceLabels.forEach(label => {
+        if (label.parentNode) {
+          label.parentNode.removeChild(label);
+        }
+      });
+      spaceLabels = [];
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className) {
+      const isHorizontal = className.startsWith('space-x');
+      const isReverse = className.endsWith('reverse');
+      
+      let cssProps, cssValues, cssComment;
+      
+      if (isReverse) {
+        if (isHorizontal) {
+          cssProps = `.${className} > * + * {\n  margin-left: 0;\n  margin-right`;
+          cssValues = '1rem';
+          cssComment = '/* 16px */';
+        } else {
+          cssProps = `.${className} > * + * {\n  margin-top: 0;\n  margin-bottom`;
+          cssValues = '1rem';
+          cssComment = '/* 16px */';
+        }
+      } else {
+        const spaceValue = spaceValues[className];
+        const pxValue = pixelEquivalents[spaceValue] || '';
+        
+        if (isHorizontal) {
+          cssProps = `.${className} > * + * {\n  margin-left`;
+          cssValues = spaceValue;
+          cssComment = pxValue !== spaceValue ? `/* ${pxValue} */` : '';
+        } else {
+          cssProps = `.${className} > * + * {\n  margin-top`;
+          cssValues = spaceValue;
+          cssComment = pxValue !== spaceValue ? `/* ${pxValue} */` : '';
+        }
+      }
+
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">${cssProps}:</span> <span class="css-value">${cssValues}</span>; <span class="comment">${cssComment}</span>
+}</code></pre>`;
+    }
+
+    // Initialize
+    createItems(spaceXWrapper, itemCount);
+    createItems(spaceYWrapper, itemCount);
+    setSpaceBetween('space-x-8');
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Set default class based on category
+        const defaultClass = category === 'horizontal' ? 'space-x-8' : 'space-y-8';
+        
+        // Find the selected button or use the first one
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          // Reset selected buttons
+          valueButtons.forEach(btn => btn.classList.remove('selected'));
+          
+          // Find button for space-x-8/space-y-8 or first button
+          const defaultButton = Array.from(activeGroup.querySelectorAll('.value-button')).find(
+            btn => btn.dataset.class === defaultClass
+          ) || activeGroup.querySelector('.value-button');
+          
+          if (defaultButton) {
+            defaultButton.classList.add('selected');
+            setSpaceBetween(defaultButton.dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons
+        valueButtons.forEach(btn => btn.classList.remove('selected'));
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update space between
+        setSpaceBetween(button.dataset.class);
+      });
+    });
+
+    // Event listener for item count update
+    updateCountButton.addEventListener('click', () => {
+      const newCount = parseInt(itemCountInput.value);
+      if (newCount >= 2 && newCount <= 12) {
+        itemCount = newCount;
+        createItems(spaceXWrapper, itemCount);
+        createItems(spaceYWrapper, itemCount);
+        setSpaceBetween(currentClass);
+      }
+    });
+
+    // Event listeners for options
+    showLabels.addEventListener('change', updateSpaceVisualization);
+    highlightSpace.addEventListener('change', updateSpaceVisualization);
+
+    // Update visualization on window resize
+    window.addEventListener('resize', () => {
+      setTimeout(updateSpaceVisualization, 100);
+    });
+
+    // Initial visualization with a delay to ensure layout is ready
+    setTimeout(updateSpaceVisualization, 300);
+  </script>
+</body>
+</html>
