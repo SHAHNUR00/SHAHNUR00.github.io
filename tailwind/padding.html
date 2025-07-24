@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Padding Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px; /* Set to 1550px as requested */
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option-row input {
+      cursor: pointer;
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 400px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Element with applied padding */
+    .demo-element {
+      position: relative;
+      background-color: var(--nord3);
+      max-width: 100%;
+      max-height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 5;
+    }
+
+    /* Element content */
+    .element-content {
+      background-color: var(--nord10);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+      border-radius: 4px;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    /* Padding visualization */
+    .padding-top {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--nord13);
+      opacity: 0.5;
+      z-index: 3;
+    }
+
+    .padding-right {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      background-color: var(--nord14);
+      opacity: 0.5;
+      z-index: 3;
+    }
+
+    .padding-bottom {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background-color: var(--nord13);
+      opacity: 0.5;
+      z-index: 3;
+    }
+
+    .padding-left {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      background-color: var(--nord14);
+      opacity: 0.5;
+      z-index: 3;
+    }
+
+    /* Padding labels - UPDATED POSITIONING */
+    .padding-label {
+      position: absolute;
+      background-color: var(--nord1);
+      color: var(--nord4);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      z-index: 4;
+      white-space: nowrap;
+    }
+
+    /* Position labels OUTSIDE the padding areas */
+    .label-top {
+      top: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .label-right {
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .label-bottom {
+      bottom: -22px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .label-left {
+      left: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Padding Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utility classes for setting padding on elements. This visualizer demonstrates how different padding utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Padding Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="all">All Sides</button>
+          <button class="tab-button" data-category="axes">X/Y Axes</button>
+          <button class="tab-button" data-category="sides">Individual Sides</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- All sides padding values -->
+          <div class="value-group" id="all-values">
+            <div class="value-grid">
+              <button class="value-button selected" data-class="p-0">p-0</button>
+              <button class="value-button" data-class="p-1">p-1</button>
+              <button class="value-button" data-class="p-2">p-2</button>
+              <button class="value-button" data-class="p-3">p-3</button>
+              <button class="value-button" data-class="p-4">p-4</button>
+              <button class="value-button" data-class="p-5">p-5</button>
+              <button class="value-button" data-class="p-6">p-6</button>
+              <button class="value-button" data-class="p-8">p-8</button>
+              <button class="value-button" data-class="p-10">p-10</button>
+              <button class="value-button" data-class="p-12">p-12</button>
+              <button class="value-button" data-class="p-16">p-16</button>
+              <button class="value-button" data-class="p-20">p-20</button>
+              <button class="value-button" data-class="p-24">p-24</button>
+              <button class="value-button" data-class="p-32">p-32</button>
+            </div>
+          </div>
+
+          <!-- X/Y axis padding values -->
+          <div class="value-group" id="axes-values" style="display: none;">
+            <h3>Horizontal (X-axis) Padding</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="px-0">px-0</button>
+              <button class="value-button" data-class="px-1">px-1</button>
+              <button class="value-button" data-class="px-2">px-2</button>
+              <button class="value-button" data-class="px-4">px-4</button>
+              <button class="value-button" data-class="px-6">px-6</button>
+              <button class="value-button" data-class="px-8">px-8</button>
+              <button class="value-button" data-class="px-12">px-12</button>
+              <button class="value-button" data-class="px-16">px-16</button>
+            </div>
+            <h3>Vertical (Y-axis) Padding</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="py-0">py-0</button>
+              <button class="value-button" data-class="py-1">py-1</button>
+              <button class="value-button" data-class="py-2">py-2</button>
+              <button class="value-button" data-class="py-4">py-4</button>
+              <button class="value-button" data-class="py-6">py-6</button>
+              <button class="value-button" data-class="py-8">py-8</button>
+              <button class="value-button" data-class="py-12">py-12</button>
+              <button class="value-button" data-class="py-16">py-16</button>
+            </div>
+          </div>
+
+          <!-- Individual sides padding values -->
+          <div class="value-group" id="sides-values" style="display: none;">
+            <h3>Padding Top</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="pt-0">pt-0</button>
+              <button class="value-button" data-class="pt-1">pt-1</button>
+              <button class="value-button" data-class="pt-2">pt-2</button>
+              <button class="value-button" data-class="pt-4">pt-4</button>
+              <button class="value-button" data-class="pt-8">pt-8</button>
+              <button class="value-button" data-class="pt-12">pt-12</button>
+            </div>
+            <h3>Padding Right</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="pr-0">pr-0</button>
+              <button class="value-button" data-class="pr-1">pr-1</button>
+              <button class="value-button" data-class="pr-2">pr-2</button>
+              <button class="value-button" data-class="pr-4">pr-4</button>
+              <button class="value-button" data-class="pr-8">pr-8</button>
+              <button class="value-button" data-class="pr-12">pr-12</button>
+            </div>
+            <h3>Padding Bottom</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="pb-0">pb-0</button>
+              <button class="value-button" data-class="pb-1">pb-1</button>
+              <button class="value-button" data-class="pb-2">pb-2</button>
+              <button class="value-button" data-class="pb-4">pb-4</button>
+              <button class="value-button" data-class="pb-8">pb-8</button>
+              <button class="value-button" data-class="pb-12">pb-12</button>
+            </div>
+            <h3>Padding Left</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="pl-0">pl-0</button>
+              <button class="value-button" data-class="pl-1">pl-1</button>
+              <button class="value-button" data-class="pl-2">pl-2</button>
+              <button class="value-button" data-class="pl-4">pl-4</button>
+              <button class="value-button" data-class="pl-8">pl-8</button>
+              <button class="value-button" data-class="pl-12">pl-12</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-content" checked>
+            <label for="show-content" class="option-label">Show content label</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="show-padding-area" checked>
+            <label for="show-padding-area" class="option-label">Highlight padding area</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="show-padding-labels" checked>
+            <label for="show-padding-labels" class="option-label">Show padding size labels</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container">
+          <div class="grid-background"></div>
+          
+          <div class="demo-element" id="demo-element">
+            <!-- Padding visualization areas -->
+            <div class="padding-top" id="padding-top"></div>
+            <div class="padding-right" id="padding-right"></div>
+            <div class="padding-bottom" id="padding-bottom"></div>
+            <div class="padding-left" id="padding-left"></div>
+            
+            <!-- Padding labels - Now positioned OUTSIDE the padding areas -->
+            <div class="padding-label label-top" id="label-top">0px</div>
+            <div class="padding-label label-right" id="label-right">0px</div>
+            <div class="padding-label label-bottom" id="label-bottom">0px</div>
+            <div class="padding-label label-left" id="label-left">0px</div>
+            
+            <!-- Element content -->
+            <div class="element-content" id="element-content">
+              <div class="element-label" id="element-label">p-0</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">p-0</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">padding:</span> <span class="css-value">0px</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Current Time: 2025-07-24 14:36:53 UTC
+    </div>
+  </div>
+
+  <script>
+    // Padding value mappings (in rem units)
+    const paddingValues = {
+      // All sides padding
+      'p-0': '0px',
+      'p-1': '0.25rem', // 4px
+      'p-2': '0.5rem',  // 8px
+      'p-3': '0.75rem', // 12px
+      'p-4': '1rem',    // 16px
+      'p-5': '1.25rem', // 20px
+      'p-6': '1.5rem',  // 24px
+      'p-8': '2rem',    // 32px
+      'p-10': '2.5rem', // 40px
+      'p-12': '3rem',   // 48px
+      'p-16': '4rem',   // 64px
+      'p-20': '5rem',   // 80px
+      'p-24': '6rem',   // 96px
+      'p-32': '8rem',   // 128px
+      
+      // X-axis padding (left and right)
+      'px-0': '0px',
+      'px-1': '0.25rem',
+      'px-2': '0.5rem',
+      'px-4': '1rem',
+      'px-6': '1.5rem',
+      'px-8': '2rem',
+      'px-12': '3rem',
+      'px-16': '4rem',
+      
+      // Y-axis padding (top and bottom)
+      'py-0': '0px',
+      'py-1': '0.25rem',
+      'py-2': '0.5rem',
+      'py-4': '1rem',
+      'py-6': '1.5rem',
+      'py-8': '2rem',
+      'py-12': '3rem',
+      'py-16': '4rem',
+      
+      // Individual sides padding
+      'pt-0': '0px',
+      'pt-1': '0.25rem',
+      'pt-2': '0.5rem',
+      'pt-4': '1rem',
+      'pt-8': '2rem',
+      'pt-12': '3rem',
+      
+      'pr-0': '0px',
+      'pr-1': '0.25rem',
+      'pr-2': '0.5rem',
+      'pr-4': '1rem',
+      'pr-8': '2rem',
+      'pr-12': '3rem',
+      
+      'pb-0': '0px',
+      'pb-1': '0.25rem',
+      'pb-2': '0.5rem',
+      'pb-4': '1rem',
+      'pb-8': '2rem',
+      'pb-12': '3rem',
+      
+      'pl-0': '0px',
+      'pl-1': '0.25rem',
+      'pl-2': '0.5rem',
+      'pl-4': '1rem',
+      'pl-8': '2rem',
+      'pl-12': '3rem'
+    };
+
+    // Pixel equivalents for display purposes (1rem = 16px)
+    const pixelEquivalents = {
+      '0px': '0px',
+      '0.25rem': '4px',
+      '0.5rem': '8px',
+      '0.75rem': '12px',
+      '1rem': '16px',
+      '1.25rem': '20px',
+      '1.5rem': '24px',
+      '2rem': '32px',
+      '2.5rem': '40px',
+      '3rem': '48px',
+      '4rem': '64px',
+      '5rem': '80px',
+      '6rem': '96px',
+      '8rem': '128px'
+    };
+
+    // DOM elements
+    const demoElement = document.getElementById('demo-element');
+    const elementContent = document.getElementById('element-content');
+    const elementLabel = document.getElementById('element-label');
+    const codeDisplay = document.getElementById('code-display');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const showContent = document.getElementById('show-content');
+    const showPaddingArea = document.getElementById('show-padding-area');
+    const showPaddingLabels = document.getElementById('show-padding-labels');
+
+    // Padding visualization elements
+    const paddingTop = document.getElementById('padding-top');
+    const paddingRight = document.getElementById('padding-right');
+    const paddingBottom = document.getElementById('padding-bottom');
+    const paddingLeft = document.getElementById('padding-left');
+
+    // Padding label elements
+    const labelTop = document.getElementById('label-top');
+    const labelRight = document.getElementById('label-right');
+    const labelBottom = document.getElementById('label-bottom');
+    const labelLeft = document.getElementById('label-left');
+
+    // Initial state
+    let currentClass = 'p-0';
+    let paddingTopValue = 0;
+    let paddingRightValue = 0;
+    let paddingBottomValue = 0;
+    let paddingLeftValue = 0;
+
+    // Set the element padding based on selected class
+    function setElementPadding(className) {
+      currentClass = className;
+      
+      // Reset all padding
+      elementContent.style.padding = '0';
+      
+      // Reset padding values
+      paddingTopValue = paddingRightValue = paddingBottomValue = paddingLeftValue = '0px';
+      
+      // Parse the class to determine which sides to apply padding to
+      if (className.startsWith('p-')) {
+        // All sides padding
+        const value = paddingValues[className];
+        elementContent.style.padding = value;
+        
+        // Update padding visualization
+        paddingTopValue = paddingRightValue = paddingBottomValue = paddingLeftValue = value;
+      } else if (className.startsWith('px-')) {
+        // X-axis padding (left and right)
+        const value = paddingValues[className];
+        elementContent.style.paddingLeft = value;
+        elementContent.style.paddingRight = value;
+        
+        // Update padding visualization
+        paddingLeftValue = paddingRightValue = value;
+      } else if (className.startsWith('py-')) {
+        // Y-axis padding (top and bottom)
+        const value = paddingValues[className];
+        elementContent.style.paddingTop = value;
+        elementContent.style.paddingBottom = value;
+        
+        // Update padding visualization
+        paddingTopValue = paddingBottomValue = value;
+      } else if (className.startsWith('pt-')) {
+        // Top padding
+        const value = paddingValues[className];
+        elementContent.style.paddingTop = value;
+        
+        // Update padding visualization
+        paddingTopValue = value;
+      } else if (className.startsWith('pr-')) {
+        // Right padding
+        const value = paddingValues[className];
+        elementContent.style.paddingRight = value;
+        
+        // Update padding visualization
+        paddingRightValue = value;
+      } else if (className.startsWith('pb-')) {
+        // Bottom padding
+        const value = paddingValues[className];
+        elementContent.style.paddingBottom = value;
+        
+        // Update padding visualization
+        paddingBottomValue = value;
+      } else if (className.startsWith('pl-')) {
+        // Left padding
+        const value = paddingValues[className];
+        elementContent.style.paddingLeft = value;
+        
+        // Update padding visualization
+        paddingLeftValue = value;
+      }
+      
+      // Update the label
+      elementLabel.textContent = className;
+
+      // Update visualization
+      updatePaddingVisualization();
+      
+      // Update code display
+      updateCodeDisplay(className);
+    }
+
+    // Update the padding visualization
+    function updatePaddingVisualization() {
+      // Convert rem values to pixel values for display
+      const topPx = pixelEquivalents[paddingTopValue] || '0px';
+      const rightPx = pixelEquivalents[paddingRightValue] || '0px';
+      const bottomPx = pixelEquivalents[paddingBottomValue] || '0px';
+      const leftPx = pixelEquivalents[paddingLeftValue] || '0px';
+      
+      // Update padding area visualization
+      const contentRect = elementContent.getBoundingClientRect();
+      const elementRect = demoElement.getBoundingClientRect();
+      
+      // Top padding
+      paddingTop.style.height = topPx;
+      paddingTop.style.display = paddingTopValue === '0px' ? 'none' : 'block';
+      
+      // Right padding
+      paddingRight.style.width = rightPx;
+      paddingRight.style.display = paddingRightValue === '0px' ? 'none' : 'block';
+      
+      // Bottom padding
+      paddingBottom.style.height = bottomPx;
+      paddingBottom.style.display = paddingBottomValue === '0px' ? 'none' : 'block';
+      
+      // Left padding
+      paddingLeft.style.width = leftPx;
+      paddingLeft.style.display = paddingLeftValue === '0px' ? 'none' : 'block';
+      
+      // Update labels
+      labelTop.textContent = topPx;
+      labelRight.textContent = rightPx;
+      labelBottom.textContent = bottomPx;
+      labelLeft.textContent = leftPx;
+      
+      // Show/hide labels based on padding values
+      labelTop.style.display = paddingTopValue === '0px' ? 'none' : (showPaddingLabels.checked ? 'block' : 'none');
+      labelRight.style.display = paddingRightValue === '0px' ? 'none' : (showPaddingLabels.checked ? 'block' : 'none');
+      labelBottom.style.display = paddingBottomValue === '0px' ? 'none' : (showPaddingLabels.checked ? 'block' : 'none');
+      labelLeft.style.display = paddingLeftValue === '0px' ? 'none' : (showPaddingLabels.checked ? 'block' : 'none');
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className) {
+      let cssProps = '';
+      let cssValues = '';
+      
+      if (className.startsWith('p-')) {
+        cssProps = 'padding:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('px-')) {
+        cssProps = 'padding-left: ' + paddingValues[className] + ';\npadding-right:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('py-')) {
+        cssProps = 'padding-top: ' + paddingValues[className] + ';\npadding-bottom:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('pt-')) {
+        cssProps = 'padding-top:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('pr-')) {
+        cssProps = 'padding-right:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('pb-')) {
+        cssProps = 'padding-bottom:';
+        cssValues = paddingValues[className];
+      } else if (className.startsWith('pl-')) {
+        cssProps = 'padding-left:';
+        cssValues = paddingValues[className];
+      }
+
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">${cssProps}</span> <span class="css-value">${cssValues}</span>;`;
+    }
+
+    // Initialize
+    setElementPadding('p-0');
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Reset padding when switching tabs
+        elementContent.style.padding = '0';
+        paddingTopValue = paddingRightValue = paddingBottomValue = paddingLeftValue = '0px';
+        
+        // Select the first button of the category if none is selected
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          const groupButtons = activeGroup.querySelectorAll('.value-button');
+          let hasSelected = false;
+          groupButtons.forEach(btn => {
+            if (btn.classList.contains('selected')) {
+              hasSelected = true;
+              setElementPadding(btn.dataset.class);
+            }
+          });
+          
+          if (!hasSelected && groupButtons.length > 0) {
+            groupButtons[0].classList.add('selected');
+            setElementPadding(groupButtons[0].dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons in the same group
+        const parentGroup = button.closest('.value-grid');
+        parentGroup.querySelectorAll('.value-button').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update element padding
+        setElementPadding(button.dataset.class);
+      });
+    });
+
+    // Event listeners for options
+    showContent.addEventListener('change', () => {
+      elementLabel.style.display = showContent.checked ? 'block' : 'none';
+    });
+
+    showPaddingArea.addEventListener('change', () => {
+      const opacity = showPaddingArea.checked ? '0.5' : '0';
+      paddingTop.style.opacity = opacity;
+      paddingRight.style.opacity = opacity;
+      paddingBottom.style.opacity = opacity;
+      paddingLeft.style.opacity = opacity;
+    });
+
+    showPaddingLabels.addEventListener('change', () => {
+      const display = showPaddingLabels.checked ? 'block' : 'none';
+      labelTop.style.display = paddingTopValue === '0px' ? 'none' : display;
+      labelRight.style.display = paddingRightValue === '0px' ? 'none' : display;
+      labelBottom.style.display = paddingBottomValue === '0px' ? 'none' : display;
+      labelLeft.style.display = paddingLeftValue === '0px' ? 'none' : display;
+    });
+
+    // Update visualization on window resize
+    window.addEventListener('resize', updatePaddingVisualization);
+  </script>
+</body>
+</html>
