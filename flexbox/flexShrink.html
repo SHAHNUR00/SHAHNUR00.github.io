@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flex-Basis Visualization - Nord Theme</title>
+    <title>Flex-Shrink Visualization - Nord Theme</title>
     <style>
         /* Nord Theme Colors */
         :root {
@@ -104,11 +104,9 @@
             height: 100%;
             font-weight: bold;
             position: relative;
-            transition: all 0.3s ease;
+            transition: width 0.3s ease;
             overflow: hidden;
-            flex-grow: 1;
-            flex-shrink: 1;
-            min-width: 20px;
+            min-width: 10px; /* Prevent complete disappearance */
         }
 
         .flex-item:nth-child(1) { background-color: var(--nord7); color: var(--nord0); }
@@ -123,7 +121,7 @@
         }
 
         .flex-item-value {
-            font-size: 1.1rem;
+            font-size: 1.4rem;
             margin-bottom: 8px;
         }
 
@@ -133,7 +131,7 @@
 
         .controls {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 1.5rem;
             margin-bottom: 2rem;
         }
@@ -154,7 +152,7 @@
 
         .control-value {
             display: inline-block;
-            width: 60px;
+            width: 40px;
             text-align: center;
             background-color: var(--nord3);
             color: var(--nord6);
@@ -163,15 +161,9 @@
             margin-left: 0.5rem;
         }
 
-        .control-input-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            margin: 0.5rem 0;
-        }
-
         input[type="range"] {
-            flex-grow: 1;
+            width: 100%;
+            margin: 0.5rem 0;
             -webkit-appearance: none;
             appearance: none;
             height: 8px;
@@ -202,15 +194,6 @@
             background: var(--nord10);
         }
 
-        select {
-            background-color: var(--nord3);
-            color: var(--nord6);
-            border: none;
-            padding: 0.3rem 0.5rem;
-            border-radius: 4px;
-            outline: none;
-        }
-
         .info-panel {
             background-color: var(--nord1);
             padding: 1.5rem;
@@ -236,6 +219,35 @@
             white-space: pre-wrap;
         }
 
+        .width-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .width-control label {
+            margin-right: 1rem;
+            color: var(--nord13);
+            font-weight: bold;
+        }
+
+        .width-control input {
+            flex-grow: 1;
+        }
+
+        .width-value {
+            margin-left: 1rem;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+
         .space-distribution {
             display: flex;
             height: 40px;
@@ -249,10 +261,10 @@
             align-items: center;
             justify-content: center;
             height: 100%;
-            transition: all 0.3s ease;
+            transition: width 0.3s ease;
             font-size: 0.8rem;
             color: var(--nord0);
-            min-width: 20px;
+            min-width: 10px;
         }
 
         button {
@@ -287,14 +299,6 @@
             background-color: var(--nord12);
         }
 
-        .overflow-button {
-            background-color: var(--nord12);
-        }
-
-        .overflow-button:hover {
-            background-color: var(--nord11);
-        }
-
         .footer {
             margin-top: 2rem;
             color: var(--nord4);
@@ -302,72 +306,33 @@
             text-align: center;
         }
 
-        .auto-basis {
-            border: 2px solid var(--nord14);
-            box-shadow: 0 0 10px var(--nord14);
+        .original-width-marker {
+            position: absolute;
+            height: 100%;
+            border-right: 2px dashed var(--nord6);
+            opacity: 0.5;
+            pointer-events: none;
+            z-index: 3;
         }
-
-        .fixed-basis {
-            border: 2px solid var(--nord13);
+        
+        .no-shrink {
+            border: 3px solid var(--nord13);
             box-shadow: 0 0 10px var(--nord13);
-        }
-
-        .overflow-warning {
-            background-color: var(--nord11);
-            color: var(--nord6);
-            padding: 0.5rem 1rem;
-            border-radius: 4px;
-            margin-bottom: 1rem;
-            font-weight: bold;
-            text-align: center;
-        }
-
-        .container-width-control {
-            display: flex;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            background-color: var(--nord2);
-            padding: 1rem;
-            border-radius: 8px;
-        }
-
-        .container-width-control label {
-            margin-right: 1rem;
-            color: var(--nord13);
-            font-weight: bold;
-        }
-
-        .container-width-control input {
-            flex-grow: 1;
-        }
-
-        .width-value {
-            margin-left: 1rem;
-            background-color: var(--nord3);
-            color: var(--nord6);
-            padding: 0.2rem 0.6rem;
-            border-radius: 4px;
-            min-width: 60px;
-            text-align: center;
         }
     </style>
 </head>
 <body>
-    <h1>Understanding Flex-Basis</h1>
+    <h1>Understanding Flex-Shrink</h1>
     <p>
-        The <code>flex-basis</code> property defines the initial main size of a flex item before free space is distributed. 
-        It can be set to a specific size (px, %, em) or 'auto' to use the item's content size. When total basis exceeds container width, items shrink proportionally.
+        The <code>flex-shrink</code> property defines how much a flex item will shrink when there's not enough space available.
+        Higher values make items shrink more than items with lower values. A value of 0 prevents shrinking completely.
     </p>
 
     <div class="container">
-        <div class="container-width-control">
+        <div class="width-control">
             <label for="containerWidth">Container Width:</label>
-            <input type="range" id="containerWidth" min="300" max="900" value="900" step="50">
-            <span class="width-value" id="containerWidthValue">900px</span>
-        </div>
-
-        <div id="overflowWarning" class="overflow-warning" style="display: none;">
-            ⚠️ Overflow Detected: Total flex-basis exceeds container width!
+            <input type="range" id="containerWidth" min="30" max="100" value="100" step="1">
+            <span class="width-value" id="containerWidthValue">100%</span>
         </div>
 
         <div class="visualization">
@@ -375,103 +340,73 @@
             <div class="flex-container" id="flexContainer">
                 <div class="flex-item">
                     <div class="flex-item-label">Item 1</div>
-                    <div class="flex-item-value">auto</div>
+                    <div class="flex-item-value">1</div>
                     <div class="content-size" id="size1">25%</div>
                 </div>
                 <div class="flex-item">
                     <div class="flex-item-label">Item 2</div>
-                    <div class="flex-item-value">auto</div>
+                    <div class="flex-item-value">1</div>
                     <div class="content-size" id="size2">25%</div>
                 </div>
                 <div class="flex-item">
                     <div class="flex-item-label">Item 3</div>
-                    <div class="flex-item-value">auto</div>
+                    <div class="flex-item-value">1</div>
                     <div class="content-size" id="size3">25%</div>
                 </div>
                 <div class="flex-item">
                     <div class="flex-item-label">Item 4</div>
-                    <div class="flex-item-value">auto</div>
+                    <div class="flex-item-value">1</div>
                     <div class="content-size" id="size4">25%</div>
                 </div>
             </div>
+            <div class="original-width-marker" id="originalWidthMarker"></div>
         </div>
 
         <div class="controls">
             <div class="control-group">
                 <label class="control-label">
-                    Item 1 flex-basis
-                    <span class="control-value" id="item1Value">auto</span>
+                    Item 1 flex-shrink
+                    <span class="control-value" id="item1Value">1</span>
                 </label>
-                <div class="control-input-group">
-                    <select id="item1Type">
-                        <option value="auto">auto</option>
-                        <option value="px">px</option>
-                        <option value="%">%</option>
-                    </select>
-                    <input type="range" min="0" max="400" value="0" step="10" id="item1Slider" disabled>
-                </div>
+                <input type="range" min="0" max="10" value="1" step="1" id="item1Slider">
             </div>
             <div class="control-group">
                 <label class="control-label">
-                    Item 2 flex-basis
-                    <span class="control-value" id="item2Value">auto</span>
+                    Item 2 flex-shrink
+                    <span class="control-value" id="item2Value">1</span>
                 </label>
-                <div class="control-input-group">
-                    <select id="item2Type">
-                        <option value="auto">auto</option>
-                        <option value="px">px</option>
-                        <option value="%">%</option>
-                    </select>
-                    <input type="range" min="0" max="400" value="0" step="10" id="item2Slider" disabled>
-                </div>
+                <input type="range" min="0" max="10" value="1" step="1" id="item2Slider">
             </div>
             <div class="control-group">
                 <label class="control-label">
-                    Item 3 flex-basis
-                    <span class="control-value" id="item3Value">auto</span>
+                    Item 3 flex-shrink
+                    <span class="control-value" id="item3Value">1</span>
                 </label>
-                <div class="control-input-group">
-                    <select id="item3Type">
-                        <option value="auto">auto</option>
-                        <option value="px">px</option>
-                        <option value="%">%</option>
-                    </select>
-                    <input type="range" min="0" max="400" value="0" step="10" id="item3Slider" disabled>
-                </div>
+                <input type="range" min="0" max="10" value="1" step="1" id="item3Slider">
             </div>
             <div class="control-group">
                 <label class="control-label">
-                    Item 4 flex-basis
-                    <span class="control-value" id="item4Value">auto</span>
+                    Item 4 flex-shrink
+                    <span class="control-value" id="item4Value">1</span>
                 </label>
-                <div class="control-input-group">
-                    <select id="item4Type">
-                        <option value="auto">auto</option>
-                        <option value="px">px</option>
-                        <option value="%">%</option>
-                    </select>
-                    <input type="range" min="0" max="400" value="0" step="10" id="item4Slider" disabled>
-                </div>
+                <input type="range" min="0" max="10" value="1" step="1" id="item4Slider">
             </div>
         </div>
 
         <div class="info-panel">
-            <h3 class="info-title">How Flex-Basis Works</h3>
+            <h3 class="info-title">How Flex-Shrink Works</h3>
             <p>
-                The <code>flex-basis</code> property sets the initial main size of a flex item. It defines the size of the item before any remaining space is distributed according to the flex factors. When the total flex-basis exceeds the container width, items shrink proportionally based on their flex-shrink values.
+                The <code>flex-shrink</code> property determines how much an item will shrink relative to other flex items when there's not enough space. 
+                The default value is 1, which means all items shrink equally. A higher value means the item will shrink more. A value of 0 means the item won't shrink at all.
             </p>
             
             <div class="calculation" id="calculation">
-Flex-basis determines the starting size of each item:
-- auto: Uses the item's content size as the basis
-- <length>: Uses the specified size (px, %, em, etc.)
-- 0: Item has no inherent size, relies entirely on flex-grow
-
-After flex-basis is applied, remaining space is distributed based on flex-grow values.
-When total basis > container width, items shrink based on flex-shrink values.
+When container space is insufficient, items shrink according to their flex-shrink values.
+Each item's shrink factor = (item's flex-shrink × item's base size)
+Total shrinkage is distributed proportionally based on these factors.
             </div>
             
-            <p>Size distribution:</p>
+            <p>Shrink distribution:</p>
             <div class="space-distribution" id="spaceDistribution">
                 <div class="space-segment" style="background-color: var(--nord7); width: 25%;">25%</div>
                 <div class="space-segment" style="background-color: var(--nord8); width: 25%;">25%</div>
@@ -480,18 +415,17 @@ When total basis > container width, items shrink based on flex-shrink values.
             </div>
             
             <div class="button-container">
-                <button id="autoButton">All Auto (auto:auto:auto:auto)</button>
-                <button id="mixedButton">Mixed Basis (100px:auto:30%:auto)</button>
-                <button id="fixedButton">Fixed Sizes (150px:100px:200px:50px)</button>
-                <button id="zeroButton">Zero Basis (0:0:0:0)</button>
-                <button class="overflow-button" id="overflowButton">Overflow Scenario (250px:200px:300px:180px)</button>
+                <button id="equalButton">Equal Shrink (1:1:1:1)</button>
+                <button id="customButton">Custom Shrink (4:3:2:1)</button>
+                <button id="noShrinkButton">No Shrink for Item 1 (0:1:1:1)</button>
+                <button id="compareButton">Compare (0:10:1:1)</button>
                 <button class="reset-button" id="resetButton">Reset All</button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        <p>Created by shanur00 | Nordic-themed Flex-Basis Visualization | &copy; 2025-07-24 21:09:37</p>
+        <p>Created by shanur00 | Nordic-themed Flex-Shrink Visualization | &copy; 2025-07-24 21:01:07</p>
     </div>
 
     <script>
@@ -500,17 +434,6 @@ When total basis > container width, items shrink based on flex-shrink values.
         const flexItems = Array.from(flexContainer.querySelectorAll('.flex-item'));
         const flexItemValues = Array.from(document.querySelectorAll('.flex-item-value'));
         const contentSizes = Array.from(document.querySelectorAll('.content-size'));
-        
-        const containerWidthSlider = document.getElementById('containerWidth');
-        const containerWidthValue = document.getElementById('containerWidthValue');
-        const overflowWarning = document.getElementById('overflowWarning');
-        
-        const typeSelects = [
-            document.getElementById('item1Type'),
-            document.getElementById('item2Type'),
-            document.getElementById('item3Type'),
-            document.getElementById('item4Type')
-        ];
         
         const sliders = [
             document.getElementById('item1Slider'),
@@ -526,161 +449,168 @@ When total basis > container width, items shrink based on flex-shrink values.
             document.getElementById('item4Value')
         ];
         
+        const containerWidthSlider = document.getElementById('containerWidth');
+        const containerWidthValue = document.getElementById('containerWidthValue');
+        const originalWidthMarker = document.getElementById('originalWidthMarker');
         const calculationDisplay = document.getElementById('calculation');
         const spaceDistribution = document.getElementById('spaceDistribution');
         const spaceSegments = Array.from(spaceDistribution.querySelectorAll('.space-segment'));
         
-        const autoButton = document.getElementById('autoButton');
-        const mixedButton = document.getElementById('mixedButton');
-        const fixedButton = document.getElementById('fixedButton');
-        const zeroButton = document.getElementById('zeroButton');
-        const overflowButton = document.getElementById('overflowButton');
+        const equalButton = document.getElementById('equalButton');
+        const customButton = document.getElementById('customButton');
+        const noShrinkButton = document.getElementById('noShrinkButton');
+        const compareButton = document.getElementById('compareButton');
         const resetButton = document.getElementById('resetButton');
 
-        // Initialize flex-basis values
-        let flexBasisValues = [
-            { type: 'auto', value: 0 },
-            { type: 'auto', value: 0 },
-            { type: 'auto', value: 0 },
-            { type: 'auto', value: 0 }
-        ];
+        // Initialize flex values
+        let flexShrinkValues = [1, 1, 1, 1];
+        let containerWidth = 100;
         
-        let containerWidth = 900;
-        
-        // Function to calculate basis size in pixels
-        function calculateBasisSize(basis, containerWidthPx) {
-            if (basis.type === 'auto') {
-                return 120; // Assume 120px content size for auto
-            } else if (basis.type === '%') {
-                return (basis.value / 100) * containerWidthPx;
-            } else {
-                return basis.value;
-            }
-        }
+        // Constants for accurate calculation
+        const REFERENCE_WIDTH = 900; // Reference container width in pixels
+        const BASE_ITEM_WIDTH = REFERENCE_WIDTH / 4; // 225px each at full width
         
         // Function to update the visualization
         function updateVisualization() {
             // Update container width
-            flexContainer.style.width = `${containerWidth}px`;
-            containerWidthValue.textContent = `${containerWidth}px`;
+            flexContainer.style.width = `${containerWidth}%`;
+            containerWidthValue.textContent = `${containerWidth}%`;
             
-            // Calculate basis sizes
-            const basisSizes = flexBasisValues.map(basis => 
-                calculateBasisSize(basis, containerWidth)
-            );
-            const totalBasisSize = basisSizes.reduce((sum, size) => sum + size, 0);
+            // Calculate current container width in pixels
+            const currentContainerPx = (containerWidth / 100) * REFERENCE_WIDTH;
             
-            // Check for overflow
-            const isOverflow = totalBasisSize > containerWidth;
-            overflowWarning.style.display = isOverflow ? 'block' : 'none';
-            
-            // Apply flex properties
+            // Update the flex-shrink values display
             flexItems.forEach((item, index) => {
-                const basis = flexBasisValues[index];
-                
-                // Update visual indicators
-                item.classList.remove('auto-basis', 'fixed-basis');
-                if (basis.type === 'auto') {
-                    item.classList.add('auto-basis');
-                } else {
-                    item.classList.add('fixed-basis');
-                }
-                
-                // Apply flex-basis
-                if (basis.type === 'auto') {
-                    item.style.flexBasis = 'auto';
-                    flexItemValues[index].textContent = 'auto';
-                } else {
-                    const basisValue = `${basis.value}${basis.type}`;
-                    item.style.flexBasis = basisValue;
-                    flexItemValues[index].textContent = basisValue;
-                }
-                
-                // Set flex-grow and flex-shrink
-                item.style.flexGrow = '1';
-                item.style.flexShrink = '1';
+                flexItemValues[index].textContent = flexShrinkValues[index];
+                item.classList.toggle('no-shrink', flexShrinkValues[index] === 0);
             });
             
             // Update control values
-            typeSelects.forEach((select, index) => {
-                select.value = flexBasisValues[index].type;
-                sliders[index].value = flexBasisValues[index].value;
-                sliders[index].disabled = flexBasisValues[index].type === 'auto';
+            sliders.forEach((slider, index) => {
+                slider.value = flexShrinkValues[index];
+                valueDisplays[index].textContent = flexShrinkValues[index];
+            });
+            
+            // Calculate final widths using proper flex-shrink algorithm
+            const finalWidths = calculateFlexShrinkWidths(
+                flexShrinkValues,
+                BASE_ITEM_WIDTH,
+                currentContainerPx
+            );
+            
+            // Apply widths and update displays
+            let calcText = `Container: ${containerWidth}% (${currentContainerPx.toFixed(0)}px)\n`;
+            calcText += `Base item width: ${BASE_ITEM_WIDTH}px each\n`;
+            calcText += `Total needed: ${BASE_ITEM_WIDTH * 4}px\n`;
+            calcText += `Available: ${currentContainerPx.toFixed(0)}px\n\n`;
+            
+            if (currentContainerPx >= BASE_ITEM_WIDTH * 4) {
+                calcText += 'No shrinking needed - enough space available.\n';
+            } else {
+                const deficit = (BASE_ITEM_WIDTH * 4) - currentContainerPx;
+                calcText += `Space deficit: ${deficit.toFixed(0)}px\n\n`;
+            }
+            
+            finalWidths.forEach((widthPx, index) => {
+                const widthPercent = (widthPx / currentContainerPx) * 100;
                 
-                if (flexBasisValues[index].type === 'auto') {
-                    valueDisplays[index].textContent = 'auto';
+                // Apply width to flex item
+                flexItems[index].style.width = `${widthPx}px`;
+                
+                // Update content size display
+                contentSizes[index].textContent = `${widthPercent.toFixed(1)}%`;
+                
+                // Update space distribution
+                spaceSegments[index].style.width = `${widthPercent}%`;
+                spaceSegments[index].textContent = `${widthPercent.toFixed(1)}%`;
+                
+                // Add to calculation text
+                if (flexShrinkValues[index] === 0) {
+                    calcText += `Item ${index + 1}: FIXED ${widthPx.toFixed(0)}px (flex-shrink: 0)\n`;
                 } else {
-                    valueDisplays[index].textContent = `${flexBasisValues[index].value}${flexBasisValues[index].type}`;
+                    const shrinkAmount = BASE_ITEM_WIDTH - widthPx;
+                    calcText += `Item ${index + 1}: ${widthPx.toFixed(0)}px (shrunk ${shrinkAmount.toFixed(0)}px)\n`;
                 }
             });
             
-            // Calculate and display results
-            setTimeout(() => {
-                let calcText = 'Flex-basis calculation:\n\n';
-                calcText += `Container width: ${containerWidth}px\n\n`;
-                
-                // Show basis calculations
-                basisSizes.forEach((size, index) => {
-                    const basis = flexBasisValues[index];
-                    if (basis.type === 'auto') {
-                        calcText += `Item ${index + 1}: flex-basis auto (≈${size}px content)\n`;
-                    } else if (basis.type === '%') {
-                        calcText += `Item ${index + 1}: flex-basis ${basis.value}% = ${size.toFixed(0)}px\n`;
-                    } else {
-                        calcText += `Item ${index + 1}: flex-basis ${basis.value}px\n`;
-                    }
-                });
-                
-                calcText += `\nTotal basis size: ${totalBasisSize.toFixed(0)}px\n`;
-                
-                if (isOverflow) {
-                    const overflow = totalBasisSize - containerWidth;
-                    calcText += `⚠️  OVERFLOW: ${overflow.toFixed(0)}px exceeds container!\n`;
-                    calcText += `Items will shrink proportionally (flex-shrink: 1)\n\n`;
-                    
-                    // Calculate shrinking
-                    const shrinkFactor = containerWidth / totalBasisSize;
-                    calcText += `Shrink factor: ${containerWidth}px ÷ ${totalBasisSize.toFixed(0)}px = ${shrinkFactor.toFixed(3)}\n\n`;
-                    
-                    flexItems.forEach((item, index) => {
-                        const actualWidth = item.offsetWidth;
-                        const percentage = (actualWidth / containerWidth) * 100;
-                        const expectedWidth = basisSizes[index] * shrinkFactor;
-                        
-                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
-                        spaceSegments[index].style.width = `${percentage}%`;
-                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
-                        
-                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px × ${shrinkFactor.toFixed(3)} = ${expectedWidth.toFixed(0)}px\n`;
-                    });
-                } else {
-                    const remainingSpace = containerWidth - totalBasisSize;
-                    calcText += `Remaining space: ${remainingSpace.toFixed(0)}px\n\n`;
-                    
-                    if (remainingSpace > 0) {
-                        calcText += `Positive space distributed equally (flex-grow: 1):\n`;
-                        calcText += `Each item gets: +${(remainingSpace / 4).toFixed(0)}px extra\n\n`;
-                    } else if (remainingSpace === 0) {
-                        calcText += `Perfect fit: no extra space to distribute\n\n`;
-                    }
-                    
-                    // Update displays for normal case
-                    flexItems.forEach((item, index) => {
-                        const actualWidth = item.offsetWidth;
-                        const percentage = (actualWidth / containerWidth) * 100;
-                        const finalSize = basisSizes[index] + (remainingSpace / 4);
-                        
-                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
-                        spaceSegments[index].style.width = `${percentage}%`;
-                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
-                        
-                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px + ${(remainingSpace / 4).toFixed(0)}px = ${finalSize.toFixed(0)}px\n`;
-                    });
-                }
-                
-                calculationDisplay.textContent = calcText;
-            }, 50);
+            calculationDisplay.textContent = calcText;
         }
+        
+        // Accurate flex-shrink calculation function
+        function calculateFlexShrinkWidths(shrinkValues, baseWidth, containerWidth) {
+            const numItems = shrinkValues.length;
+            const totalNeeded = baseWidth * numItems;
+            
+            // If container is big enough, no shrinking needed
+            if (containerWidth >= totalNeeded) {
+                return new Array(numItems).fill(baseWidth);
+            }
+            
+            // Calculate how much we need to shrink
+            const totalShrinkage = totalNeeded - containerWidth;
+            
+            // Separate non-shrinking items from shrinking items
+            const nonShrinkingItems = [];
+            const shrinkingItems = [];
+            
+            shrinkValues.forEach((value, index) => {
+                if (value === 0) {
+                    nonShrinkingItems.push(index);
+                } else {
+                    shrinkingItems.push(index);
+                }
+            });
+            
+            // Start with base widths
+            const finalWidths = new Array(numItems).fill(baseWidth);
+            
+            // Non-shrinking items keep their base width
+            const nonShrinkingWidth = nonShrinkingItems.length * baseWidth;
+            const availableForShrinking = containerWidth - nonShrinkingWidth;
+            
+            if (shrinkingItems.length === 0) {
+                // All items are non-shrinking, they overflow
+                return finalWidths;
+            }
+            
+            // Calculate total shrink factor for items that can shrink
+            let totalShrinkFactor = 0;
+            shrinkingItems.forEach(index => {
+                totalShrinkFactor += shrinkValues[index] * baseWidth;
+            });
+            
+            // If no shrink factor, distribute equally among shrinking items
+            if (totalShrinkFactor === 0) {
+                const widthPerShrinkingItem = Math.max(10, availableForShrinking / shrinkingItems.length);
+                shrinkingItems.forEach(index => {
+                    finalWidths[index] = widthPerShrinkingItem;
+                });
+                return finalWidths;
+            }
+            
+            // Calculate how much each shrinking item should shrink
+            const naturalShrinkingWidth = shrinkingItems.length * baseWidth;
+            const shrinkageNeeded = Math.max(0, naturalShrinkingWidth - availableForShrinking);
+            
+            shrinkingItems.forEach(index => {
+                const itemShrinkFactor = shrinkValues[index] * baseWidth;
+                const shrinkRatio = itemShrinkFactor / totalShrinkFactor;
+                const itemShrinkage = shrinkageNeeded * shrinkRatio;
+                
+                // Ensure minimum width
+                finalWidths[index] = Math.max(10, baseWidth - itemShrinkage);
+            });
+            
+            return finalWidths;
+        }
+        
+        // Add event listeners to sliders
+        sliders.forEach((slider, index) => {
+            slider.addEventListener('input', () => {
+                flexShrinkValues[index] = parseInt(slider.value);
+                updateVisualization();
+            });
+        });
         
         // Add event listener to container width slider
         containerWidthSlider.addEventListener('input', () => {
@@ -688,101 +618,37 @@ When total basis > container width, items shrink based on flex-shrink values.
             updateVisualization();
         });
         
-        // Add event listeners to type selects
-        typeSelects.forEach((select, index) => {
-            select.addEventListener('change', () => {
-                flexBasisValues[index].type = select.value;
-                if (select.value === 'auto') {
-                    flexBasisValues[index].value = 0;
-                    sliders[index].disabled = true;
-                } else {
-                    sliders[index].disabled = false;
-                    if (select.value === '%') {
-                        sliders[index].max = 100;
-                        sliders[index].step = 5;
-                        flexBasisValues[index].value = 25;
-                        sliders[index].value = 25;
-                    } else {
-                        sliders[index].max = 400;
-                        sliders[index].step = 10;
-                        flexBasisValues[index].value = 100;
-                        sliders[index].value = 100;
-                    }
-                }
-                updateVisualization();
-            });
-        });
-        
-        // Add event listeners to sliders
-        sliders.forEach((slider, index) => {
-            slider.addEventListener('input', () => {
-                flexBasisValues[index].value = parseInt(slider.value);
-                updateVisualization();
-            });
-        });
-        
         // Add event listeners to buttons
-        autoButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 }
-            ];
+        equalButton.addEventListener('click', () => {
+            flexShrinkValues = [1, 1, 1, 1];
             updateVisualization();
         });
         
-        mixedButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'px', value: 100 },
-                { type: 'auto', value: 0 },
-                { type: '%', value: 30 },
-                { type: 'auto', value: 0 }
-            ];
+        customButton.addEventListener('click', () => {
+            flexShrinkValues = [4, 3, 2, 1];
+            containerWidth = 70;
+            containerWidthSlider.value = 70;
             updateVisualization();
         });
         
-        fixedButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'px', value: 150 },
-                { type: 'px', value: 100 },
-                { type: 'px', value: 200 },
-                { type: 'px', value: 50 }
-            ];
+        noShrinkButton.addEventListener('click', () => {
+            flexShrinkValues = [0, 1, 1, 1];
+            containerWidth = 70;
+            containerWidthSlider.value = 70;
             updateVisualization();
         });
         
-        zeroButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'px', value: 0 },
-                { type: 'px', value: 0 },
-                { type: 'px', value: 0 },
-                { type: 'px', value: 0 }
-            ];
-            updateVisualization();
-        });
-        
-        overflowButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'px', value: 250 },
-                { type: 'px', value: 200 },
-                { type: 'px', value: 300 },
-                { type: 'px', value: 180 }
-            ];
-            containerWidth = 600;
-            containerWidthSlider.value = 600;
+        compareButton.addEventListener('click', () => {
+            flexShrinkValues = [0, 10, 1, 1];
+            containerWidth = 50;
+            containerWidthSlider.value = 50;
             updateVisualization();
         });
         
         resetButton.addEventListener('click', () => {
-            flexBasisValues = [
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 },
-                { type: 'auto', value: 0 }
-            ];
-            containerWidth = 900;
-            containerWidthSlider.value = 900;
+            flexShrinkValues = [1, 1, 1, 1];
+            containerWidth = 100;
+            containerWidthSlider.value = 100;
             updateVisualization();
         });
         
@@ -790,4 +656,4 @@ When total basis > container width, items shrink based on flex-shrink values.
         updateVisualization();
     </script>
 </body>
-</html>
+</html> 
