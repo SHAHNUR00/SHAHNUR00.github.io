@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Ring Width Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px; /* Set to 1550px as requested */
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Color selection */
+    .color-selector {
+      margin-bottom: 20px;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-button {
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .color-button:hover {
+      transform: scale(1.05);
+    }
+
+    .color-button.selected {
+      box-shadow: 0 0 0 2px var(--nord0), 0 0 0 4px var(--nord7);
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option-row input {
+      cursor: pointer;
+    }
+
+    /* Size controls */
+    .size-controls {
+      margin-bottom: 20px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .size-label {
+      min-width: 70px;
+    }
+
+    input[type="range"] {
+      flex-grow: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: var(--nord3);
+      border-radius: 3px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    .size-value {
+      min-width: 40px;
+      text-align: right;
+      color: var(--nord8);
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 400px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Element with applied ring */
+    .demo-element {
+      position: relative;
+      background-color: var(--nord10);
+      width: 250px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 5;
+      border-radius: 8px;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Ring Width Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides ring utilities for creating focus rings on elements using box shadows. This visualizer demonstrates how different ring-width utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Ring Width Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="width">Width</button>
+          <button class="tab-button" data-category="special">Special</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- Ring width values -->
+          <div class="value-group" id="width-values">
+            <div class="value-grid">
+              <button class="value-button selected" data-class="ring-0">ring-0</button>
+              <button class="value-button" data-class="ring-1">ring-1</button>
+              <button class="value-button" data-class="ring-2">ring-2</button>
+              <button class="value-button" data-class="ring">ring</button>
+              <button class="value-button" data-class="ring-4">ring-4</button>
+              <button class="value-button" data-class="ring-8">ring-8</button>
+            </div>
+          </div>
+
+          <!-- Special ring values -->
+          <div class="value-group" id="special-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="ring-inset">ring-inset</button>
+              <button class="value-button" data-class="ring-1 ring-inset">ring-1 inset</button>
+              <button class="value-button" data-class="ring-2 ring-inset">ring-2 inset</button>
+              <button class="value-button" data-class="ring ring-inset">ring inset</button>
+              <button class="value-button" data-class="ring-4 ring-inset">ring-4 inset</button>
+              <button class="value-button" data-class="ring-8 ring-inset">ring-8 inset</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="color-selector">
+          <h2>Ring Color</h2>
+          <div class="color-grid">
+            <button class="color-button selected" style="background-color: #3B82F6;" data-color="#3B82F6" title="Default blue"></button>
+            <button class="color-button" style="background-color: #10B981;" data-color="#10B981" title="Green"></button>
+            <button class="color-button" style="background-color: #F59E0B;" data-color="#F59E0B" title="Yellow"></button>
+            <button class="color-button" style="background-color: #EF4444;" data-color="#EF4444" title="Red"></button>
+            <button class="color-button" style="background-color: #8B5CF6;" data-color="#8B5CF6" title="Purple"></button>
+            <button class="color-button" style="background-color: #EC4899;" data-color="#EC4899" title="Pink"></button>
+            <button class="color-button" style="background-color: #6B7280;" data-color="#6B7280" title="Gray"></button>
+            <button class="color-button" style="background-color: #000000;" data-color="#000000" title="Black"></button>
+          </div>
+        </div>
+
+        <div class="size-controls">
+          <h2>Element Size</h2>
+          <div class="size-row">
+            <label class="size-label">Width:</label>
+            <input type="range" id="element-width" min="50" max="500" value="250">
+            <span class="size-value" id="width-value">250px</span>
+          </div>
+          <div class="size-row">
+            <label class="size-label">Height:</label>
+            <input type="range" id="element-height" min="50" max="500" value="250">
+            <span class="size-value" id="height-value">250px</span>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-content" checked>
+            <label for="show-content" class="option-label">Show content</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container">
+          <div class="grid-background"></div>
+          
+          <div class="demo-element" id="demo-element">
+            <div class="element-label" id="element-label">ring-0</div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">ring-0</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-value">var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color)</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Current Time: 2025-07-24 14:16:38 UTC
+    </div>
+  </div>
+
+  <script>
+    // Ring width value mappings
+    const ringWidthValues = {
+      'ring-0': '0px',
+      'ring-1': '1px',
+      'ring-2': '2px',
+      'ring': '3px',  // Default ring is 3px
+      'ring-4': '4px',
+      'ring-8': '8px',
+      'ring-inset': '0px',  // Just inset
+      'ring-1 ring-inset': '1px',
+      'ring-2 ring-inset': '2px',
+      'ring ring-inset': '3px',
+      'ring-4 ring-inset': '4px',
+      'ring-8 ring-inset': '8px'
+    };
+
+    // DOM elements
+    const demoElement = document.getElementById('demo-element');
+    const elementLabel = document.getElementById('element-label');
+    const codeDisplay = document.getElementById('code-display');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const colorButtons = document.querySelectorAll('.color-button');
+    const showContent = document.getElementById('show-content');
+    const elementWidth = document.getElementById('element-width');
+    const elementHeight = document.getElementById('element-height');
+    const widthValue = document.getElementById('width-value');
+    const heightValue = document.getElementById('height-value');
+
+    // Initial state
+    let currentClass = 'ring-0';
+    let currentColor = '#3B82F6'; // Default blue color
+    let isInset = false;
+
+    // Set the element ring based on selected class and color
+    function setElementRing(className) {
+      currentClass = className;
+      isInset = className.includes('inset');
+      
+      // Get the ring width value
+      const ringWidth = ringWidthValues[className];
+      
+      // Create the box-shadow CSS
+      let boxShadow = '';
+      if (className === 'ring-0') {
+        boxShadow = 'none';
+      } else {
+        const insetValue = isInset ? 'inset' : '';
+        boxShadow = `${insetValue} 0 0 0 ${ringWidth} ${currentColor}`;
+      }
+      
+      // Apply the box shadow to the element
+      demoElement.style.boxShadow = boxShadow;
+      
+      // Update the label
+      elementLabel.textContent = className;
+
+      // Update code display
+      updateCodeDisplay(className, ringWidth, isInset);
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className, ringWidth, isInset) {
+      const insetVar = isInset ? 'inset' : '';
+      let cssValue;
+      
+      if (className === 'ring-0') {
+        cssValue = 'var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color)';
+      } else {
+        cssValue = `${insetVar} 0 0 0 ${ringWidth} ${currentColor}`;
+      }
+
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-value">${cssValue}</span>;`;
+    }
+
+    // Initialize
+    setElementRing('ring-0');
+
+    // Update element size
+    function updateElementSize() {
+      const width = elementWidth.value;
+      const height = elementHeight.value;
+      
+      demoElement.style.width = `${width}px`;
+      demoElement.style.height = `${height}px`;
+      
+      widthValue.textContent = `${width}px`;
+      heightValue.textContent = `${height}px`;
+    }
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Select the first button of the category if none is selected
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          const groupButtons = activeGroup.querySelectorAll('.value-button');
+          let hasSelected = false;
+          groupButtons.forEach(btn => {
+            if (btn.classList.contains('selected')) {
+              hasSelected = true;
+              setElementRing(btn.dataset.class);
+            }
+          });
+          
+          if (!hasSelected && groupButtons.length > 0) {
+            groupButtons[0].classList.add('selected');
+            setElementRing(groupButtons[0].dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons in the same group
+        const parentGroup = button.closest('.value-group');
+        parentGroup.querySelectorAll('.value-button').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update element ring
+        setElementRing(button.dataset.class);
+      });
+    });
+
+    // Event listeners for color buttons
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all color buttons
+        colorButtons.forEach(btn => btn.classList.remove('selected'));
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update current color
+        currentColor = button.dataset.color;
+        
+        // Update element ring with new color
+        setElementRing(currentClass);
+      });
+    });
+
+    // Event listeners for options
+    showContent.addEventListener('change', () => {
+      elementLabel.style.display = showContent.checked ? 'block' : 'none';
+    });
+
+    // Event listeners for size controls
+    elementWidth.addEventListener('input', updateElementSize);
+    elementHeight.addEventListener('input', updateElementSize);
+  </script>
+</body>
+</html>
