@@ -3,679 +3,481 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Flex Grow Accurate Visual Demo</title>
+    <title>Flex-Grow Visualization - Nord Theme</title>
     <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Polar Night (darkest) */
+            --nord1: #3B4252;  /* Polar Night */
+            --nord2: #434C5E;  /* Polar Night */
+            --nord3: #4C566A;  /* Polar Night */
+            --nord4: #D8DEE9;  /* Snow Storm */
+            --nord5: #E5E9F0;  /* Snow Storm */
+            --nord6: #ECEFF4;  /* Snow Storm (lightest) */
+            --nord7: #8FBCBB;  /* Frost */
+            --nord8: #88C0D0;  /* Frost */
+            --nord9: #81A1C1;  /* Frost */
+            --nord10: #5E81AC; /* Frost */
+            --nord11: #BF616A; /* Aurora (red) */
+            --nord12: #D08770; /* Aurora (orange) */
+            --nord13: #EBCB8B; /* Aurora (yellow) */
+            --nord14: #A3BE8C; /* Aurora (green) */
+            --nord15: #B48EAD; /* Aurora (purple) */
+        }
+
         * {
+            box-sizing: border-box;
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Ubuntu Sans Mono', sans-serif !important
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
-            color: #333;
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             line-height: 1.6;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
         }
 
         h1 {
+            color: var(--nord8);
+            margin-bottom: 1rem;
             text-align: center;
-            color: white;
-            font-size: 2.5rem;
-            margin-bottom: 30px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
-        .demo-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            margin-bottom: 30px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        h2 {
-            color: #2c3e50;
-            font-size: 1.5rem;
-            margin-bottom: 15px;
-            border-bottom: 3px solid #11998e;
-            padding-bottom: 10px;
-        }
-
-        .comparison-container {
-            display: flex;
-            gap: 30px;
-            margin-bottom: 20px;
-        }
-
-        .before-after {
-            flex: 1;
-        }
-
-        .before-after h3 {
-            color: #e74c3c;
-            margin-bottom: 10px;
+        p {
+            color: var(--nord4);
+            margin-bottom: 2rem;
+            max-width: 800px;
             text-align: center;
-            font-size: 1.2rem;
         }
 
-        .before-after.after h3 {
-            color: #27ae60;
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 2rem;
+            background: var(--nord1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Graph paper grid */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord2) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord2) 1px, transparent 1px);
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
         }
 
         .flex-container {
             display: flex;
-            border: 3px solid #11998e;
-            border-radius: 10px;
-            padding: 15px;
-            background: #f8f9fa;
+            height: 100%;
+            width: 100%;
             position: relative;
-            height: 100px;
-            align-items: center;
-            width: 600px; /* Fixed width to show growth clearly */
+            z-index: 2;
         }
 
         .flex-item {
-            color: white;
-            padding: 15px;
-            margin: 5px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 70px;
-            position: relative;
-            border: 2px solid rgba(0,0,0,0.1);
-        }
-
-        .item1 {
-            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
-        }
-
-        .item2 {
-            background: linear-gradient(135deg, #4ecdc4, #44a08d);
-        }
-
-        .item3 {
-            background: linear-gradient(135deg, #45b7d1, #96c93d);
-        }
-
-        .item4 {
-            background: linear-gradient(135deg, #f39c12, #e67e22);
-        }
-
-        .label {
-            font-size: 1rem;
-            margin-bottom: 3px;
-        }
-
-        .grow-value {
-            font-size: 0.8rem;
-            opacity: 0.9;
-            background: rgba(255,255,255,0.3);
-            padding: 3px 8px;
-            border-radius: 10px;
-        }
-
-        .size-indicator {
-            position: absolute;
-            bottom: -25px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: #2c3e50;
-            color: white;
-            padding: 2px 6px;
-            border-radius: 5px;
-            font-size: 0.7rem;
+            height: 100%;
             font-weight: bold;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        /* BEFORE - No growth (content-based width) */
-        .before .flex-item {
-            flex-grow: 0;
-            flex-basis: auto;
-            width: auto;
-        }
+        .flex-item:nth-child(1) { background-color: var(--nord7); color: var(--nord0); }
+        .flex-item:nth-child(2) { background-color: var(--nord8); color: var(--nord0); }
+        .flex-item:nth-child(3) { background-color: var(--nord9); color: var(--nord0); }
+        .flex-item:nth-child(4) { background-color: var(--nord10); color: var(--nord0); }
 
-        /* AFTER - Growth scenarios */
-        .after .flex-container {
-            width: 600px; /* Plenty of space for growth */
-        }
-
-        /* Scenario 1: Equal growth */
-        .scenario1 .after .flex-item {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        /* Scenario 2: Unequal growth */
-        .scenario2 .after .item1 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        .scenario2 .after .item2 {
-            flex-grow: 3; /* Grows 3x more */
-            flex-basis: 0;
-        }
-
-        .scenario2 .after .item3 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        /* Scenario 3: No growth */
-        .scenario3 .after .item1 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        .scenario3 .after .item2 {
-            flex-grow: 0; /* No growth */
-            flex-basis: auto;
-        }
-
-        .scenario3 .after .item3 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        /* Scenario 4: Extreme growth */
-        .scenario4 .after .item1 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        .scenario4 .after .item2 {
-            flex-grow: 10; /* Extreme growth */
-            flex-basis: 0;
-        }
-
-        .scenario4 .after .item3 {
-            flex-grow: 1;
-            flex-basis: 0;
-        }
-
-        /* Scenario 5: Mixed values */
-        .scenario5 .after .item1 {
-            flex-grow: 0; /* No growth */
-            flex-basis: auto;
-        }
-
-        .scenario5 .after .item2 {
-            flex-grow: 2; /* Medium growth */
-            flex-basis: 0;
-        }
-
-        .scenario5 .after .item3 {
-            flex-grow: 1; /* Default growth */
-            flex-basis: 0;
-        }
-
-        .scenario5 .after .item4 {
-            flex-grow: 5; /* High growth */
-            flex-basis: 0;
-        }
-
-        .explanation {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: 500;
+        .flex-item-label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
             text-align: center;
-            margin-top: 20px;
+            font-size: 0.9rem;
         }
 
-        .arrow {
-            font-size: 2rem;
-            color: #e74c3c;
-            text-align: center;
-            margin: 20px 0;
-            animation: bounce 2s infinite;
+        .flex-item-value {
+            font-size: 1.4rem;
         }
 
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {
-                transform: translateY(0);
-            }
-            40% {
-                transform: translateY(-10px);
-            }
-            60% {
-                transform: translateY(-5px);
-            }
-        }
-
-        .reference-section {
-            background: white;
-            border-radius: 15px;
-            padding: 25px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            margin-top: 30px;
-        }
-
-        .reference-grid {
+        .controls {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            gap: 1.5rem;
+            margin-bottom: 2rem;
         }
 
-        .reference-item {
-            background: linear-gradient(135deg, #11998e, #38ef7d);
-            color: white;
-            padding: 15px;
-            border-radius: 10px;
-            text-align: center;
+        .control-group {
+            background-color: var(--nord1);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .ref-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-        }
-
-        .ref-desc {
-            font-size: 0.9rem;
-            opacity: 0.9;
-        }
-
-        /* Measurement lines */
-        .measurement {
-            position: relative;
-            margin-top: 30px;
-            padding: 10px;
-            background: #ecf0f1;
-            border-radius: 5px;
-            font-family: monospace;
-            font-size: 0.9rem;
-        }
-
-        .measurement::before {
-            content: "📏 Growth explanation:";
-            font-weight: bold;
-            color: #2c3e50;
+        .control-label {
             display: block;
-            margin-bottom: 5px;
+            margin-bottom: 0.5rem;
+            color: var(--nord8);
+            font-weight: bold;
         }
 
-        /* Visual growth indicators */
-        .growth-bar {
-            position: absolute;
-            top: -10px;
-            left: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #11998e, #38ef7d);
-            border-radius: 2px;
-            transition: width 0.3s ease;
+        .control-value {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
         }
 
-        .scenario1 .after .item1 .growth-bar,
-        .scenario1 .after .item2 .growth-bar,
-        .scenario1 .after .item3 .growth-bar {
+        input[type="range"] {
             width: 100%;
+            margin: 0.5rem 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: var(--nord3);
+            border-radius: 4px;
+            outline: none;
         }
 
-        .scenario2 .after .item1 .growth-bar,
-        .scenario2 .after .item3 .growth-bar {
-            width: 50%;
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
         }
 
-        .scenario2 .after .item2 .growth-bar {
-            width: 100%;
+        input[type="range"]:nth-of-type(1)::-webkit-slider-thumb {
+            background: var(--nord7);
+        }
+        input[type="range"]:nth-of-type(2)::-webkit-slider-thumb {
+            background: var(--nord8);
+        }
+        input[type="range"]:nth-of-type(3)::-webkit-slider-thumb {
+            background: var(--nord9);
+        }
+        input[type="range"]:nth-of-type(4)::-webkit-slider-thumb {
+            background: var(--nord10);
         }
 
-        .scenario3 .after .item1 .growth-bar,
-        .scenario3 .after .item3 .growth-bar {
-            width: 100%;
+        .info-panel {
+            background-color: var(--nord1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
 
-        .scenario3 .after .item2 .growth-bar {
-            width: 0%;
+        .info-title {
+            color: var(--nord13);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
         }
 
-        @media (max-width: 768px) {
-            .comparison-container {
-                flex-direction: column;
-                gap: 20px;
-            }
-            
-            .flex-container {
-                width: 100% !important;
-            }
+        .calculation {
+            font-family: monospace;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 4px;
+            color: var(--nord6);
+            margin: 1rem 0;
+            white-space: pre-wrap;
+        }
+
+        .space-distribution {
+            display: flex;
+            height: 40px;
+            margin-top: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .space-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--nord0);
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .reset-button {
+            background-color: var(--nord11);
+        }
+
+        .reset-button:hover {
+            background-color: var(--nord12);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.9rem;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <h1>Understanding Flex-Grow</h1>
+    <p>
+        The <code>flex-grow</code> property defines how much space a flex item should take up when there's extra space available.
+        It's a proportion of the available space in the flex container.
+    </p>
+
     <div class="container">
-        <h1>🌱 Flex Grow - Accurate Visual Demo</h1>
-        
-        <!-- Scenario 1: Equal Growth -->
-        <div class="demo-section scenario1">
-            <h2>🌱 Scenario 1: Equal Growth (All flex-grow: 1)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Content-based)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                    </div>
+        <div class="visualization">
+            <div class="grid-background"></div>
+            <div class="flex-container" id="flexContainer">
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 1</span>
+                    <span class="flex-item-value">1</span>
                 </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (With Growth)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~180px</div>
-                        </div>
-                    </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 2</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 3</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 4</span>
+                    <span class="flex-item-value">1</span>
                 </div>
             </div>
-            <p class="explanation">🌱 All items grow equally and share the available space equally</p>
         </div>
 
-        <!-- Scenario 2: Unequal Growth -->
-        <div class="demo-section scenario2">
-            <h2>🚀 Scenario 2: Unequal Growth (1, 3, 1)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Content-based)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (With Growth)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~108px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 3</span>
-                            <div class="size-indicator">~324px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~108px</div>
-                        </div>
-                    </div>
-                </div>
+        <div class="controls">
+            <div class="control-group">
+                <label class="control-label">
+                    Item 1 flex-grow
+                    <span class="control-value" id="item1Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item1Slider">
             </div>
-            <p class="explanation">🚀 Item 2 grows 3x more than Items 1 & 3 - Gets 3x more space!</p>
-        </div>
-
-        <!-- Scenario 3: No Growth -->
-        <div class="demo-section scenario3">
-            <h2>🚫 Scenario 3: Prevent Growth (1, 0, 1)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Content-based)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (With Growth)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~250px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~250px</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 2 flex-grow
+                    <span class="control-value" id="item2Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item2Slider">
             </div>
-            <p class="explanation">🚫 Item 2 stays same size! Items 1 & 3 grow to fill remaining space</p>
-        </div>
-
-        <!-- Scenario 4: Extreme Growth -->
-        <div class="demo-section scenario4">
-            <h2>🔥 Scenario 4: Extreme Growth (1, 10, 1)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Content-based)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~80px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (With Growth)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~45px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 10</span>
-                            <div class="size-indicator">~450px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~45px</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 3 flex-grow
+                    <span class="control-value" id="item3Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item3Slider">
             </div>
-            <p class="explanation">🔥 Item 2 takes most space! It grows 10x more than the others</p>
-        </div>
-
-        <!-- Scenario 5: Mixed Values -->
-        <div class="demo-section scenario5">
-            <h2>🎪 Scenario 5: Mixed Values (0, 2, 1, 5)</h2>
-            <div class="comparison-container">
-                <div class="before-after before">
-                    <h3>🔵 BEFORE (Content-based)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~60px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~60px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~60px</div>
-                        </div>
-                        <div class="flex-item item4">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 4</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~60px</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="before-after after">
-                    <h3>🔴 AFTER (With Growth)</h3>
-                    <div class="flex-container">
-                        <div class="flex-item item1">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 1</span>
-                            <span class="grow-value">flex-grow: 0</span>
-                            <div class="size-indicator">~60px</div>
-                        </div>
-                        <div class="flex-item item2">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 2</span>
-                            <span class="grow-value">flex-grow: 2</span>
-                            <div class="size-indicator">~135px</div>
-                        </div>
-                        <div class="flex-item item3">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 3</span>
-                            <span class="grow-value">flex-grow: 1</span>
-                            <div class="size-indicator">~67px</div>
-                        </div>
-                        <div class="flex-item item4">
-                            <div class="growth-bar"></div>
-                            <span class="label">Item 4</span>
-                            <span class="grow-value">flex-grow: 5</span>
-                            <div class="size-indicator">~338px</div>
-                        </div>
-                    </div>
-                </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 4 flex-grow
+                    <span class="control-value" id="item4Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item4Slider">
             </div>
-            <p class="explanation">🎪 Complex growth! Item 1 stays same, Item 4 grows most (5x), Item 2 grows 2x Item 3</p>
         </div>
 
-        <!-- Quick Reference -->
-        <div class="reference-section">
-            <h2>📚 Quick Reference - Flex Grow Values</h2>
-            <div class="reference-grid">
-                <div class="reference-item">
-                    <div class="ref-title">flex-grow: 0</div>
-                    <div class="ref-desc">🚫 Never grows (default)</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-grow: 1</div>
-                    <div class="ref-desc">🌱 Takes equal share</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-grow: 2</div>
-                    <div class="ref-desc">📈 Grows 2x more</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-grow: 5</div>
-                    <div class="ref-desc">📈📈 Grows 5x more</div>
-                </div>
-                <div class="reference-item">
-                    <div class="ref-title">flex-grow: 10</div>
-                    <div class="ref-desc">🚀 Extreme growth</div>
-                </div>
+        <div class="info-panel">
+            <h3 class="info-title">How Flex-Grow Works</h3>
+            <p>
+                The <code>flex-grow</code> property distributes available space proportionally among flex items. 
+                The browser calculates a "flex factor" for each item based on its flex-grow value.
+            </p>
+            
+            <div class="calculation" id="calculation">
+Available space is divided among items according to their flex-grow values.
+Each item gets: (item's flex-grow / sum of all flex-grow values) × available space
             </div>
             
-            <div class="measurement">
-                <strong>🎯 Key Concept:</strong> flex-grow controls how much of the REMAINING space an item should take up.<br>
-                <strong>Formula:</strong> Item's share = (item's flex-grow / total flex-grow) × remaining space<br>
-                <strong>Example:</strong> If items have flex-grow: 1, 2, 1 → Item 2 gets 2/4 = 50% of remaining space
+            <p>Space distribution:</p>
+            <div class="space-distribution" id="spaceDistribution">
+                <div class="space-segment" style="background-color: var(--nord7); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord8); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord9); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord10); width: 25%;">25%</div>
+            </div>
+            
+            <div class="button-container">
+                <button id="equalButton">Equal Distribution (1:1:1:1)</button>
+                <button id="customButton">Custom Distribution (1:2:3:4)</button>
+                <button class="reset-button" id="resetButton">Reset All</button>
             </div>
         </div>
     </div>
+
+    <div class="footer">
+        <p>Created by shanur00 | Nordic-themed Flex-Grow Visualization | &copy; 2025</p>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const flexContainer = document.getElementById('flexContainer');
+        const flexItems = Array.from(flexContainer.querySelectorAll('.flex-item'));
+        const flexItemValues = Array.from(document.querySelectorAll('.flex-item-value'));
+        
+        const sliders = [
+            document.getElementById('item1Slider'),
+            document.getElementById('item2Slider'),
+            document.getElementById('item3Slider'),
+            document.getElementById('item4Slider')
+        ];
+        
+        const valueDisplays = [
+            document.getElementById('item1Value'),
+            document.getElementById('item2Value'),
+            document.getElementById('item3Value'),
+            document.getElementById('item4Value')
+        ];
+        
+        const calculationDisplay = document.getElementById('calculation');
+        const spaceDistribution = document.getElementById('spaceDistribution');
+        const spaceSegments = Array.from(spaceDistribution.querySelectorAll('.space-segment'));
+        
+        const equalButton = document.getElementById('equalButton');
+        const customButton = document.getElementById('customButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // Initialize flex-grow values
+        let flexGrowValues = [1, 1, 1, 1];
+        
+        // Function to update the visualization
+        function updateVisualization() {
+            // Update flex-grow for each item
+            flexItems.forEach((item, index) => {
+                item.style.flexGrow = flexGrowValues[index];
+                flexItemValues[index].textContent = flexGrowValues[index];
+            });
+            
+            // Update control values
+            sliders.forEach((slider, index) => {
+                slider.value = flexGrowValues[index];
+                valueDisplays[index].textContent = flexGrowValues[index];
+            });
+            
+            // Calculate the sum of all flex-grow values
+            const totalFlexGrow = flexGrowValues.reduce((sum, value) => sum + value, 0);
+            
+            // If the sum is zero, show equal distribution
+            if (totalFlexGrow === 0) {
+                flexItems.forEach(item => {
+                    item.style.flexGrow = 0;
+                    item.style.flexBasis = '25%';
+                });
+                
+                spaceSegments.forEach((segment, index) => {
+                    segment.style.width = '25%';
+                    segment.textContent = '25%';
+                });
+                
+                calculationDisplay.textContent = 'All flex-grow values are 0, so items use their base sizes.\nEach item gets 25% of the container width.';
+                return;
+            } else {
+                // Reset flexBasis if we're using flex-grow again
+                flexItems.forEach(item => {
+                    item.style.flexBasis = '0';
+                });
+            }
+            
+            // Update the calculation display
+            let calcText = 'Calculation:\n';
+            calcText += `Total flex-grow sum: ${totalFlexGrow}\n\n`;
+            
+            // Update space distribution visualization
+            flexGrowValues.forEach((value, index) => {
+                const percentage = totalFlexGrow > 0 
+                    ? Math.round((value / totalFlexGrow) * 100) 
+                    : Math.round(100 / flexGrowValues.length);
+                
+                calcText += `Item ${index + 1}: ${value}/${totalFlexGrow} = ${percentage}%\n`;
+                
+                spaceSegments[index].style.width = `${percentage}%`;
+                spaceSegments[index].textContent = `${percentage}%`;
+            });
+            
+            calculationDisplay.textContent = calcText;
+        }
+        
+        // Add event listeners to sliders
+        sliders.forEach((slider, index) => {
+            slider.addEventListener('input', () => {
+                flexGrowValues[index] = parseInt(slider.value);
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to buttons
+        equalButton.addEventListener('click', () => {
+            flexGrowValues = [1, 1, 1, 1];
+            updateVisualization();
+        });
+        
+        customButton.addEventListener('click', () => {
+            flexGrowValues = [1, 2, 3, 4];
+            updateVisualization();
+        });
+        
+        resetButton.addEventListener('click', () => {
+            flexGrowValues = [0, 0, 0, 0];
+            updateVisualization();
+        });
+        
+        // Initialize the visualization
+        updateVisualization();
+    </script>
 </body>
 </html>
