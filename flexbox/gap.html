@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Gap Visualization - Nord Theme</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            --nord11: #BF616A;
+            --nord12: #D08770;
+            --nord13: #EBCB8B;
+            --nord14: #A3BE8C;
+            --nord15: #B48EAD;
+        }
+
+        *{
+          font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+        
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--nord0);
+            color: var(--nord4);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        h1 {
+            color: var(--nord8);
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        /* Visualization Area */
+        .visualization-container {
+            background-color: var(--nord1);
+            border-radius: 8px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Graph Paper Grid */
+        .flex-container-wrapper {
+            overflow: auto;
+            padding: 10px;
+            background-color: var(--nord2);
+            border-radius: 6px;
+            position: relative;
+            background-image: 
+                linear-gradient(var(--nord3) 1px, transparent 1px),
+                linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            background-position: 0 0;
+        }
+        
+        /* Flex Container */
+        .flex-container {
+            display: flex;
+            flex-wrap: wrap;
+            min-height: 300px;
+            position: relative;
+            /* gap will be set by JavaScript */
+        }
+        
+        /* Flex Items */
+        .flex-item {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border-radius: 4px;
+            padding: 20px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            flex-shrink: 0; /* Prevent items from shrinking */
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Different color for each item */
+        .flex-item:nth-child(1) { background-color: var(--nord7); }
+        .flex-item:nth-child(2) { background-color: var(--nord8); }
+        .flex-item:nth-child(3) { background-color: var(--nord9); }
+        .flex-item:nth-child(4) { background-color: var(--nord10); }
+        .flex-item:nth-child(5) { background-color: var(--nord14); }
+        .flex-item:nth-child(6) { background-color: var(--nord15); }
+        .flex-item:nth-child(7) { background-color: var(--nord13); }
+        .flex-item:nth-child(8) { background-color: var(--nord12); }
+        
+        /* Gap Visualization */
+        .gap-highlight {
+            position: relative;
+        }
+        
+        .row-gap-indicator, .column-gap-indicator {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1;
+            transition: all 0.2s ease;
+        }
+        
+        .row-gap-indicator {
+            background-color: rgba(235, 203, 139, 0.3); /* lighter nord13 with low opacity */
+        }
+        
+        .column-gap-indicator {
+            background-color: rgba(191, 97, 106, 0.3); /* lighter nord11 with low opacity */
+        }
+        
+        /* Controls */
+        .controls {
+            background-color: var(--nord1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--nord8);
+            font-weight: bold;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        input[type="range"] {
+            flex-grow: 1;
+            height: 8px;
+            background-color: var(--nord3);
+            border-radius: 4px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background-color: var(--nord8);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background-color: var(--nord8);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+        }
+        
+        .value-display {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 5px 10px;
+            border-radius: 4px;
+            min-width: 50px;
+            text-align: center;
+            font-family: monospace;
+        }
+        
+        /* Code Display */
+        .code-display {
+            background-color: var(--nord1);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        pre {
+            background-color: var(--nord0);
+            color: var(--nord4);
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-family: 'Consolas', 'Monaco', monospace;
+            margin: 0;
+        }
+        
+        code {
+            color: var(--nord4);
+        }
+        
+        .property {
+            color: var(--nord9);
+        }
+        
+        .value {
+            color: var(--nord14);
+        }
+        
+        .punctuation {
+            color: var(--nord6);
+        }
+        
+        .comment {
+            color: var(--nord3);
+            font-style: italic;
+        }
+        
+        /* Legend */
+        .gap-legend {
+            margin-top: 20px;
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+        
+        .row-gap-color {
+            background-color: rgba(235, 203, 139, 0.3);
+        }
+        
+        .column-gap-color {
+            background-color: rgba(191, 97, 106, 0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .flex-item {
+                width: 60px;
+                height: 60px;
+                padding: 15px;
+            }
+            
+            .visualization-container {
+                padding: 15px;
+            }
+            
+            .gap-legend {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Flexbox Gap Visualization</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <label for="row-gap-slider">Row Gap Value (px):</label>
+                <div class="slider-container">
+                    <input type="range" id="row-gap-slider" min="0" max="50" value="10" step="1">
+                    <div class="value-display" id="row-gap-value">10px</div>
+                </div>
+            </div>
+            <div class="control-group">
+                <label for="column-gap-slider">Column Gap Value (px):</label>
+                <div class="slider-container">
+                    <input type="range" id="column-gap-slider" min="0" max="50" value="10" step="1">
+                    <div class="value-display" id="column-gap-value">10px</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="visualization-container">
+            <div class="flex-container-wrapper">
+                <div class="flex-container" id="flex-container">
+                    <div class="flex-item">1</div>
+                    <div class="flex-item">2</div>
+                    <div class="flex-item">3</div>
+                    <div class="flex-item">4</div>
+                    <div class="flex-item">5</div>
+                    <div class="flex-item">6</div>
+                    <div class="flex-item">7</div>
+                    <div class="flex-item">8</div>
+                </div>
+            </div>
+            
+            <div class="gap-legend">
+                <div class="legend-item">
+                    <div class="legend-color row-gap-color"></div>
+                    <span>Row Gap</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color column-gap-color"></div>
+                    <span>Column Gap</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="code-display">
+            <h3>CSS Code:</h3>
+            <pre><code><span class="selector">.flex-container</span> <span class="punctuation">{</span>
+  <span class="property">display</span><span class="punctuation">:</span> <span class="value">flex</span><span class="punctuation">;</span>
+  <span class="property">flex-wrap</span><span class="punctuation">:</span> <span class="value">wrap</span><span class="punctuation">;</span>
+  <span class="property">row-gap</span><span class="punctuation">:</span> <span class="value" id="code-row-gap-value">10px</span><span class="punctuation">;</span>
+  <span class="property">column-gap</span><span class="punctuation">:</span> <span class="value" id="code-column-gap-value">10px</span><span class="punctuation">;</span>
+<span class="punctuation">}</span></code></pre>
+        </div>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const rowGapSlider = document.getElementById('row-gap-slider');
+        const columnGapSlider = document.getElementById('column-gap-slider');
+        const rowGapValue = document.getElementById('row-gap-value');
+        const columnGapValue = document.getElementById('column-gap-value');
+        const flexContainer = document.getElementById('flex-container');
+        const codeRowGapValue = document.getElementById('code-row-gap-value');
+        const codeColumnGapValue = document.getElementById('code-column-gap-value');
+        
+        // Initialize with default values
+        updateGaps(rowGapSlider.value, columnGapSlider.value);
+        
+        // Add event listeners for sliders
+        rowGapSlider.addEventListener('input', function() {
+            updateGaps(this.value, columnGapSlider.value);
+        });
+        
+        columnGapSlider.addEventListener('input', function() {
+            updateGaps(rowGapSlider.value, this.value);
+        });
+        
+        // Function to update gap values
+        function updateGaps(rowGapValue, columnGapValue) {
+            // Update the flex container's gap properties
+            flexContainer.style.rowGap = `${rowGapValue}px`;
+            flexContainer.style.columnGap = `${columnGapValue}px`;
+            
+            // Update display values
+            document.getElementById('row-gap-value').textContent = `${rowGapValue}px`;
+            document.getElementById('column-gap-value').textContent = `${columnGapValue}px`;
+            codeRowGapValue.textContent = `${rowGapValue}px`;
+            codeColumnGapValue.textContent = `${columnGapValue}px`;
+            
+            // Clear previous gap indicators
+            document.querySelectorAll('.row-gap-indicator, .column-gap-indicator').forEach(el => el.remove());
+            
+            // Add visual indicators for the gaps
+            visualizeGaps(parseInt(rowGapValue), parseInt(columnGapValue));
+        }
+        
+        // Function to visualize the gaps
+        function visualizeGaps(rowGap, columnGap) {
+            // Get all items and their positions
+            const items = Array.from(flexContainer.querySelectorAll('.flex-item'));
+            if (items.length === 0) return;
+            
+            const containerRect = flexContainer.getBoundingClientRect();
+            const itemRects = items.map(item => {
+                const rect = item.getBoundingClientRect();
+                return {
+                    left: rect.left - containerRect.left,
+                    top: rect.top - containerRect.top,
+                    right: rect.right - containerRect.left,
+                    bottom: rect.bottom - containerRect.top,
+                    width: rect.width,
+                    height: rect.height,
+                    element: item
+                };
+            });
+            
+            // Identify rows based on y-position
+            const rowMap = new Map();
+            itemRects.forEach(rect => {
+                const rowY = Math.round(rect.top);
+                if (!rowMap.has(rowY)) {
+                    rowMap.set(rowY, []);
+                }
+                rowMap.get(rowY).push(rect);
+            });
+            
+            // Sort rows by y-position
+            const rows = Array.from(rowMap.entries())
+                .sort((a, b) => a[0] - b[0])
+                .map(entry => entry[1]);
+                
+            // Process column gaps
+            rows.forEach(rowItems => {
+                // Sort items in this row by x-position
+                rowItems.sort((a, b) => a.left - b.left);
+                
+                // Add column gaps between items
+                for (let i = 0; i < rowItems.length - 1; i++) {
+                    const leftItem = rowItems[i];
+                    const rightItem = rowItems[i + 1];
+                    
+                    if (columnGap > 0) {
+                        const columnGapEl = document.createElement('div');
+                        columnGapEl.className = 'column-gap-indicator';
+                        
+                        // Position between boxes (no overlap)
+                        columnGapEl.style.left = `${leftItem.right}px`;
+                        columnGapEl.style.top = `${leftItem.top}px`;
+                        columnGapEl.style.width = `${rightItem.left - leftItem.right}px`;
+                        columnGapEl.style.height = `${leftItem.height}px`;
+                        
+                        flexContainer.appendChild(columnGapEl);
+                    }
+                }
+            });
+            
+            // Process row gaps - only between vertically aligned boxes
+            for (let i = 0; i < rows.length - 1; i++) {
+                const topRowItems = rows[i];
+                const bottomRowItems = rows[i + 1];
+                
+                if (rowGap > 0) {
+                    // For each item in the top row, see if there's any item in the bottom row that overlaps horizontally
+                    topRowItems.forEach(topItem => {
+                        bottomRowItems.forEach(bottomItem => {
+                            // Check for horizontal overlap
+                            const overlapStart = Math.max(topItem.left, bottomItem.left);
+                            const overlapEnd = Math.min(topItem.right, bottomItem.right);
+                            
+                            if (overlapEnd > overlapStart) { // There is horizontal overlap
+                                const rowGapEl = document.createElement('div');
+                                rowGapEl.className = 'row-gap-indicator';
+                                
+                                // Position between boxes (no overlap)
+                                rowGapEl.style.top = `${topItem.bottom}px`;
+                                rowGapEl.style.height = `${bottomItem.top - topItem.bottom}px`;
+                                rowGapEl.style.left = `${overlapStart}px`;
+                                rowGapEl.style.width = `${overlapEnd - overlapStart}px`;
+                                
+                                flexContainer.appendChild(rowGapEl);
+                            }
+                        });
+                    });
+                }
+            }
+        }
+        
+        // Initialize gap visualization
+        window.addEventListener('load', () => {
+            updateGaps(rowGapSlider.value, columnGapSlider.value);
+        });
+        
+        // Update on resize
+        window.addEventListener('resize', () => {
+            updateGaps(rowGapSlider.value, columnGapSlider.value);
+        });
+    </script>
+</body>
+</html>
