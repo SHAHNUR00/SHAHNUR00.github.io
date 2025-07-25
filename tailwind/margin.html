@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Margin Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px;
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option-row input {
+      cursor: pointer;
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 450px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Box with margin */
+    .margin-box {
+      position: absolute;
+      width: 200px;
+      height: 200px;
+      background-color: var(--nord10);
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 15;
+    }
+
+    /* Margin visualization */
+    .margin-area {
+      position: absolute;
+      z-index: 5;
+      pointer-events: none;
+    }
+
+    .margin-top {
+      background-color: rgba(235, 203, 139, 0.5); /* nord13 with opacity */
+    }
+
+    .margin-right {
+      background-color: rgba(163, 190, 140, 0.5); /* nord14 with opacity */
+    }
+
+    .margin-bottom {
+      background-color: rgba(235, 203, 139, 0.5); /* nord13 with opacity */
+    }
+
+    .margin-left {
+      background-color: rgba(163, 190, 140, 0.5); /* nord14 with opacity */
+    }
+
+    /* Negative margin */
+    .negative-margin {
+      background-color: rgba(191, 97, 106, 0.3) !important; /* nord11 with opacity */
+    }
+
+    /* Margin labels */
+    .margin-label {
+      position: absolute;
+      background-color: var(--nord1);
+      color: var(--nord4);
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+      z-index: 20;
+      white-space: nowrap;
+    }
+
+    .label-top {
+      top: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .label-right {
+      right: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    .label-bottom {
+      bottom: -30px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .label-left {
+      left: -40px;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Negative margin indicator */
+    .negative-margin-note {
+      color: var(--nord11);
+      margin-top: 5px;
+      font-size: 12px;
+      font-style: italic;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+      
+      .margin-box {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Margin Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utility classes for setting margins on elements. This visualizer demonstrates how different margin utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Margin Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="all">All Sides</button>
+          <button class="tab-button" data-category="axes">X/Y Axes</button>
+          <button class="tab-button" data-category="sides">Individual Sides</button>
+          <button class="tab-button" data-category="negative">Negative</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- All sides margin values -->
+          <div class="value-group" id="all-values">
+            <div class="value-grid">
+              <button class="value-button selected" data-class="m-0">m-0</button>
+              <button class="value-button" data-class="m-1">m-1</button>
+              <button class="value-button" data-class="m-2">m-2</button>
+              <button class="value-button" data-class="m-3">m-3</button>
+              <button class="value-button" data-class="m-4">m-4</button>
+              <button class="value-button" data-class="m-5">m-5</button>
+              <button class="value-button" data-class="m-6">m-6</button>
+              <button class="value-button" data-class="m-8">m-8</button>
+              <button class="value-button" data-class="m-10">m-10</button>
+              <button class="value-button" data-class="m-12">m-12</button>
+              <button class="value-button" data-class="m-16">m-16</button>
+              <button class="value-button" data-class="m-20">m-20</button>
+              <button class="value-button" data-class="m-24">m-24</button>
+              <button class="value-button" data-class="m-32">m-32</button>
+            </div>
+          </div>
+
+          <!-- X/Y axis margin values -->
+          <div class="value-group" id="axes-values" style="display: none;">
+            <h3>Horizontal (X-axis) Margin</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="mx-0">mx-0</button>
+              <button class="value-button" data-class="mx-1">mx-1</button>
+              <button class="value-button" data-class="mx-2">mx-2</button>
+              <button class="value-button" data-class="mx-4">mx-4</button>
+              <button class="value-button" data-class="mx-6">mx-6</button>
+              <button class="value-button" data-class="mx-8">mx-8</button>
+              <button class="value-button" data-class="mx-12">mx-12</button>
+              <button class="value-button" data-class="mx-16">mx-16</button>
+            </div>
+            <h3>Vertical (Y-axis) Margin</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="my-0">my-0</button>
+              <button class="value-button" data-class="my-1">my-1</button>
+              <button class="value-button" data-class="my-2">my-2</button>
+              <button class="value-button" data-class="my-4">my-4</button>
+              <button class="value-button" data-class="my-6">my-6</button>
+              <button class="value-button" data-class="my-8">my-8</button>
+              <button class="value-button" data-class="my-12">my-12</button>
+              <button class="value-button" data-class="my-16">my-16</button>
+            </div>
+          </div>
+
+          <!-- Individual sides margin values -->
+          <div class="value-group" id="sides-values" style="display: none;">
+            <h3>Margin Top</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="mt-0">mt-0</button>
+              <button class="value-button" data-class="mt-1">mt-1</button>
+              <button class="value-button" data-class="mt-2">mt-2</button>
+              <button class="value-button" data-class="mt-4">mt-4</button>
+              <button class="value-button" data-class="mt-8">mt-8</button>
+              <button class="value-button" data-class="mt-12">mt-12</button>
+            </div>
+            <h3>Margin Right</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="mr-0">mr-0</button>
+              <button class="value-button" data-class="mr-1">mr-1</button>
+              <button class="value-button" data-class="mr-2">mr-2</button>
+              <button class="value-button" data-class="mr-4">mr-4</button>
+              <button class="value-button" data-class="mr-8">mr-8</button>
+              <button class="value-button" data-class="mr-12">mr-12</button>
+            </div>
+            <h3>Margin Bottom</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="mb-0">mb-0</button>
+              <button class="value-button" data-class="mb-1">mb-1</button>
+              <button class="value-button" data-class="mb-2">mb-2</button>
+              <button class="value-button" data-class="mb-4">mb-4</button>
+              <button class="value-button" data-class="mb-8">mb-8</button>
+              <button class="value-button" data-class="mb-12">mb-12</button>
+            </div>
+            <h3>Margin Left</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="ml-0">ml-0</button>
+              <button class="value-button" data-class="ml-1">ml-1</button>
+              <button class="value-button" data-class="ml-2">ml-2</button>
+              <button class="value-button" data-class="ml-4">ml-4</button>
+              <button class="value-button" data-class="ml-8">ml-8</button>
+              <button class="value-button" data-class="ml-12">ml-12</button>
+            </div>
+          </div>
+
+          <!-- Negative margin values -->
+          <div class="value-group" id="negative-values" style="display: none;">
+            <h3>Negative All Sides</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="-m-1">-m-1</button>
+              <button class="value-button" data-class="-m-2">-m-2</button>
+              <button class="value-button" data-class="-m-4">-m-4</button>
+              <button class="value-button" data-class="-m-8">-m-8</button>
+            </div>
+            <h3>Negative Top Margin</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="-mt-1">-mt-1</button>
+              <button class="value-button" data-class="-mt-2">-mt-2</button>
+              <button class="value-button" data-class="-mt-4">-mt-4</button>
+            </div>
+            <h3>Negative X-axis Margin</h3>
+            <div class="value-grid">
+              <button class="value-button" data-class="-mx-1">-mx-1</button>
+              <button class="value-button" data-class="-mx-2">-mx-2</button>
+              <button class="value-button" data-class="-mx-4">-mx-4</button>
+            </div>
+            <div class="negative-margin-note">Note: Negative margins can cause elements to overlap with others.</div>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-content" checked>
+            <label for="show-content" class="option-label">Show element label</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="show-margin-area" checked>
+            <label for="show-margin-area" class="option-label">Highlight margin area</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="show-margin-labels" checked>
+            <label for="show-margin-labels" class="option-label">Show margin size labels</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container" id="demo-container">
+          <div class="grid-background"></div>
+          
+          <!-- Visualization elements will be added here dynamically -->
+          <div class="margin-box" id="margin-box">
+            <div class="element-label" id="element-label">m-0</div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">m-0</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">margin:</span> <span class="css-value">0px</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: shanur00 | Current Time: 2025-07-25 12:03:50
+    </div>
+  </div>
+
+  <script>
+    // Margin value mappings (in rem units)
+    const marginValues = {
+      // All sides margin
+      'm-0': '0px',
+      'm-1': '0.25rem', // 4px
+      'm-2': '0.5rem',  // 8px
+      'm-3': '0.75rem', // 12px
+      'm-4': '1rem',    // 16px
+      'm-5': '1.25rem', // 20px
+      'm-6': '1.5rem',  // 24px
+      'm-8': '2rem',    // 32px
+      'm-10': '2.5rem', // 40px
+      'm-12': '3rem',   // 48px
+      'm-16': '4rem',   // 64px
+      'm-20': '5rem',   // 80px
+      'm-24': '6rem',   // 96px
+      'm-32': '8rem',   // 128px
+      
+      // X-axis margin (left and right)
+      'mx-0': '0px',
+      'mx-1': '0.25rem',
+      'mx-2': '0.5rem',
+      'mx-4': '1rem',
+      'mx-6': '1.5rem',
+      'mx-8': '2rem',
+      'mx-12': '3rem',
+      'mx-16': '4rem',
+      
+      // Y-axis margin (top and bottom)
+      'my-0': '0px',
+      'my-1': '0.25rem',
+      'my-2': '0.5rem',
+      'my-4': '1rem',
+      'my-6': '1.5rem',
+      'my-8': '2rem',
+      'my-12': '3rem',
+      'my-16': '4rem',
+      
+      // Individual sides margin
+      'mt-0': '0px',
+      'mt-1': '0.25rem',
+      'mt-2': '0.5rem',
+      'mt-4': '1rem',
+      'mt-8': '2rem',
+      'mt-12': '3rem',
+      
+      'mr-0': '0px',
+      'mr-1': '0.25rem',
+      'mr-2': '0.5rem',
+      'mr-4': '1rem',
+      'mr-8': '2rem',
+      'mr-12': '3rem',
+      
+      'mb-0': '0px',
+      'mb-1': '0.25rem',
+      'mb-2': '0.5rem',
+      'mb-4': '1rem',
+      'mb-8': '2rem',
+      'mb-12': '3rem',
+      
+      'ml-0': '0px',
+      'ml-1': '0.25rem',
+      'ml-2': '0.5rem',
+      'ml-4': '1rem',
+      'ml-8': '2rem',
+      'ml-12': '3rem',
+      
+      // Negative margins
+      '-m-1': '-0.25rem',
+      '-m-2': '-0.5rem',
+      '-m-4': '-1rem',
+      '-m-8': '-2rem',
+      
+      '-mt-1': '-0.25rem',
+      '-mt-2': '-0.5rem',
+      '-mt-4': '-1rem',
+      
+      '-mx-1': '-0.25rem',
+      '-mx-2': '-0.5rem',
+      '-mx-4': '-1rem'
+    };
+
+    // Pixel equivalents for display purposes (1rem = 16px)
+    const pixelEquivalents = {
+      '0px': '0px',
+      '0.25rem': '4px',
+      '-0.25rem': '-4px',
+      '0.5rem': '8px',
+      '-0.5rem': '-8px',
+      '0.75rem': '12px',
+      '-0.75rem': '-12px',
+      '1rem': '16px',
+      '-1rem': '-16px',
+      '1.25rem': '20px',
+      '-1.25rem': '-20px',
+      '1.5rem': '24px',
+      '-1.5rem': '-24px',
+      '2rem': '32px',
+      '-2rem': '-32px',
+      '2.5rem': '40px',
+      '-2.5rem': '-40px',
+      '3rem': '48px',
+      '-3rem': '-48px',
+      '4rem': '64px',
+      '-4rem': '-64px',
+      '5rem': '80px',
+      '-5rem': '-80px',
+      '6rem': '96px',
+      '-6rem': '-96px',
+      '8rem': '128px',
+      '-8rem': '-128px'
+    };
+
+    // DOM elements
+    const demoContainer = document.getElementById('demo-container');
+    const marginBox = document.getElementById('margin-box');
+    const elementLabel = document.getElementById('element-label');
+    const codeDisplay = document.getElementById('code-display');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const showContent = document.getElementById('show-content');
+    const showMarginArea = document.getElementById('show-margin-area');
+    const showMarginLabels = document.getElementById('show-margin-labels');
+
+    // Initial state
+    let currentClass = 'm-0';
+    let marginTopValue = '0px';
+    let marginRightValue = '0px';
+    let marginBottomValue = '0px';
+    let marginLeftValue = '0px';
+
+    // Create margin visualization elements
+    function createMarginVisualization() {
+      // Remove any existing margin elements
+      document.querySelectorAll('.margin-area, .margin-label').forEach(el => el.remove());
+      
+      // Create margin areas
+      const marginTop = document.createElement('div');
+      marginTop.id = 'margin-top';
+      marginTop.className = 'margin-area margin-top';
+      
+      const marginRight = document.createElement('div');
+      marginRight.id = 'margin-right';
+      marginRight.className = 'margin-area margin-right';
+      
+      const marginBottom = document.createElement('div');
+      marginBottom.id = 'margin-bottom';
+      marginBottom.className = 'margin-area margin-bottom';
+      
+      const marginLeft = document.createElement('div');
+      marginLeft.id = 'margin-left';
+      marginLeft.className = 'margin-area margin-left';
+      
+      // Create margin labels
+      const labelTop = document.createElement('div');
+      labelTop.id = 'label-top';
+      labelTop.className = 'margin-label label-top';
+      
+      const labelRight = document.createElement('div');
+      labelRight.id = 'label-right';
+      labelRight.className = 'margin-label label-right';
+      
+      const labelBottom = document.createElement('div');
+      labelBottom.id = 'label-bottom';
+      labelBottom.className = 'margin-label label-bottom';
+      
+      const labelLeft = document.createElement('div');
+      labelLeft.id = 'label-left';
+      labelLeft.className = 'margin-label label-left';
+      
+      // Add elements to the DOM
+      demoContainer.appendChild(marginTop);
+      demoContainer.appendChild(marginRight);
+      demoContainer.appendChild(marginBottom);
+      demoContainer.appendChild(marginLeft);
+      
+      marginBox.appendChild(labelTop);
+      marginBox.appendChild(labelRight);
+      marginBox.appendChild(labelBottom);
+      marginBox.appendChild(labelLeft);
+    }
+
+    // Set the element margin based on selected class
+    function setElementMargin(className) {
+      currentClass = className;
+      
+      // Reset all margins
+      marginBox.style.margin = '0';
+      
+      // Reset margin values
+      marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = '0px';
+      
+      // Parse the class to determine which sides to apply margin to
+      if (className.startsWith('m-')) {
+        // All sides margin
+        const value = marginValues[className];
+        marginBox.style.margin = value;
+        
+        // Update margin visualization
+        marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
+      } else if (className.startsWith('mx-')) {
+        // X-axis margin (left and right)
+        const value = marginValues[className];
+        marginBox.style.marginLeft = value;
+        marginBox.style.marginRight = value;
+        
+        // Update margin visualization
+        marginLeftValue = marginRightValue = value;
+      } else if (className.startsWith('my-')) {
+        // Y-axis margin (top and bottom)
+        const value = marginValues[className];
+        marginBox.style.marginTop = value;
+        marginBox.style.marginBottom = value;
+        
+        // Update margin visualization
+        marginTopValue = marginBottomValue = value;
+      } else if (className.startsWith('mt-')) {
+        // Top margin
+        const value = marginValues[className];
+        marginBox.style.marginTop = value;
+        
+        // Update margin visualization
+        marginTopValue = value;
+      } else if (className.startsWith('mr-')) {
+        // Right margin
+        const value = marginValues[className];
+        marginBox.style.marginRight = value;
+        
+        // Update margin visualization
+        marginRightValue = value;
+      } else if (className.startsWith('mb-')) {
+        // Bottom margin
+        const value = marginValues[className];
+        marginBox.style.marginBottom = value;
+        
+        // Update margin visualization
+        marginBottomValue = value;
+      } else if (className.startsWith('ml-')) {
+        // Left margin
+        const value = marginValues[className];
+        marginBox.style.marginLeft = value;
+        
+        // Update margin visualization
+        marginLeftValue = value;
+      } else if (className.startsWith('-m-')) {
+        // Negative all sides margin
+        const value = marginValues[className];
+        marginBox.style.margin = value;
+        
+        // Update margin visualization
+        marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
+      } else if (className.startsWith('-mt-')) {
+        // Negative top margin
+        const value = marginValues[className];
+        marginBox.style.marginTop = value;
+        
+        // Update margin visualization
+        marginTopValue = value;
+      } else if (className.startsWith('-mx-')) {
+        // Negative X-axis margin
+        const value = marginValues[className];
+        marginBox.style.marginLeft = value;
+        marginBox.style.marginRight = value;
+        
+        // Update margin visualization
+        marginLeftValue = marginRightValue = value;
+      }
+      
+      // Update the label
+      elementLabel.textContent = className;
+      
+      // Recreate margin visualization
+      createMarginVisualization();
+
+      // Update visualization
+      updateMarginVisualization();
+      
+      // Update code display
+      updateCodeDisplay(className);
+    }
+
+    // Update the margin visualization
+    function updateMarginVisualization() {
+      // Get margin indicators
+      const marginTop = document.getElementById('margin-top');
+      const marginRight = document.getElementById('margin-right');
+      const marginBottom = document.getElementById('margin-bottom');
+      const marginLeft = document.getElementById('margin-left');
+      
+      // Get margin labels
+      const labelTop = document.getElementById('label-top');
+      const labelRight = document.getElementById('label-right');
+      const labelBottom = document.getElementById('label-bottom');
+      const labelLeft = document.getElementById('label-left');
+      
+      // Get box dimensions and position
+      const boxRect = marginBox.getBoundingClientRect();
+      const containerRect = demoContainer.getBoundingClientRect();
+      
+      // Calculate box position relative to container
+      const boxLeft = boxRect.left - containerRect.left;
+      const boxTop = boxRect.top - containerRect.top;
+      const boxWidth = boxRect.width;
+      const boxHeight = boxRect.height;
+      
+      // Get pixel values for margins
+      const topPx = pixelEquivalents[marginTopValue] || '0px';
+      const rightPx = pixelEquivalents[marginRightValue] || '0px';
+      const bottomPx = pixelEquivalents[marginBottomValue] || '0px';
+      const leftPx = pixelEquivalents[marginLeftValue] || '0px';
+      
+      // Convert pixel values to numbers
+      const topPxVal = parseInt(topPx);
+      const rightPxVal = parseInt(rightPx);
+      const bottomPxVal = parseInt(bottomPx);
+      const leftPxVal = parseInt(leftPx);
+      
+      // Check for negative margins
+      const isNegativeTop = marginTopValue && marginTopValue.startsWith('-');
+      const isNegativeRight = marginRightValue && marginRightValue.startsWith('-');
+      const isNegativeBottom = marginBottomValue && marginBottomValue.startsWith('-');
+      const isNegativeLeft = marginLeftValue && marginLeftValue.startsWith('-');
+      
+      // TOP MARGIN
+      if (marginTopValue !== '0px') {
+        marginTop.style.display = showMarginArea.checked ? 'block' : 'none';
+        
+        // Position and size - extend full width to include left and right margins
+        marginTop.style.top = `${boxTop - topPxVal}px`;
+        marginTop.style.left = `${boxLeft - leftPxVal}px`;
+        marginTop.style.width = `${boxWidth + leftPxVal + rightPxVal}px`;
+        marginTop.style.height = `${Math.abs(topPxVal)}px`;
+        
+        if (isNegativeTop) {
+          marginTop.classList.add('negative-margin');
+        } else {
+          marginTop.classList.remove('negative-margin');
+        }
+      } else {
+        marginTop.style.display = 'none';
+      }
+      
+      // RIGHT MARGIN
+      if (marginRightValue !== '0px') {
+        marginRight.style.display = showMarginArea.checked ? 'block' : 'none';
+        
+        // Position and size - extend full height to include top and bottom margins
+        marginRight.style.top = `${boxTop - topPxVal}px`;
+        marginRight.style.left = `${boxLeft + boxWidth}px`;
+        marginRight.style.width = `${Math.abs(rightPxVal)}px`;
+        marginRight.style.height = `${boxHeight + topPxVal + bottomPxVal}px`;
+        
+        if (isNegativeRight) {
+          marginRight.classList.add('negative-margin');
+        } else {
+          marginRight.classList.remove('negative-margin');
+        }
+      } else {
+        marginRight.style.display = 'none';
+      }
+      
+      // BOTTOM MARGIN
+      if (marginBottomValue !== '0px') {
+        marginBottom.style.display = showMarginArea.checked ? 'block' : 'none';
+        
+        // Position and size - extend full width to include left and right margins
+        marginBottom.style.top = `${boxTop + boxHeight}px`;
+        marginBottom.style.left = `${boxLeft - leftPxVal}px`;
+        marginBottom.style.width = `${boxWidth + leftPxVal + rightPxVal}px`;
+        marginBottom.style.height = `${Math.abs(bottomPxVal)}px`;
+        
+        if (isNegativeBottom) {
+          marginBottom.classList.add('negative-margin');
+        } else {
+          marginBottom.classList.remove('negative-margin');
+        }
+      } else {
+        marginBottom.style.display = 'none';
+      }
+      
+      // LEFT MARGIN
+      if (marginLeftValue !== '0px') {
+        marginLeft.style.display = showMarginArea.checked ? 'block' : 'none';
+        
+        // Position and size - extend full height to include top and bottom margins
+        marginLeft.style.top = `${boxTop - topPxVal}px`;
+        marginLeft.style.left = `${boxLeft - leftPxVal}px`;
+        marginLeft.style.width = `${Math.abs(leftPxVal)}px`;
+        marginLeft.style.height = `${boxHeight + topPxVal + bottomPxVal}px`;
+        
+        if (isNegativeLeft) {
+          marginLeft.classList.add('negative-margin');
+        } else {
+          marginLeft.classList.remove('negative-margin');
+        }
+      } else {
+        marginLeft.style.display = 'none';
+      }
+      
+      // Update margin labels
+      labelTop.textContent = topPx;
+      labelRight.textContent = rightPx;
+      labelBottom.textContent = bottomPx;
+      labelLeft.textContent = leftPx;
+      
+      // Show/hide labels based on margin values and settings
+      labelTop.style.display = marginTopValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelRight.style.display = marginRightValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelBottom.style.display = marginBottomValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelLeft.style.display = marginLeftValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      
+      // For negative margins, adjust the label color
+      labelTop.style.color = isNegativeTop ? 'var(--nord11)' : 'var(--nord4)';
+      labelRight.style.color = isNegativeRight ? 'var(--nord11)' : 'var(--nord4)';
+      labelBottom.style.color = isNegativeBottom ? 'var(--nord11)' : 'var(--nord4)';
+      labelLeft.style.color = isNegativeLeft ? 'var(--nord11)' : 'var(--nord4)';
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className) {
+      let cssProps = '';
+      let cssValues = '';
+      
+      if (className.startsWith('m-') || className.startsWith('-m-')) {
+        cssProps = 'margin:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('mx-') || className.startsWith('-mx-')) {
+        cssProps = 'margin-left: ' + marginValues[className] + ';\nmargin-right:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('my-')) {
+        cssProps = 'margin-top: ' + marginValues[className] + ';\nmargin-bottom:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('mt-') || className.startsWith('-mt-')) {
+        cssProps = 'margin-top:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('mr-')) {
+        cssProps = 'margin-right:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('mb-')) {
+        cssProps = 'margin-bottom:';
+        cssValues = marginValues[className];
+      } else if (className.startsWith('ml-')) {
+        cssProps = 'margin-left:';
+        cssValues = marginValues[className];
+      }
+
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">${cssProps}</span> <span class="css-value">${cssValues}</span>;`;
+    }
+
+    // Initialize
+    createMarginVisualization();
+    setElementMargin('m-0');
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Reset margins when switching tabs
+        marginBox.style.margin = '0';
+        marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = '0px';
+        
+        // Select the first button of the category
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          const groupButtons = activeGroup.querySelectorAll('.value-button');
+          
+          // Reset all buttons
+          groupButtons.forEach(btn => btn.classList.remove('selected'));
+          
+          // Select first button and apply its margin
+          if (groupButtons.length > 0) {
+            groupButtons[0].classList.add('selected');
+            setElementMargin(groupButtons[0].dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons in the same group
+        const parentGroup = button.closest('.value-grid');
+        parentGroup.querySelectorAll('.value-button').forEach(btn => {
+          btn.classList.remove('selected');
+        });
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update element margin
+        setElementMargin(button.dataset.class);
+      });
+    });
+
+    // Event listeners for options
+    showContent.addEventListener('change', () => {
+      elementLabel.style.display = showContent.checked ? 'block' : 'none';
+    });
+
+    showMarginArea.addEventListener('change', () => {
+      updateMarginVisualization();
+    });
+
+    showMarginLabels.addEventListener('change', () => {
+      updateMarginVisualization();
+    });
+
+    // Update visualization on window resize or when the margins are changed
+    window.addEventListener('resize', updateMarginVisualization);
+    
+    // Update the visualization periodically to ensure it's correct
+    const observer = new MutationObserver(updateMarginVisualization);
+    observer.observe(marginBox, { attributes: true, attributeFilter: ['style'] });
+
+    // Set current date in footer
+    document.querySelector('.footer').innerHTML = `User: shanur00 | Current Time: 2025-07-25 12:03:50`;
+  </script>
+</body>
+</html>
