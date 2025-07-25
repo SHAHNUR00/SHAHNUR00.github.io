@@ -181,7 +181,7 @@
     /* Visualization container */
     .demo-container {
       position: relative;
-      height: 450px;
+      height: 500px;
       background-color: var(--nord2);
       border-radius: 8px;
       overflow: hidden;
@@ -209,8 +209,8 @@
     /* Box with margin */
     .margin-box {
       position: absolute;
-      width: 200px;
-      height: 200px;
+      width: 280px;
+      height: 280px;
       background-color: var(--nord10);
       border-radius: 4px;
       display: flex;
@@ -262,8 +262,8 @@
       position: absolute;
       background-color: var(--nord1);
       color: var(--nord4);
-      font-size: 11px;
-      padding: 2px 6px;
+      font-size: 12px;
+      padding: 3px 8px;
       border-radius: 3px;
       z-index: 20;
       white-space: nowrap;
@@ -276,7 +276,7 @@
     }
 
     .label-right {
-      right: -40px;
+      right: -45px;
       top: 50%;
       transform: translateY(-50%);
     }
@@ -288,7 +288,7 @@
     }
 
     .label-left {
-      left: -40px;
+      left: -45px;
       top: 50%;
       transform: translateY(-50%);
     }
@@ -353,6 +353,33 @@
       font-style: italic;
     }
 
+    /* Custom value input */
+    .custom-value-input {
+      display: flex;
+      gap: 10px;
+      margin-top: 10px;
+      align-items: center;
+    }
+
+    .custom-value-input input {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--nord2);
+      color: var(--nord4);
+    }
+
+    .custom-value-input button {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--nord8);
+      color: var(--nord0);
+      cursor: pointer;
+      font-weight: bold;
+    }
+
     /* Responsive adjustments */
     @media (max-width: 768px) {
       .main-content {
@@ -360,8 +387,8 @@
       }
       
       .margin-box {
-        width: 150px;
-        height: 150px;
+        width: 180px;
+        height: 180px;
       }
     }
   </style>
@@ -381,7 +408,8 @@
           <button class="tab-button active" data-category="all">All Sides</button>
           <button class="tab-button" data-category="axes">X/Y Axes</button>
           <button class="tab-button" data-category="sides">Individual Sides</button>
-          <button class="tab-button" data-category="negative">Negative</button>
+          <button class="tab-button" data-category="logical">Logical</button>
+          <button class="tab-button" data-category="special">Special</button>
         </div>
 
         <div class="value-selector">
@@ -399,9 +427,16 @@
               <button class="value-button" data-class="m-10">m-10</button>
               <button class="value-button" data-class="m-12">m-12</button>
               <button class="value-button" data-class="m-16">m-16</button>
-              <button class="value-button" data-class="m-20">m-20</button>
-              <button class="value-button" data-class="m-24">m-24</button>
-              <button class="value-button" data-class="m-32">m-32</button>
+              <button class="value-button" data-class="m-px">m-px</button>
+              <button class="value-button" data-class="-m-1">-m-1</button>
+              <button class="value-button" data-class="-m-2">-m-2</button>
+              <button class="value-button" data-class="-m-4">-m-4</button>
+              <button class="value-button" data-class="-m-px">-m-px</button>
+              <button class="value-button" data-class="m-auto">m-auto</button>
+            </div>
+            <div class="custom-value-input">
+              <input type="text" id="custom-m-value" placeholder="e.g., 15rem, 5vh, etc.">
+              <button id="apply-custom-m">Apply</button>
             </div>
           </div>
 
@@ -413,21 +448,35 @@
               <button class="value-button" data-class="mx-1">mx-1</button>
               <button class="value-button" data-class="mx-2">mx-2</button>
               <button class="value-button" data-class="mx-4">mx-4</button>
-              <button class="value-button" data-class="mx-6">mx-6</button>
               <button class="value-button" data-class="mx-8">mx-8</button>
-              <button class="value-button" data-class="mx-12">mx-12</button>
-              <button class="value-button" data-class="mx-16">mx-16</button>
+              <button class="value-button" data-class="mx-px">mx-px</button>
+              <button class="value-button" data-class="mx-auto">mx-auto</button>
+              <button class="value-button" data-class="-mx-1">-mx-1</button>
+              <button class="value-button" data-class="-mx-2">-mx-2</button>
+              <button class="value-button" data-class="-mx-4">-mx-4</button>
             </div>
+            <div class="custom-value-input">
+              <input type="text" id="custom-mx-value" placeholder="e.g., 15rem, 5vh, etc.">
+              <button id="apply-custom-mx">Apply</button>
+            </div>
+            
             <h3>Vertical (Y-axis) Margin</h3>
             <div class="value-grid">
               <button class="value-button" data-class="my-0">my-0</button>
               <button class="value-button" data-class="my-1">my-1</button>
               <button class="value-button" data-class="my-2">my-2</button>
               <button class="value-button" data-class="my-4">my-4</button>
-              <button class="value-button" data-class="my-6">my-6</button>
               <button class="value-button" data-class="my-8">my-8</button>
-              <button class="value-button" data-class="my-12">my-12</button>
-              <button class="value-button" data-class="my-16">my-16</button>
+              <button class="value-button" data-class="my-px">my-px</button>
+              <button class="value-button" data-class="my-auto">my-auto</button>
+              <button class="value-button" data-class="-my-1">-my-1</button>
+              <button class="value-button" data-class="-my-2">-my-2</button>
+              <button class="value-button" data-class="-my-4">-my-4</button>
+              <button class="value-button" data-class="-my-px">-my-px</button>
+            </div>
+            <div class="custom-value-input">
+              <input type="text" id="custom-my-value" placeholder="e.g., 15rem, 5vh, etc.">
+              <button id="apply-custom-my">Apply</button>
             </div>
           </div>
 
@@ -440,7 +489,11 @@
               <button class="value-button" data-class="mt-2">mt-2</button>
               <button class="value-button" data-class="mt-4">mt-4</button>
               <button class="value-button" data-class="mt-8">mt-8</button>
-              <button class="value-button" data-class="mt-12">mt-12</button>
+              <button class="value-button" data-class="mt-px">mt-px</button>
+              <button class="value-button" data-class="mt-auto">mt-auto</button>
+              <button class="value-button" data-class="-mt-1">-mt-1</button>
+              <button class="value-button" data-class="-mt-2">-mt-2</button>
+              <button class="value-button" data-class="-mt-px">-mt-px</button>
             </div>
             <h3>Margin Right</h3>
             <div class="value-grid">
@@ -449,7 +502,11 @@
               <button class="value-button" data-class="mr-2">mr-2</button>
               <button class="value-button" data-class="mr-4">mr-4</button>
               <button class="value-button" data-class="mr-8">mr-8</button>
-              <button class="value-button" data-class="mr-12">mr-12</button>
+              <button class="value-button" data-class="mr-px">mr-px</button>
+              <button class="value-button" data-class="mr-auto">mr-auto</button>
+              <button class="value-button" data-class="-mr-1">-mr-1</button>
+              <button class="value-button" data-class="-mr-2">-mr-2</button>
+              <button class="value-button" data-class="-mr-px">-mr-px</button>
             </div>
             <h3>Margin Bottom</h3>
             <div class="value-grid">
@@ -458,7 +515,11 @@
               <button class="value-button" data-class="mb-2">mb-2</button>
               <button class="value-button" data-class="mb-4">mb-4</button>
               <button class="value-button" data-class="mb-8">mb-8</button>
-              <button class="value-button" data-class="mb-12">mb-12</button>
+              <button class="value-button" data-class="mb-px">mb-px</button>
+              <button class="value-button" data-class="mb-auto">mb-auto</button>
+              <button class="value-button" data-class="-mb-1">-mb-1</button>
+              <button class="value-button" data-class="-mb-2">-mb-2</button>
+              <button class="value-button" data-class="-mb-px">-mb-px</button>
             </div>
             <h3>Margin Left</h3>
             <div class="value-grid">
@@ -467,32 +528,67 @@
               <button class="value-button" data-class="ml-2">ml-2</button>
               <button class="value-button" data-class="ml-4">ml-4</button>
               <button class="value-button" data-class="ml-8">ml-8</button>
-              <button class="value-button" data-class="ml-12">ml-12</button>
+              <button class="value-button" data-class="ml-px">ml-px</button>
+              <button class="value-button" data-class="ml-auto">ml-auto</button>
+              <button class="value-button" data-class="-ml-1">-ml-1</button>
+              <button class="value-button" data-class="-ml-2">-ml-2</button>
+              <button class="value-button" data-class="-ml-px">-ml-px</button>
             </div>
           </div>
 
-          <!-- Negative margin values -->
-          <div class="value-group" id="negative-values" style="display: none;">
-            <h3>Negative All Sides</h3>
+          <!-- Logical margin properties -->
+          <div class="value-group" id="logical-values" style="display: none;">
+            <h3>Margin Inline Start (ms)</h3>
             <div class="value-grid">
-              <button class="value-button" data-class="-m-1">-m-1</button>
-              <button class="value-button" data-class="-m-2">-m-2</button>
-              <button class="value-button" data-class="-m-4">-m-4</button>
-              <button class="value-button" data-class="-m-8">-m-8</button>
+              <button class="value-button" data-class="ms-0">ms-0</button>
+              <button class="value-button" data-class="ms-1">ms-1</button>
+              <button class="value-button" data-class="ms-2">ms-2</button>
+              <button class="value-button" data-class="ms-4">ms-4</button>
+              <button class="value-button" data-class="ms-8">ms-8</button>
+              <button class="value-button" data-class="ms-px">ms-px</button>
+              <button class="value-button" data-class="ms-auto">ms-auto</button>
+              <button class="value-button" data-class="-ms-1">-ms-1</button>
+              <button class="value-button" data-class="-ms-2">-ms-2</button>
+              <button class="value-button" data-class="-ms-px">-ms-px</button>
             </div>
-            <h3>Negative Top Margin</h3>
+            <div class="custom-value-input">
+              <input type="text" id="custom-ms-value" placeholder="e.g., 15rem, 5vh, etc.">
+              <button id="apply-custom-ms">Apply</button>
+            </div>
+            
+            <h3>Margin Inline End (me)</h3>
             <div class="value-grid">
-              <button class="value-button" data-class="-mt-1">-mt-1</button>
-              <button class="value-button" data-class="-mt-2">-mt-2</button>
-              <button class="value-button" data-class="-mt-4">-mt-4</button>
+              <button class="value-button" data-class="me-0">me-0</button>
+              <button class="value-button" data-class="me-1">me-1</button>
+              <button class="value-button" data-class="me-2">me-2</button>
+              <button class="value-button" data-class="me-4">me-4</button>
+              <button class="value-button" data-class="me-8">me-8</button>
+              <button class="value-button" data-class="me-px">me-px</button>
+              <button class="value-button" data-class="me-auto">me-auto</button>
+              <button class="value-button" data-class="-me-1">-me-1</button>
+              <button class="value-button" data-class="-me-2">-me-2</button>
+              <button class="value-button" data-class="-me-px">-me-px</button>
             </div>
-            <h3>Negative X-axis Margin</h3>
-            <div class="value-grid">
-              <button class="value-button" data-class="-mx-1">-mx-1</button>
-              <button class="value-button" data-class="-mx-2">-mx-2</button>
-              <button class="value-button" data-class="-mx-4">-mx-4</button>
+          </div>
+          
+          <!-- Special cases -->
+          <div class="value-group" id="special-values" style="display: none;">
+            <h3>Arbitrary Values</h3>
+            <p>Enter a custom value using Tailwind's arbitrary value syntax: m-[value]</p>
+            <div class="custom-value-input">
+              <input type="text" id="arbitrary-value" placeholder="e.g., 15rem, 5vh, calc(100% - 10px)">
+              <button id="apply-arbitrary">Apply</button>
             </div>
-            <div class="negative-margin-note">Note: Negative margins can cause elements to overlap with others.</div>
+            <div style="margin-top: 15px">
+              <p>Examples:</p>
+              <div class="value-grid" style="margin-top: 8px">
+                <button class="value-button" data-class="m-[10vh]">m-[10vh]</button>
+                <button class="value-button" data-class="mx-[2em]">mx-[2em]</button>
+                <button class="value-button" data-class="mt-[5%]">mt-[5%]</button>
+                <button class="value-button" data-class="m-[clamp(10px,5%,20px)]">m-[clamp(...)]</button>
+                <button class="value-button" data-class="m-[calc(100%-5px)]">m-[calc(...)]</button>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -534,7 +630,7 @@
     </div>
 
     <div class="footer">
-      User: shanur00 | Current Time: 2025-07-25 12:03:50
+      User: shanur00 | Current Time: 2025-07-25 14:31:02
     </div>
   </div>
 
@@ -556,6 +652,15 @@
       'm-20': '5rem',   // 80px
       'm-24': '6rem',   // 96px
       'm-32': '8rem',   // 128px
+      'm-px': '1px',    // pixel
+      'm-auto': 'auto', // auto
+      
+      // Negative margins
+      '-m-1': '-0.25rem',
+      '-m-2': '-0.5rem',
+      '-m-4': '-1rem',
+      '-m-8': '-2rem',
+      '-m-px': '-1px',
       
       // X-axis margin (left and right)
       'mx-0': '0px',
@@ -566,6 +671,11 @@
       'mx-8': '2rem',
       'mx-12': '3rem',
       'mx-16': '4rem',
+      'mx-px': '1px',
+      'mx-auto': 'auto',
+      '-mx-1': '-0.25rem',
+      '-mx-2': '-0.5rem',
+      '-mx-4': '-1rem',
       
       // Y-axis margin (top and bottom)
       'my-0': '0px',
@@ -576,6 +686,12 @@
       'my-8': '2rem',
       'my-12': '3rem',
       'my-16': '4rem',
+      'my-px': '1px',
+      'my-auto': 'auto',
+      '-my-1': '-0.25rem',
+      '-my-2': '-0.5rem',
+      '-my-4': '-1rem',
+      '-my-px': '-1px',
       
       // Individual sides margin
       'mt-0': '0px',
@@ -584,6 +700,12 @@
       'mt-4': '1rem',
       'mt-8': '2rem',
       'mt-12': '3rem',
+      'mt-px': '1px',
+      'mt-auto': 'auto',
+      '-mt-1': '-0.25rem',
+      '-mt-2': '-0.5rem',
+      '-mt-4': '-1rem',
+      '-mt-px': '-1px',
       
       'mr-0': '0px',
       'mr-1': '0.25rem',
@@ -591,6 +713,12 @@
       'mr-4': '1rem',
       'mr-8': '2rem',
       'mr-12': '3rem',
+      'mr-px': '1px',
+      'mr-auto': 'auto',
+      '-mr-1': '-0.25rem',
+      '-mr-2': '-0.5rem',
+      '-mr-4': '-1rem',
+      '-mr-px': '-1px',
       
       'mb-0': '0px',
       'mb-1': '0.25rem',
@@ -598,6 +726,12 @@
       'mb-4': '1rem',
       'mb-8': '2rem',
       'mb-12': '3rem',
+      'mb-px': '1px',
+      'mb-auto': 'auto',
+      '-mb-1': '-0.25rem',
+      '-mb-2': '-0.5rem',
+      '-mb-4': '-1rem',
+      '-mb-px': '-1px',
       
       'ml-0': '0px',
       'ml-1': '0.25rem',
@@ -605,25 +739,43 @@
       'ml-4': '1rem',
       'ml-8': '2rem',
       'ml-12': '3rem',
+      'ml-px': '1px',
+      'ml-auto': 'auto',
+      '-ml-1': '-0.25rem',
+      '-ml-2': '-0.5rem',
+      '-ml-4': '-1rem',
+      '-ml-px': '-1px',
       
-      // Negative margins
-      '-m-1': '-0.25rem',
-      '-m-2': '-0.5rem',
-      '-m-4': '-1rem',
-      '-m-8': '-2rem',
+      // Logical properties
+      'ms-0': '0px',
+      'ms-1': '0.25rem',
+      'ms-2': '0.5rem',
+      'ms-4': '1rem',
+      'ms-8': '2rem',
+      'ms-px': '1px',
+      'ms-auto': 'auto',
+      '-ms-1': '-0.25rem',
+      '-ms-2': '-0.5rem',
+      '-ms-px': '-1px',
       
-      '-mt-1': '-0.25rem',
-      '-mt-2': '-0.5rem',
-      '-mt-4': '-1rem',
-      
-      '-mx-1': '-0.25rem',
-      '-mx-2': '-0.5rem',
-      '-mx-4': '-1rem'
+      'me-0': '0px',
+      'me-1': '0.25rem',
+      'me-2': '0.5rem',
+      'me-4': '1rem',
+      'me-8': '2rem',
+      'me-px': '1px',
+      'me-auto': 'auto',
+      '-me-1': '-0.25rem',
+      '-me-2': '-0.5rem',
+      '-me-px': '-1px'
     };
 
     // Pixel equivalents for display purposes (1rem = 16px)
     const pixelEquivalents = {
       '0px': '0px',
+      'auto': 'auto',
+      '1px': '1px',
+      '-1px': '-1px',
       '0.25rem': '4px',
       '-0.25rem': '-4px',
       '0.5rem': '8px',
@@ -663,6 +815,18 @@
     const showContent = document.getElementById('show-content');
     const showMarginArea = document.getElementById('show-margin-area');
     const showMarginLabels = document.getElementById('show-margin-labels');
+
+    // Custom value inputs
+    const customMValue = document.getElementById('custom-m-value');
+    const applyCustomM = document.getElementById('apply-custom-m');
+    const customMxValue = document.getElementById('custom-mx-value');
+    const applyCustomMx = document.getElementById('apply-custom-mx');
+    const customMyValue = document.getElementById('custom-my-value');
+    const applyCustomMy = document.getElementById('apply-custom-my');
+    const customMsValue = document.getElementById('custom-ms-value');
+    const applyCustomMs = document.getElementById('apply-custom-ms');
+    const arbitraryValue = document.getElementById('arbitrary-value');
+    const applyArbitrary = document.getElementById('apply-arbitrary');
 
     // Initial state
     let currentClass = 'm-0';
@@ -731,81 +895,116 @@
       
       // Reset margin values
       marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = '0px';
-      
-      // Parse the class to determine which sides to apply margin to
-      if (className.startsWith('m-')) {
-        // All sides margin
-        const value = marginValues[className];
-        marginBox.style.margin = value;
+
+      // Handle arbitrary value syntax: m-[value]
+      if (className.includes('[') && className.includes(']')) {
+        const prefix = className.split('[')[0];
+        let value = className.substring(
+          className.indexOf('[') + 1,
+          className.lastIndexOf(']')
+        );
         
-        // Update margin visualization
-        marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
-      } else if (className.startsWith('mx-')) {
-        // X-axis margin (left and right)
-        const value = marginValues[className];
-        marginBox.style.marginLeft = value;
-        marginBox.style.marginRight = value;
-        
-        // Update margin visualization
-        marginLeftValue = marginRightValue = value;
-      } else if (className.startsWith('my-')) {
-        // Y-axis margin (top and bottom)
-        const value = marginValues[className];
-        marginBox.style.marginTop = value;
-        marginBox.style.marginBottom = value;
-        
-        // Update margin visualization
-        marginTopValue = marginBottomValue = value;
-      } else if (className.startsWith('mt-')) {
-        // Top margin
-        const value = marginValues[className];
-        marginBox.style.marginTop = value;
-        
-        // Update margin visualization
-        marginTopValue = value;
-      } else if (className.startsWith('mr-')) {
-        // Right margin
-        const value = marginValues[className];
-        marginBox.style.marginRight = value;
-        
-        // Update margin visualization
-        marginRightValue = value;
-      } else if (className.startsWith('mb-')) {
-        // Bottom margin
-        const value = marginValues[className];
-        marginBox.style.marginBottom = value;
-        
-        // Update margin visualization
-        marginBottomValue = value;
-      } else if (className.startsWith('ml-')) {
-        // Left margin
-        const value = marginValues[className];
-        marginBox.style.marginLeft = value;
-        
-        // Update margin visualization
-        marginLeftValue = value;
-      } else if (className.startsWith('-m-')) {
-        // Negative all sides margin
-        const value = marginValues[className];
-        marginBox.style.margin = value;
-        
-        // Update margin visualization
-        marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
-      } else if (className.startsWith('-mt-')) {
-        // Negative top margin
-        const value = marginValues[className];
-        marginBox.style.marginTop = value;
-        
-        // Update margin visualization
-        marginTopValue = value;
-      } else if (className.startsWith('-mx-')) {
-        // Negative X-axis margin
-        const value = marginValues[className];
-        marginBox.style.marginLeft = value;
-        marginBox.style.marginRight = value;
-        
-        // Update margin visualization
-        marginLeftValue = marginRightValue = value;
+        // Apply the arbitrary value based on prefix
+        if (prefix === 'm-') {
+          marginBox.style.margin = value;
+          marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
+        } else if (prefix === 'mx-') {
+          marginBox.style.marginLeft = value;
+          marginBox.style.marginRight = value;
+          marginLeftValue = marginRightValue = value;
+        } else if (prefix === 'my-') {
+          marginBox.style.marginTop = value;
+          marginBox.style.marginBottom = value;
+          marginTopValue = marginBottomValue = value;
+        } else if (prefix === 'mt-') {
+          marginBox.style.marginTop = value;
+          marginTopValue = value;
+        } else if (prefix === 'mr-') {
+          marginBox.style.marginRight = value;
+          marginRightValue = value;
+        } else if (prefix === 'mb-') {
+          marginBox.style.marginBottom = value;
+          marginBottomValue = value;
+        } else if (prefix === 'ml-') {
+          marginBox.style.marginLeft = value;
+          marginLeftValue = value;
+        } else if (prefix === 'ms-') {
+          marginBox.style.marginInlineStart = value;
+          marginLeftValue = value; // Assuming LTR for visualization
+        } else if (prefix === 'me-') {
+          marginBox.style.marginInlineEnd = value;
+          marginRightValue = value; // Assuming LTR for visualization
+        }
+      }
+      // Regular predefined classes
+      else if (marginValues[className]) {
+        // Parse the class to determine which sides to apply margin to
+        if (className.startsWith('m-') || className.startsWith('-m-')) {
+          // All sides margin
+          const value = marginValues[className];
+          marginBox.style.margin = value;
+          
+          // Update margin visualization
+          marginTopValue = marginRightValue = marginBottomValue = marginLeftValue = value;
+        } else if (className.startsWith('mx-') || className.startsWith('-mx-')) {
+          // X-axis margin (left and right)
+          const value = marginValues[className];
+          marginBox.style.marginLeft = value;
+          marginBox.style.marginRight = value;
+          
+          // Update margin visualization
+          marginLeftValue = marginRightValue = value;
+        } else if (className.startsWith('my-') || className.startsWith('-my-')) {
+          // Y-axis margin (top and bottom)
+          const value = marginValues[className];
+          marginBox.style.marginTop = value;
+          marginBox.style.marginBottom = value;
+          
+          // Update margin visualization
+          marginTopValue = marginBottomValue = value;
+        } else if (className.startsWith('mt-') || className.startsWith('-mt-')) {
+          // Top margin
+          const value = marginValues[className];
+          marginBox.style.marginTop = value;
+          
+          // Update margin visualization
+          marginTopValue = value;
+        } else if (className.startsWith('mr-') || className.startsWith('-mr-')) {
+          // Right margin
+          const value = marginValues[className];
+          marginBox.style.marginRight = value;
+          
+          // Update margin visualization
+          marginRightValue = value;
+        } else if (className.startsWith('mb-') || className.startsWith('-mb-')) {
+          // Bottom margin
+          const value = marginValues[className];
+          marginBox.style.marginBottom = value;
+          
+          // Update margin visualization
+          marginBottomValue = value;
+        } else if (className.startsWith('ml-') || className.startsWith('-ml-')) {
+          // Left margin
+          const value = marginValues[className];
+          marginBox.style.marginLeft = value;
+          
+          // Update margin visualization
+          marginLeftValue = value;
+        } else if (className.startsWith('ms-') || className.startsWith('-ms-')) {
+          // Margin inline start (left in LTR)
+          const value = marginValues[className];
+          marginBox.style.marginInlineStart = value;
+          
+          // Update margin visualization (assuming LTR for visualization)
+          marginLeftValue = value;
+        } else if (className.startsWith('me-') || className.startsWith('-me-')) {
+          // Margin inline end (right in LTR)
+          const value = marginValues[className];
+          marginBox.style.marginInlineEnd = value;
+          
+          // Update margin visualization (assuming LTR for visualization)
+          marginRightValue = value;
+        }
       }
       
       // Update the label
@@ -845,32 +1044,32 @@
       const boxWidth = boxRect.width;
       const boxHeight = boxRect.height;
       
-      // Get pixel values for margins
-      const topPx = pixelEquivalents[marginTopValue] || '0px';
-      const rightPx = pixelEquivalents[marginRightValue] || '0px';
-      const bottomPx = pixelEquivalents[marginBottomValue] || '0px';
-      const leftPx = pixelEquivalents[marginLeftValue] || '0px';
+      // Get actual pixel values for calculations
+      const topPxVal = marginTopValue === 'auto' ? 0 : (parseInt(marginTopValue) || 0);
+      const rightPxVal = marginRightValue === 'auto' ? 0 : (parseInt(marginRightValue) || 0);
+      const bottomPxVal = marginBottomValue === 'auto' ? 0 : (parseInt(marginBottomValue) || 0);
+      const leftPxVal = marginLeftValue === 'auto' ? 0 : (parseInt(marginLeftValue) || 0);
       
-      // Convert pixel values to numbers
-      const topPxVal = parseInt(topPx);
-      const rightPxVal = parseInt(rightPx);
-      const bottomPxVal = parseInt(bottomPx);
-      const leftPxVal = parseInt(leftPx);
+      // Check for special values
+      const isAutoTop = marginTopValue === 'auto';
+      const isAutoRight = marginRightValue === 'auto';
+      const isAutoBottom = marginBottomValue === 'auto';
+      const isAutoLeft = marginLeftValue === 'auto';
       
       // Check for negative margins
-      const isNegativeTop = marginTopValue && marginTopValue.startsWith('-');
-      const isNegativeRight = marginRightValue && marginRightValue.startsWith('-');
-      const isNegativeBottom = marginBottomValue && marginBottomValue.startsWith('-');
-      const isNegativeLeft = marginLeftValue && marginLeftValue.startsWith('-');
+      const isNegativeTop = typeof marginTopValue === 'string' && marginTopValue.startsWith('-');
+      const isNegativeRight = typeof marginRightValue === 'string' && marginRightValue.startsWith('-');
+      const isNegativeBottom = typeof marginBottomValue === 'string' && marginBottomValue.startsWith('-');
+      const isNegativeLeft = typeof marginLeftValue === 'string' && marginLeftValue.startsWith('-');
       
       // TOP MARGIN
-      if (marginTopValue !== '0px') {
+      if (marginTopValue !== '0px' && !isAutoTop) {
         marginTop.style.display = showMarginArea.checked ? 'block' : 'none';
         
         // Position and size - extend full width to include left and right margins
-        marginTop.style.top = `${boxTop - topPxVal}px`;
-        marginTop.style.left = `${boxLeft - leftPxVal}px`;
-        marginTop.style.width = `${boxWidth + leftPxVal + rightPxVal}px`;
+        marginTop.style.top = `${boxTop - Math.abs(topPxVal)}px`;
+        marginTop.style.left = `${boxLeft - (isNegativeLeft ? 0 : leftPxVal)}px`;
+        marginTop.style.width = `${boxWidth + (isNegativeLeft ? 0 : leftPxVal) + (isNegativeRight ? 0 : rightPxVal)}px`;
         marginTop.style.height = `${Math.abs(topPxVal)}px`;
         
         if (isNegativeTop) {
@@ -883,14 +1082,14 @@
       }
       
       // RIGHT MARGIN
-      if (marginRightValue !== '0px') {
+      if (marginRightValue !== '0px' && !isAutoRight) {
         marginRight.style.display = showMarginArea.checked ? 'block' : 'none';
         
         // Position and size - extend full height to include top and bottom margins
-        marginRight.style.top = `${boxTop - topPxVal}px`;
+        marginRight.style.top = `${boxTop - (isNegativeTop ? 0 : topPxVal)}px`;
         marginRight.style.left = `${boxLeft + boxWidth}px`;
         marginRight.style.width = `${Math.abs(rightPxVal)}px`;
-        marginRight.style.height = `${boxHeight + topPxVal + bottomPxVal}px`;
+        marginRight.style.height = `${boxHeight + (isNegativeTop ? 0 : topPxVal) + (isNegativeBottom ? 0 : bottomPxVal)}px`;
         
         if (isNegativeRight) {
           marginRight.classList.add('negative-margin');
@@ -902,13 +1101,13 @@
       }
       
       // BOTTOM MARGIN
-      if (marginBottomValue !== '0px') {
+      if (marginBottomValue !== '0px' && !isAutoBottom) {
         marginBottom.style.display = showMarginArea.checked ? 'block' : 'none';
         
         // Position and size - extend full width to include left and right margins
         marginBottom.style.top = `${boxTop + boxHeight}px`;
-        marginBottom.style.left = `${boxLeft - leftPxVal}px`;
-        marginBottom.style.width = `${boxWidth + leftPxVal + rightPxVal}px`;
+        marginBottom.style.left = `${boxLeft - (isNegativeLeft ? 0 : leftPxVal)}px`;
+        marginBottom.style.width = `${boxWidth + (isNegativeLeft ? 0 : leftPxVal) + (isNegativeRight ? 0 : rightPxVal)}px`;
         marginBottom.style.height = `${Math.abs(bottomPxVal)}px`;
         
         if (isNegativeBottom) {
@@ -921,14 +1120,14 @@
       }
       
       // LEFT MARGIN
-      if (marginLeftValue !== '0px') {
+      if (marginLeftValue !== '0px' && !isAutoLeft) {
         marginLeft.style.display = showMarginArea.checked ? 'block' : 'none';
         
         // Position and size - extend full height to include top and bottom margins
-        marginLeft.style.top = `${boxTop - topPxVal}px`;
-        marginLeft.style.left = `${boxLeft - leftPxVal}px`;
+        marginLeft.style.top = `${boxTop - (isNegativeTop ? 0 : topPxVal)}px`;
+        marginLeft.style.left = `${boxLeft - Math.abs(leftPxVal)}px`;
         marginLeft.style.width = `${Math.abs(leftPxVal)}px`;
-        marginLeft.style.height = `${boxHeight + topPxVal + bottomPxVal}px`;
+        marginLeft.style.height = `${boxHeight + (isNegativeTop ? 0 : topPxVal) + (isNegativeBottom ? 0 : bottomPxVal)}px`;
         
         if (isNegativeLeft) {
           marginLeft.classList.add('negative-margin');
@@ -939,17 +1138,17 @@
         marginLeft.style.display = 'none';
       }
       
-      // Update margin labels
-      labelTop.textContent = topPx;
-      labelRight.textContent = rightPx;
-      labelBottom.textContent = bottomPx;
-      labelLeft.textContent = leftPx;
+      // Update margin labels with the correct pixel equivalents
+      labelTop.textContent = isAutoTop ? 'auto' : (marginTopValue === '0px' ? '0px' : pixelEquivalents[marginTopValue] || marginTopValue);
+      labelRight.textContent = isAutoRight ? 'auto' : (marginRightValue === '0px' ? '0px' : pixelEquivalents[marginRightValue] || marginRightValue);
+      labelBottom.textContent = isAutoBottom ? 'auto' : (marginBottomValue === '0px' ? '0px' : pixelEquivalents[marginBottomValue] || marginBottomValue);
+      labelLeft.textContent = isAutoLeft ? 'auto' : (marginLeftValue === '0px' ? '0px' : pixelEquivalents[marginLeftValue] || marginLeftValue);
       
       // Show/hide labels based on margin values and settings
-      labelTop.style.display = marginTopValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
-      labelRight.style.display = marginRightValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
-      labelBottom.style.display = marginBottomValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
-      labelLeft.style.display = marginLeftValue === '0px' ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelTop.style.display = (marginTopValue === '0px' || marginTopValue === 0) ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelRight.style.display = (marginRightValue === '0px' || marginRightValue === 0) ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelBottom.style.display = (marginBottomValue === '0px' || marginBottomValue === 0) ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
+      labelLeft.style.display = (marginLeftValue === '0px' || marginLeftValue === 0) ? 'none' : (showMarginLabels.checked ? 'block' : 'none');
       
       // For negative margins, adjust the label color
       labelTop.style.color = isNegativeTop ? 'var(--nord11)' : 'var(--nord4)';
@@ -963,27 +1162,73 @@
       let cssProps = '';
       let cssValues = '';
       
-      if (className.startsWith('m-') || className.startsWith('-m-')) {
-        cssProps = 'margin:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('mx-') || className.startsWith('-mx-')) {
-        cssProps = 'margin-left: ' + marginValues[className] + ';\nmargin-right:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('my-')) {
-        cssProps = 'margin-top: ' + marginValues[className] + ';\nmargin-bottom:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('mt-') || className.startsWith('-mt-')) {
-        cssProps = 'margin-top:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('mr-')) {
-        cssProps = 'margin-right:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('mb-')) {
-        cssProps = 'margin-bottom:';
-        cssValues = marginValues[className];
-      } else if (className.startsWith('ml-')) {
-        cssProps = 'margin-left:';
-        cssValues = marginValues[className];
+      // Handle arbitrary value classes
+      if (className.includes('[') && className.includes(']')) {
+        const prefix = className.split('[')[0];
+        let value = className.substring(
+          className.indexOf('[') + 1,
+          className.lastIndexOf(']')
+        );
+        
+        if (prefix === 'm-') {
+          cssProps = 'margin:';
+          cssValues = value;
+        } else if (prefix === 'mx-') {
+          cssProps = 'margin-left: ' + value + ';\nmargin-right:';
+          cssValues = value;
+        } else if (prefix === 'my-') {
+          cssProps = 'margin-top: ' + value + ';\nmargin-bottom:';
+          cssValues = value;
+        } else if (prefix === 'mt-') {
+          cssProps = 'margin-top:';
+          cssValues = value;
+        } else if (prefix === 'mr-') {
+          cssProps = 'margin-right:';
+          cssValues = value;
+        } else if (prefix === 'mb-') {
+          cssProps = 'margin-bottom:';
+          cssValues = value;
+        } else if (prefix === 'ml-') {
+          cssProps = 'margin-left:';
+          cssValues = value;
+        } else if (prefix === 'ms-') {
+          cssProps = 'margin-inline-start:';
+          cssValues = value;
+        } else if (prefix === 'me-') {
+          cssProps = 'margin-inline-end:';
+          cssValues = value;
+        }
+      }
+      // Regular predefined classes
+      else {
+        if (className.startsWith('m-') || className.startsWith('-m-')) {
+          cssProps = 'margin:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('mx-') || className.startsWith('-mx-')) {
+          cssProps = 'margin-inline:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('my-') || className.startsWith('-my-')) {
+          cssProps = 'margin-block:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('mt-') || className.startsWith('-mt-')) {
+          cssProps = 'margin-top:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('mr-') || className.startsWith('-mr-')) {
+          cssProps = 'margin-right:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('mb-') || className.startsWith('-mb-')) {
+          cssProps = 'margin-bottom:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('ml-') || className.startsWith('-ml-')) {
+          cssProps = 'margin-left:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('ms-') || className.startsWith('-ms-')) {
+          cssProps = 'margin-inline-start:';
+          cssValues = marginValues[className];
+        } else if (className.startsWith('me-') || className.startsWith('-me-')) {
+          cssProps = 'margin-inline-end:';
+          cssValues = marginValues[className];
+        }
       }
 
       codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
@@ -1052,6 +1297,42 @@
       });
     });
 
+    // Event listeners for custom value inputs
+    applyCustomM.addEventListener('click', () => {
+      const value = customMValue.value.trim();
+      if (value) {
+        setElementMargin(`m-[${value}]`);
+      }
+    });
+    
+    applyCustomMx.addEventListener('click', () => {
+      const value = customMxValue.value.trim();
+      if (value) {
+        setElementMargin(`mx-[${value}]`);
+      }
+    });
+    
+    applyCustomMy.addEventListener('click', () => {
+      const value = customMyValue.value.trim();
+      if (value) {
+        setElementMargin(`my-[${value}]`);
+      }
+    });
+    
+    applyCustomMs.addEventListener('click', () => {
+      const value = customMsValue.value.trim();
+      if (value) {
+        setElementMargin(`ms-[${value}]`);
+      }
+    });
+    
+    applyArbitrary.addEventListener('click', () => {
+      const value = arbitraryValue.value.trim();
+      if (value) {
+        setElementMargin(`m-[${value}]`);
+      }
+    });
+
     // Event listeners for options
     showContent.addEventListener('change', () => {
       elementLabel.style.display = showContent.checked ? 'block' : 'none';
@@ -1073,7 +1354,7 @@
     observer.observe(marginBox, { attributes: true, attributeFilter: ['style'] });
 
     // Set current date in footer
-    document.querySelector('.footer').innerHTML = `User: shanur00 | Current Time: 2025-07-25 12:03:50`;
+    document.querySelector('.footer').innerHTML = `User: shanur00 | Current Time: 2025-07-25 14:31:02`;
   </script>
 </body>
 </html>
