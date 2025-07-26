@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind CSS Text Align Visualization</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Dark background */
+            --nord1: #3B4252;  /* Darker gray */
+            --nord2: #434C5E;  /* Dark gray */
+            --nord3: #4C566A;  /* Gray */
+            --nord4: #D8DEE9;  /* Light gray */
+            --nord5: #E5E9F0;  /* Lighter gray */
+            --nord6: #ECEFF4;  /* Almost white */
+            --nord7: #8FBCBB;  /* Teal */
+            --nord8: #88C0D0;  /* Light blue */
+            --nord9: #81A1C1;  /* Blue */
+            --nord10: #5E81AC; /* Dark blue */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Graph paper grid */
+        .graph-paper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord1) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord1) 1px, transparent 1px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background-color: var(--nord2);
+        }
+
+        .btn.active {
+            background-color: var(--nord10);
+            color: var(--nord6);
+        }
+
+        .visualization {
+            background-color: var(--nord1);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .text-align-display {
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .text-align-display:last-child {
+            margin-bottom: 0;
+        }
+
+        .align-name {
+            color: var(--nord9);
+            font-family: monospace;
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .align-example-container {
+            position: relative;
+            background-color: var(--nord2);
+            border-radius: 0.375rem;
+            overflow: hidden;
+        }
+
+        .align-example {
+            color: var(--nord4);
+            padding: 1.5rem;
+            border-radius: 0.25rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .align-indicator {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background-color: var(--nord14);
+            z-index: 1;
+        }
+
+        .align-indicator.left {
+            left: 0;
+        }
+
+        .align-indicator.center {
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .align-indicator.right {
+            right: 0;
+        }
+
+        .align-indicator.justify-start {
+            left: 0;
+            width: 3px;
+        }
+
+        .align-indicator.justify-end {
+            right: 0;
+            width: 3px;
+        }
+
+        .align-indicator.justify {
+            left: 0;
+            right: 0;
+            width: auto;
+            height: 3px;
+            top: auto;
+            bottom: 0;
+        }
+
+        .code-block {
+            background-color: var(--nord0);
+            border-radius: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            font-family: monospace;
+            color: var(--nord8);
+        }
+
+        .text-sample {
+            margin-bottom: 0.75rem;
+        }
+
+        .text-sample:last-child {
+            margin-bottom: 0;
+        }
+
+        .text-left {
+            text-align: left;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .text-justify {
+            text-align: justify;
+        }
+
+        .text-start {
+            text-align: start;
+        }
+
+        .text-end {
+            text-align: end;
+        }
+
+        .breakpoint-controls {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .breakpoint-controls.active {
+            display: flex;
+        }
+
+        .rtl-controls {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .rtl-controls.active {
+            display: flex;
+        }
+
+        .variant-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .info-card {
+            background-color: var(--nord2);
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-card h3 {
+            color: var(--nord8);
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card p {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .info-card ul {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .info-card li {
+            margin-bottom: 0.25rem;
+        }
+
+        .info-card code {
+            background-color: var(--nord0);
+            padding: 0.125rem 0.25rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+            color: var(--nord8);
+        }
+
+        .direction-indicator {
+            font-size: 0.875rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            background-color: var(--nord0);
+            color: var(--nord13);
+            margin-left: 1rem;
+        }
+
+        /* RTL specific */
+        .rtl-mode .align-example {
+            direction: rtl;
+            unicode-bidi: bidi-override;
+        }
+
+        /* Responsive breakpoint visualization */
+        .responsive-text {
+            padding: 1rem;
+            border: 1px solid var(--nord3);
+            border-radius: 0.25rem;
+            margin-top: 1rem;
+            position: relative;
+        }
+
+        .responsive-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background-color: var(--nord10);
+            color: var(--nord6);
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+            border-radius: 0 0.25rem 0 0.25rem;
+        }
+
+        .device-icon {
+            width: 1.5rem;
+            height: 1.5rem;
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 0.5rem;
+            background-color: var(--nord4);
+            mask-size: contain;
+            mask-repeat: no-repeat;
+            mask-position: center;
+            -webkit-mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+        }
+
+        .device-icon.mobile {
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M17 1.01L7 1c-1.1 0-2 .9-2 2v18c0 1.1.9 2 2 2h10c1.1 0 2-.9 2-2V3c0-1.1-.9-1.99-2-1.99zM17 19H7V5h10v14z'/%3E%3C/svg%3E");
+        }
+
+        .device-icon.tablet {
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H3V6h18v12z'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 4H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H3V6h18v12z'/%3E%3C/svg%3E");
+        }
+
+        .device-icon.desktop {
+            mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z'/%3E%3C/svg%3E");
+            -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M21 2H3c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h7v2H8v2h8v-2h-2v-2h7c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H3V4h18v12z'/%3E%3C/svg%3E");
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="graph-paper"></div>
+        <h1>Tailwind CSS Text Align Visualization</h1>
+        
+        <div class="controls">
+            <button class="btn variant-btn active" data-variant="basic">Basic Alignment</button>
+            <button class="btn variant-btn" data-variant="directional">Directional Alignment</button>
+            <button class="btn variant-btn" data-variant="responsive">Responsive Alignment</button>
+        </div>
+        
+        <div class="variant-container basic-container">
+            <div class="visualization">
+                <!-- Text Left -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-left</span> (Default)</span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator left"></div>
+                        <div class="align-example text-left">
+                            <p class="text-sample">This text is aligned to the left. Left alignment is the default text alignment in most Western languages. It creates a straight edge on the left side while leaving the right side ragged.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Center -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-center</span></span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator center"></div>
+                        <div class="align-example text-center">
+                            <p class="text-sample">This text is centered. Center alignment creates equal ragged edges on both sides. It's often used for headings, quotes, and other elements that need to stand out or be visually balanced.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Right -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-right</span></span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator right"></div>
+                        <div class="align-example text-right">
+                            <p class="text-sample">This text is aligned to the right. Right alignment creates a straight edge on the right side while leaving the left side ragged. It's sometimes used in right-to-left languages by default.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text Justify -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-justify</span></span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator justify"></div>
+                        <div class="align-example text-justify">
+                            <p class="text-sample">This text is justified. Justified text creates straight edges on both the left and right sides. It adjusts the spacing between words to ensure the text fills the entire width. This is commonly used in print media like newspapers and books.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla, ut commodo diam libero vitae erat. Aenean faucibus nibh et justo cursus id rutrum lorem imperdiet. Nunc ut sem vitae risus tristique posuere.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="variant-container directional-container" style="display: none;">
+            <div class="controls rtl-controls active">
+                <button class="btn direction-btn active" data-direction="ltr">LTR (Left-to-Right)</button>
+                <button class="btn direction-btn" data-direction="rtl">RTL (Right-to-Left)</button>
+            </div>
+            
+            <div class="visualization">
+                <!-- Text Start -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-start</span></span>
+                        <span class="direction-indicator">Direction: LTR</span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator justify-start"></div>
+                        <div class="align-example text-start">
+                            <p class="text-sample">This text is aligned to the start. In LTR (left-to-right) languages like English, "start" means the left side. In RTL (right-to-left) languages like Arabic or Hebrew, "start" means the right side.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Text End -->
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span><span class="code-block">text-end</span></span>
+                        <span class="direction-indicator">Direction: LTR</span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator justify-end"></div>
+                        <div class="align-example text-end">
+                            <p class="text-sample">This text is aligned to the end. In LTR (left-to-right) languages like English, "end" means the right side. In RTL (right-to-left) languages like Arabic or Hebrew, "end" means the left side.</p>
+                            <p class="text-sample">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Suspendisse varius enim in eros elementum tristique. Duis cursus, mi quis viverra ornare, eros dolor interdum nulla.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="variant-container responsive-container" style="display: none;">
+            <div class="controls breakpoint-controls active">
+                <button class="btn breakpoint-btn active" data-breakpoint="sm">
+                    <span class="device-icon mobile"></span>Small (sm)
+                </button>
+                <button class="btn breakpoint-btn" data-breakpoint="md">
+                    <span class="device-icon tablet"></span>Medium (md)
+                </button>
+                <button class="btn breakpoint-btn" data-breakpoint="lg">
+                    <span class="device-icon desktop"></span>Large (lg)
+                </button>
+            </div>
+            
+            <div class="visualization">
+                <div class="text-align-display">
+                    <div class="align-name">
+                        <span>Responsive Text Alignment</span>
+                    </div>
+                    <div class="align-example-container">
+                        <div class="align-indicator left"></div>
+                        <div class="align-example">
+                            <p class="text-sample">Tailwind allows you to apply different text alignments at different screen sizes using responsive prefixes. For example: <span class="code-block">sm:text-left md:text-center lg:text-right</span></p>
+                            
+                            <div class="responsive-text" id="responsive-demo">
+                                <div class="responsive-indicator">sm (640px+)</div>
+                                <p>This text changes alignment based on screen size. On small screens (sm), it's left-aligned. On medium screens (md), it's center-aligned. On large screens (lg), it's right-aligned.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <h3>About Tailwind CSS Text Alignment</h3>
+            <p>Tailwind CSS provides several utilities for controlling text alignment:</p>
+            <ul>
+                <li><code>text-left</code>: Aligns text to the left (default)</li>
+                <li><code>text-center</code>: Centers text</li>
+                <li><code>text-right</code>: Aligns text to the right</li>
+                <li><code>text-justify</code>: Justifies text (creates straight edges on both sides)</li>
+                <li><code>text-start</code>: Aligns text to the logical start (depends on text direction)</li>
+                <li><code>text-end</code>: Aligns text to the logical end (depends on text direction)</li>
+            </ul>
+            <p>These utilities can be combined with responsive prefixes (<code>sm:</code>, <code>md:</code>, <code>lg:</code>, etc.) to apply different alignments at different screen sizes.</p>
+        </div>
+
+        <footer>
+            <p>Created by shanur00 on 2025-07-26</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variant toggle
+            const variantBtns = document.querySelectorAll('.variant-btn');
+            const variantContainers = document.querySelectorAll('.variant-container');
+            
+            variantBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    variantBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected variant container
+                    const variant = this.dataset.variant;
+                    variantContainers.forEach(container => {
+                        container.style.display = container.classList.contains(variant + '-container') ? 'block' : 'none';
+                    });
+                    
+                    // Show/hide specific controls
+                    document.querySelector('.rtl-controls').classList.toggle('active', variant === 'directional');
+                    document.querySelector('.breakpoint-controls').classList.toggle('active', variant === 'responsive');
+                });
+            });
+            
+            // Direction toggle (LTR/RTL)
+            const directionBtns = document.querySelectorAll('.direction-btn');
+            directionBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    directionBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const direction = this.dataset.direction;
+                    document.querySelectorAll('.direction-indicator').forEach(indicator => {
+                        indicator.textContent = `Direction: ${direction.toUpperCase()}`;
+                    });
+                    
+                    document.querySelectorAll('.align-example').forEach(example => {
+                        if (direction === 'rtl') {
+                            example.classList.add('rtl-mode');
+                        } else {
+                            example.classList.remove('rtl-mode');
+                        }
+                    });
+                    
+                    // Toggle RTL mode
+                    if (direction === 'rtl') {
+                        document.querySelectorAll('.align-example').forEach(el => {
+                            el.style.direction = 'rtl';
+                            el.style.unicodeBidi = 'bidi-override';
+                        });
+                    } else {
+                        document.querySelectorAll('.align-example').forEach(el => {
+                            el.style.direction = '';
+                            el.style.unicodeBidi = '';
+                        });
+                    }
+                });
+            });
+            
+            // Breakpoint toggle
+            const breakpointBtns = document.querySelectorAll('.breakpoint-btn');
+            const responsiveDemo = document.getElementById('responsive-demo');
+            
+            breakpointBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    breakpointBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const breakpoint = this.dataset.breakpoint;
+                    const indicator = responsiveDemo.querySelector('.responsive-indicator');
+                    
+                    // Update the responsive text alignment
+                    responsiveDemo.style.textAlign = breakpoint === 'sm' ? 'left' : breakpoint === 'md' ? 'center' : 'right';
+                    
+                    // Update the indicator
+                    if (breakpoint === 'sm') {
+                        indicator.textContent = 'sm (640px+)';
+                    } else if (breakpoint === 'md') {
+                        indicator.textContent = 'md (768px+)';
+                    } else if (breakpoint === 'lg') {
+                        indicator.textContent = 'lg (1024px+)';
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
