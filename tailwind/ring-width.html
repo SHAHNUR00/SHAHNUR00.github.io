@@ -365,6 +365,33 @@
         flex-direction: column;
       }
     }
+    
+    /* Transparent color pattern */
+    .transparent-pattern {
+      background-image: linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                        linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+                        linear-gradient(45deg, transparent 75%, #ccc 75%), 
+                        linear-gradient(-45deg, transparent 75%, #ccc 75%);
+      background-size: 10px 10px;
+      background-position: 0 0, 0 5px, 5px -5px, -5px 0px;
+    }
+    
+    /* Offset color button styles */
+    .offset-color-button {
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+    
+    .offset-color-button:hover {
+      transform: scale(1.05);
+    }
+    
+    .offset-color-button.selected {
+      box-shadow: 0 0 0 2px var(--nord0), 0 0 0 4px var(--nord7);
+    }
   </style>
 </head>
 <body>
@@ -381,6 +408,7 @@
         <div class="tabs">
           <button class="tab-button active" data-category="width">Width</button>
           <button class="tab-button" data-category="special">Special</button>
+          <button class="tab-button" data-category="offset">Offset</button>
         </div>
 
         <div class="value-selector">
@@ -407,6 +435,17 @@
               <button class="value-button" data-class="ring-8 ring-inset">ring-8 inset</button>
             </div>
           </div>
+
+          <!-- Ring offset values -->
+          <div class="value-group" id="offset-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="ring-offset-0">offset-0</button>
+              <button class="value-button" data-class="ring-offset-1">offset-1</button>
+              <button class="value-button" data-class="ring-offset-2">offset-2</button>
+              <button class="value-button" data-class="ring-offset-4">offset-4</button>
+              <button class="value-button" data-class="ring-offset-8">offset-8</button>
+            </div>
+          </div>
         </div>
 
         <div class="color-selector">
@@ -420,6 +459,21 @@
             <button class="color-button" style="background-color: #EC4899;" data-color="#EC4899" title="Pink"></button>
             <button class="color-button" style="background-color: #6B7280;" data-color="#6B7280" title="Gray"></button>
             <button class="color-button" style="background-color: #000000;" data-color="#000000" title="Black"></button>
+          </div>
+        </div>
+
+        <!-- Ring Offset Color Selector -->
+        <div class="color-selector" id="offset-color-selector">
+          <h2>Ring Offset Color</h2>
+          <div class="color-grid">
+            <button class="offset-color-button transparent-pattern selected" data-color="transparent" title="Transparent (default)"></button>
+            <button class="offset-color-button" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="White"></button>
+            <button class="offset-color-button" style="background-color: #F3F4F6;" data-color="#F3F4F6" title="Gray-100"></button>
+            <button class="offset-color-button" style="background-color: #E5E7EB;" data-color="#E5E7EB" title="Gray-200"></button>
+            <button class="offset-color-button" style="background-color: #D1D5DB;" data-color="#D1D5DB" title="Gray-300"></button>
+            <button class="offset-color-button" style="background-color: #1F2937;" data-color="#1F2937" title="Gray-800"></button>
+            <button class="offset-color-button" style="background-color: #111827;" data-color="#111827" title="Gray-900"></button>
+            <button class="offset-color-button" style="background-color: #000000;" data-color="#000000" title="Black"></button>
           </div>
         </div>
 
@@ -487,6 +541,15 @@
       'ring-8 ring-inset': '8px'
     };
 
+    // Ring offset width mappings
+    const ringOffsetValues = {
+      'ring-offset-0': '0px',
+      'ring-offset-1': '1px',
+      'ring-offset-2': '2px',
+      'ring-offset-4': '4px',
+      'ring-offset-8': '8px'
+    };
+
     // DOM elements
     const demoElement = document.getElementById('demo-element');
     const elementLabel = document.getElementById('element-label');
@@ -495,6 +558,7 @@
     const valueGroups = document.querySelectorAll('.value-group');
     const valueButtons = document.querySelectorAll('.value-button');
     const colorButtons = document.querySelectorAll('.color-button');
+    const offsetColorButtons = document.querySelectorAll('.offset-color-button');
     const showContent = document.getElementById('show-content');
     const elementWidth = document.getElementById('element-width');
     const elementHeight = document.getElementById('element-height');
@@ -504,6 +568,8 @@
     // Initial state
     let currentClass = 'ring-0';
     let currentColor = '#3B82F6'; // Default blue color
+    let currentOffsetClass = '';
+    let currentOffsetColor = 'transparent'; // Default transparent color
     let isInset = false;
 
     // Set the element ring based on selected class and color
@@ -511,44 +577,102 @@
       currentClass = className;
       isInset = className.includes('inset');
       
+      updateRingDisplay();
+    }
+
+    // Set the ring offset based on selected class and color
+    function setElementRingOffset(className) {
+      currentOffsetClass = className;
+      
+      updateRingDisplay();
+    }
+
+    // Update the ring display with current settings
+    function updateRingDisplay() {
       // Get the ring width value
-      const ringWidth = ringWidthValues[className];
+      const ringWidth = ringWidthValues[currentClass] || '0px';
+      
+      // Get the offset width value if any
+      const offsetWidth = currentOffsetClass ? ringOffsetValues[currentOffsetClass] || '0px' : '0px';
       
       // Create the box-shadow CSS
       let boxShadow = '';
-      if (className === 'ring-0') {
+      
+      if (currentClass === 'ring-0' && !currentOffsetClass) {
         boxShadow = 'none';
       } else {
-        const insetValue = isInset ? 'inset' : '';
-        boxShadow = `${insetValue} 0 0 0 ${ringWidth} ${currentColor}`;
+        // First add the offset if any
+        if (currentOffsetClass && offsetWidth !== '0px') {
+          boxShadow = `0 0 0 ${offsetWidth} ${currentOffsetColor}`;
+        }
+        
+        // Then add the ring if any
+        if (currentClass !== 'ring-0' && ringWidth !== '0px') {
+          const insetValue = isInset ? 'inset' : '';
+          if (boxShadow) {
+            boxShadow += `, ${insetValue} 0 0 0 calc(${ringWidth} + ${offsetWidth}) ${currentColor}`;
+          } else {
+            boxShadow = `${insetValue} 0 0 0 ${ringWidth} ${currentColor}`;
+          }
+        }
+        
+        if (!boxShadow) {
+          boxShadow = 'none';
+        }
       }
       
       // Apply the box shadow to the element
       demoElement.style.boxShadow = boxShadow;
       
       // Update the label
-      elementLabel.textContent = className;
+      let labelText = currentClass;
+      if (currentOffsetClass) {
+        labelText += ' ' + currentOffsetClass;
+      }
+      elementLabel.textContent = labelText;
 
       // Update code display
-      updateCodeDisplay(className, ringWidth, isInset);
+      updateCodeDisplay(currentClass, ringWidth, isInset, currentOffsetClass, offsetWidth);
     }
 
     // Update the code display
-    function updateCodeDisplay(className, ringWidth, isInset) {
+    function updateCodeDisplay(className, ringWidth, isInset, offsetClass, offsetWidth) {
       const insetVar = isInset ? 'inset' : '';
       let cssValue;
+      let tailwindClass = className;
       
-      if (className === 'ring-0') {
+      if (offsetClass) {
+        tailwindClass += ' ' + offsetClass;
+      }
+      
+      if (className === 'ring-0' && !offsetClass) {
         cssValue = 'var(--tw-ring-inset) 0 0 0 calc(0px + var(--tw-ring-offset-width)) var(--tw-ring-color)';
       } else {
-        cssValue = `${insetVar} 0 0 0 ${ringWidth} ${currentColor}`;
+        if (offsetClass && offsetWidth !== '0px') {
+          if (className !== 'ring-0' && ringWidth !== '0px') {
+            cssValue = `0 0 0 ${offsetWidth} ${currentOffsetColor}, ${insetVar} 0 0 0 calc(${ringWidth} + ${offsetWidth}) ${currentColor}`;
+          } else {
+            cssValue = `0 0 0 ${offsetWidth} ${currentOffsetColor}`;
+          }
+        } else {
+          cssValue = `${insetVar} 0 0 0 ${ringWidth} ${currentColor}`;
+        }
       }
 
-      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
-<span class="utility">${className}</span>
+      let codeHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${tailwindClass}</span>
 
 <span class="comment">/* Generated CSS */</span>
 <span class="css-prop">box-shadow:</span> <span class="css-value">${cssValue}</span>;`;
+
+      // Add ring-offset-color if offset is applied
+      if (offsetClass && offsetWidth !== '0px' && currentOffsetColor !== 'transparent') {
+        const colorHex = currentOffsetColor.toUpperCase();
+        codeHTML += `
+<span class="css-prop">--tw-ring-offset-color:</span> <span class="css-value">${colorHex}</span>;`;
+      }
+
+      codeDisplay.innerHTML = codeHTML;
     }
 
     // Initialize
@@ -583,6 +707,13 @@
           }
         });
         
+        // Show/hide offset color selector
+        if (category === 'offset') {
+          document.getElementById('offset-color-selector').style.display = 'block';
+        } else {
+          document.getElementById('offset-color-selector').style.display = 'none';
+        }
+        
         // Select the first button of the category if none is selected
         const activeGroup = document.getElementById(`${category}-values`);
         if (activeGroup) {
@@ -591,13 +722,21 @@
           groupButtons.forEach(btn => {
             if (btn.classList.contains('selected')) {
               hasSelected = true;
-              setElementRing(btn.dataset.class);
+              if (category === 'offset') {
+                setElementRingOffset(btn.dataset.class);
+              } else {
+                setElementRing(btn.dataset.class);
+              }
             }
           });
           
           if (!hasSelected && groupButtons.length > 0) {
             groupButtons[0].classList.add('selected');
-            setElementRing(groupButtons[0].dataset.class);
+            if (category === 'offset') {
+              setElementRingOffset(groupButtons[0].dataset.class);
+            } else {
+              setElementRing(groupButtons[0].dataset.class);
+            }
           }
         }
       });
@@ -615,8 +754,12 @@
         // Add selected class to clicked button
         button.classList.add('selected');
         
-        // Update element ring
-        setElementRing(button.dataset.class);
+        // Check if this is an offset button or regular ring button
+        if (parentGroup.id === 'offset-values') {
+          setElementRingOffset(button.dataset.class);
+        } else {
+          setElementRing(button.dataset.class);
+        }
       });
     });
 
@@ -633,7 +776,24 @@
         currentColor = button.dataset.color;
         
         // Update element ring with new color
-        setElementRing(currentClass);
+        updateRingDisplay();
+      });
+    });
+
+    // Event listeners for offset color buttons
+    offsetColorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all offset color buttons
+        offsetColorButtons.forEach(btn => btn.classList.remove('selected'));
+        
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        
+        // Update current offset color
+        currentOffsetColor = button.dataset.color;
+        
+        // Update element ring with new offset color
+        updateRingDisplay();
       });
     });
 
@@ -645,6 +805,9 @@
     // Event listeners for size controls
     elementWidth.addEventListener('input', updateElementSize);
     elementHeight.addEventListener('input', updateElementSize);
+
+    // Initially hide the offset color selector
+    document.getElementById('offset-color-selector').style.display = 'none';
   </script>
 </body>
 </html>
