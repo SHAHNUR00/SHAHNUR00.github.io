@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Specificity Considerations</title>
+    <style>
+        /* Nord Color Palette */
+        :root {
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            --nord11: #BF616A;
+            --nord12: #D08770;
+            --nord13: #EBCB8B;
+            --nord14: #A3BE8C;
+            --nord15: #B48EAD;
+
+            /* Light and dark text colors for demonstration */
+            --light-text: #000000;
+            --dark-text: #FFFFFF;
+        }
+
+        /* Base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord4);
+            padding: 2rem;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        h1, h2 {
+            color: var(--nord8);
+            margin-bottom: 1.5rem;
+        }
+
+        h2 {
+            margin-top: 2rem;
+            font-size: 1.4rem;
+        }
+
+        p {
+            margin-bottom: 1.5rem;
+            max-width: 800px;
+        }
+
+        /* Card styling */
+        .card {
+            background-color: var(--nord1);
+            border-radius: 8px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border-left: 4px solid var(--nord7);
+        }
+
+        /* Code blocks */
+        pre {
+            background-color: var(--nord0);
+            border-radius: 6px;
+            padding: 1.5rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            border: 1px solid var(--nord3);
+            position: relative;
+        }
+
+        code {
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 0.9rem;
+            color: var(--nord4);
+        }
+
+        .code-highlight {
+            display: inline-block;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+        }
+
+        .tag {
+            color: var(--nord15);
+        }
+
+        .attribute {
+            color: var(--nord7);
+        }
+
+        .value {
+            color: var(--nord14);
+        }
+
+        .comment {
+            color: var(--nord3);
+            font-style: italic;
+        }
+
+        /* Text highlights */
+        .highlight {
+            font-family: monospace;
+            padding: 0.1rem 0.3rem;
+            border-radius: 3px;
+            background-color: rgba(136, 192, 208, 0.1);
+            color: var(--nord8);
+        }
+
+        .text-purple {
+            color: var(--nord15);
+            font-family: monospace;
+        }
+
+        .text-blue {
+            color: var(--nord9);
+            font-family: monospace;
+        }
+
+        /* Toggle controls */
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .toggle-button {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .toggle-button:hover {
+            background-color: var(--nord2);
+        }
+
+        .toggle-button.active {
+            background-color: var(--nord8);
+            color: var(--nord0);
+        }
+
+        /* Visual demos */
+        .demo-section {
+            margin: 2rem 0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .demo-box {
+            position: relative;
+            height: 200px;
+            border-radius: 6px;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Graph paper grid background */
+        .graph-paper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                linear-gradient(var(--nord3) 1px, transparent 1px),
+                linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+            background-size: 20px 20px;
+            opacity: 0.2;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* For media strategy demo */
+        .demo-box.light-mode {
+            background-color: var(--nord6);
+        }
+
+        .demo-box.dark-mode {
+            background-color: var(--nord0);
+        }
+
+        /* Text for demos */
+        .demo-text {
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 1;
+            position: relative;
+        }
+
+        /* Class strategy styles */
+        .text-black {
+            color: var(--light-text);
+        }
+
+        .text-opacity-50 {
+            opacity: 0.5;
+        }
+
+        .dark .dark\:text-white {
+            color: var(--dark-text);
+        }
+
+        .dark .dark\:text-opacity-50 {
+            opacity: 0.5;
+        }
+
+        /* Mode descriptions */
+        .mode-description {
+            background-color: var(--nord2);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            border: 1px solid var(--nord3);
+        }
+
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--nord3);
+        }
+
+        th {
+            background-color: var(--nord2);
+            font-weight: 500;
+        }
+
+        tr:nth-child(even) {
+            background-color: rgba(76, 86, 106, 0.2);
+        }
+
+        /* Specificity arrows */
+        .specificity-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            color: var(--nord11);
+            font-weight: bold;
+        }
+
+        .arrow {
+            font-size: 1.5rem;
+            margin: 0 0.5rem;
+        }
+
+        /* Result boxes */
+        .result-box {
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 6px;
+            margin-top: 1rem;
+            font-family: monospace;
+        }
+
+        .result-title {
+            font-weight: bold;
+            color: var(--nord8);
+            margin-bottom: 0.5rem;
+        }
+
+        /* CSS specificity visualization */
+        .specificity-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem 0;
+            gap: 0.5rem;
+        }
+
+        .specificity-block {
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            text-align: center;
+        }
+
+        .specificity-low {
+            background-color: var(--nord9);
+            color: var(--nord0);
+        }
+
+        .specificity-high {
+            background-color: var(--nord11);
+            color: var(--nord0);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Specificity considerations</h1>
+
+        <div class="card">
+            <p>
+                When using the <span class="text-purple">class</span> strategy, the specificity of dark mode utilities will be higher than regular utilities
+                because the selector contains an extra class. This means that in certain situations the behavior of some
+                combination of utilities can be slightly different in <span class="text-purple">class</span> mode than it is in <span class="text-blue">media</span> mode.
+            </p>
+
+            <div class="controls">
+                <button class="toggle-button active" id="class-strategy">Class Strategy</button>
+                <button class="toggle-button" id="media-strategy">Media Strategy</button>
+                <button class="toggle-button" id="toggle-dark">Toggle Dark Mode</button>
+            </div>
+
+            <h2>For example, consider this HTML:</h2>
+
+            <pre><code><span class="tag">&lt;div</span> <span class="attribute">class</span>=<span class="value">"text-black text-opacity-50 dark:text-white"</span><span class="tag">&gt;</span>
+    <span class="comment">&lt;!-- ... --&gt;</span>
+<span class="tag">&lt;/div&gt;</span></code></pre>
+
+            <div class="demo-section">
+                <div class="mode-description">Current Strategy: <span id="current-strategy">Class Strategy</span></div>
+                
+                <div class="demo-grid">
+                    <div class="demo-box light-mode">
+                        <div class="graph-paper"></div>
+                        <div id="demo-light" class="demo-text text-black text-opacity-50">
+                            Light Mode Text
+                        </div>
+                    </div>
+                    <div class="demo-box dark-mode">
+                        <div class="graph-paper"></div>
+                        <div id="demo-dark" class="demo-text text-black text-opacity-50">
+                            Dark Mode Text
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h2>Media Strategy vs Class Strategy</h2>
+
+            <p>
+                When using the <span class="text-blue">media</span> strategy, <span class="highlight">dark:text-white</span> has the same specificity as <span class="highlight">text-black</span> and
+                <span class="highlight">text-opacity-50</span>. Because <span class="highlight">text-opacity-50</span> is defined later in the generated CSS than <span class="highlight">dark:text-white</span>, the white text will have 50% opacity.
+            </p>
+
+            <div class="specificity-visual" id="media-specificity">
+                <div class="specificity-block specificity-low">text-black</div>
+                <div class="specificity-block specificity-low">dark:text-white</div>
+                <div class="specificity-block specificity-low">text-opacity-50</div>
+                <div class="arrow">→</div>
+                <div class="specificity-block specificity-low">50% opacity applies</div>
+            </div>
+
+            <p>
+                When using the <span class="text-purple">class</span> strategy, <span class="highlight">dark:text-white</span> has a <strong>higher</strong> specificity, so even though it is defined
+                sooner, it will actually override <span class="highlight">text-opacity-50</span> and reset the opacity back to 1. So when using the
+                <span class="text-purple">class</span> strategy, you'll need to re-specify the opacity in dark mode:
+            </p>
+
+            <div class="specificity-visual" id="class-specificity">
+                <div class="specificity-block specificity-low">text-black</div>
+                <div class="specificity-block specificity-low">text-opacity-50</div>
+                <div class="specificity-block specificity-high">dark:text-white</div>
+                <div class="arrow">→</div>
+                <div class="specificity-block specificity-high">100% opacity (overrides)</div>
+            </div>
+
+            <pre><code><span class="tag">&lt;div</span> <span class="attribute">class</span>=<span class="value">"text-black text-opacity-50 dark:text-white dark:text-opacity-50"</span><span class="tag">&gt;</span>
+    <span class="comment">&lt;!-- ... --&gt;</span>
+<span class="tag">&lt;/div&gt;</span></code></pre>
+
+            <div class="result-box">
+                <div class="result-title">Key Takeaway:</div>
+                <p>With class strategy, dark mode utilities have higher specificity and will override regular utilities even if they appear earlier in the CSS.</p>
+                <p>With media strategy, dark mode utilities have the same specificity as regular utilities, so order matters.</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>CSS Specificity Explained</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Strategy</th>
+                        <th>Compiled CSS Example</th>
+                        <th>Specificity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Regular Utility</td>
+                        <td><code>.text-black { color: black; }</code></td>
+                        <td>0, 0, 1, 0</td>
+                    </tr>
+                    <tr>
+                        <td>Media Strategy</td>
+                        <td><code>@media (prefers-color-scheme: dark) { .dark\:text-white { color: white; } }</code></td>
+                        <td>0, 0, 1, 0</td>
+                    </tr>
+                    <tr>
+                        <td>Class Strategy</td>
+                        <td><code>.dark .dark\:text-white { color: white; }</code></td>
+                        <td>0, 0, 2, 0</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p>
+                In the class strategy, the dark mode selector <code>.dark .dark\:text-white</code> has two classes (specificity of 0,0,2,0), 
+                making it more specific than regular utilities with just one class (specificity of 0,0,1,0).
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const classStrategyBtn = document.getElementById('class-strategy');
+        const mediaStrategyBtn = document.getElementById('media-strategy');
+        const toggleDarkBtn = document.getElementById('toggle-dark');
+        const currentStrategyText = document.getElementById('current-strategy');
+        const demoLight = document.getElementById('demo-light');
+        const demoDark = document.getElementById('demo-dark');
+        
+        // State
+        let isDarkMode = false;
+        let isClassStrategy = true;
+
+        // Functions to update the demo based on state
+        function updateDemo() {
+            // Update strategy text
+            currentStrategyText.textContent = isClassStrategy ? 'Class Strategy' : 'Media Strategy';
+
+            // Reset classes
+            demoLight.className = 'demo-text text-black text-opacity-50';
+            demoDark.className = 'demo-text text-black text-opacity-50';
+            
+            if (isClassStrategy) {
+                // Class strategy behavior
+                document.body.classList.toggle('dark', isDarkMode);
+                
+                // In class strategy, dark:text-white has higher specificity and overrides text-opacity-50
+                if (isDarkMode) {
+                    // Without dark:text-opacity-50, the text will be fully opaque
+                    demoDark.classList.add('dark:text-white');
+                }
+            } else {
+                // Media strategy behavior (simulated)
+                document.body.classList.remove('dark');
+                
+                // In media strategy, dark:text-white and text-opacity-50 have equal specificity
+                // text-opacity-50 wins because it comes later in the CSS
+                if (isDarkMode) {
+                    // Text will be white but still 50% opacity
+                    demoDark.style.color = 'white';
+                } else {
+                    demoDark.style.color = '';
+                }
+            }
+        }
+
+        // Event Listeners
+        classStrategyBtn.addEventListener('click', () => {
+            isClassStrategy = true;
+            classStrategyBtn.classList.add('active');
+            mediaStrategyBtn.classList.remove('active');
+            updateDemo();
+        });
+
+        mediaStrategyBtn.addEventListener('click', () => {
+            isClassStrategy = false;
+            mediaStrategyBtn.classList.add('active');
+            classStrategyBtn.classList.remove('active');
+            updateDemo();
+        });
+
+        toggleDarkBtn.addEventListener('click', () => {
+            isDarkMode = !isDarkMode;
+            toggleDarkBtn.textContent = isDarkMode ? 'Toggle Light Mode' : 'Toggle Dark Mode';
+            updateDemo();
+        });
+
+        // Initialize
+        updateDemo();
+    </script>
+</body>
+</html>
