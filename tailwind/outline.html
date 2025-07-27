@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Outline Properties Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 300px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Property control sections */
+    .property-control {
+      margin-bottom: 20px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Color selection */
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .color-button {
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: transform 0.2s ease;
+    }
+
+    .color-button:hover {
+      transform: scale(1.05);
+    }
+
+    .color-button.selected {
+      box-shadow: 0 0 0 2px var(--nord0), 0 0 0 4px var(--nord7);
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 400px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Graph paper grid background */
+    .graph-paper {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Element with applied outline */
+    .demo-element {
+      position: relative;
+      background-color: var(--nord10);
+      width: 200px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 5;
+      border-radius: 8px;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Outline Properties Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utilities for controlling outline properties. This visualizer demonstrates how outline-width, outline-offset, and outline-style utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <div class="property-control">
+          <h2>Outline Width</h2>
+          <div class="value-grid">
+            <button class="value-button outline-width-btn selected" data-width="0">outline-0</button>
+            <button class="value-button outline-width-btn" data-width="1">outline-1</button>
+            <button class="value-button outline-width-btn" data-width="2">outline-2</button>
+            <button class="value-button outline-width-btn" data-width="4">outline-4</button>
+            <button class="value-button outline-width-btn" data-width="8">outline-8</button>
+          </div>
+        </div>
+
+        <div class="property-control">
+          <h2>Outline Style</h2>
+          <div class="value-grid">
+            <button class="value-button outline-style-btn selected" data-style="solid">outline-solid</button>
+            <button class="value-button outline-style-btn" data-style="dashed">outline-dashed</button>
+            <button class="value-button outline-style-btn" data-style="dotted">outline-dotted</button>
+            <button class="value-button outline-style-btn" data-style="double">outline-double</button>
+            <button class="value-button outline-style-btn" data-style="none">outline-none</button>
+          </div>
+        </div>
+
+        <div class="property-control">
+          <h2>Outline Offset</h2>
+          <div class="value-grid">
+            <button class="value-button outline-offset-btn selected" data-offset="0">offset-0</button>
+            <button class="value-button outline-offset-btn" data-offset="1">offset-1</button>
+            <button class="value-button outline-offset-btn" data-offset="2">offset-2</button>
+            <button class="value-button outline-offset-btn" data-offset="4">offset-4</button>
+            <button class="value-button outline-offset-btn" data-offset="8">offset-8</button>
+          </div>
+        </div>
+
+        <div class="property-control">
+          <h2>Outline Color</h2>
+          <div class="color-grid">
+            <button class="color-button selected" style="background-color: #3B82F6;" data-color="#3B82F6" title="Blue"></button>
+            <button class="color-button" style="background-color: #10B981;" data-color="#10B981" title="Green"></button>
+            <button class="color-button" style="background-color: #F59E0B;" data-color="#F59E0B" title="Yellow"></button>
+            <button class="color-button" style="background-color: #EF4444;" data-color="#EF4444" title="Red"></button>
+            <button class="color-button" style="background-color: #8B5CF6;" data-color="#8B5CF6" title="Purple"></button>
+            <button class="color-button" style="background-color: #EC4899;" data-color="#EC4899" title="Pink"></button>
+            <button class="color-button" style="background-color: #6B7280;" data-color="#6B7280" title="Gray"></button>
+            <button class="color-button" style="background-color: #FFFFFF;" data-color="#FFFFFF" title="White"></button>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container">
+          <div class="graph-paper"></div>
+          
+          <div class="demo-element" id="demo-element">
+            <div class="element-label" id="element-label">outline-0 outline-solid outline-offset-0</div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Classes */</span>
+<span class="utility">outline-0 outline-solid outline-offset-0</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">outline-width:</span> <span class="css-value">0px</span>;
+<span class="css-prop">outline-style:</span> <span class="css-value">solid</span>;
+<span class="css-prop">outline-offset:</span> <span class="css-value">0px</span>;
+<span class="css-prop">outline-color:</span> <span class="css-value">#3B82F6</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      Current User: shanur00 | Current Time: 2025-07-27 08:59:55 UTC
+    </div>
+  </div>
+
+  <script>
+    // DOM elements
+    const demoElement = document.getElementById('demo-element');
+    const elementLabel = document.getElementById('element-label');
+    const codeDisplay = document.getElementById('code-display');
+    const outlineWidthBtns = document.querySelectorAll('.outline-width-btn');
+    const outlineStyleBtns = document.querySelectorAll('.outline-style-btn');
+    const outlineOffsetBtns = document.querySelectorAll('.outline-offset-btn');
+    const colorButtons = document.querySelectorAll('.color-button');
+
+    // Initial state
+    let currentOutlineWidth = '0';
+    let currentOutlineStyle = 'solid';
+    let currentOutlineOffset = '0';
+    let currentOutlineColor = '#3B82F6';
+
+    // Update the outline based on selected properties
+    function updateOutline() {
+      // Update outline properties
+      demoElement.style.outlineWidth = `${currentOutlineWidth}px`;
+      demoElement.style.outlineStyle = currentOutlineStyle;
+      demoElement.style.outlineOffset = `${currentOutlineOffset}px`;
+      demoElement.style.outlineColor = currentOutlineColor;
+      
+      // Update the label
+      const outlineWidthClass = `outline-${currentOutlineWidth}`;
+      const outlineStyleClass = `outline-${currentOutlineStyle}`;
+      const outlineOffsetClass = `outline-offset-${currentOutlineOffset}`;
+      
+      elementLabel.textContent = `${outlineWidthClass} ${outlineStyleClass} ${outlineOffsetClass}`;
+
+      // Update code display
+      updateCodeDisplay(outlineWidthClass, outlineStyleClass, outlineOffsetClass);
+    }
+
+    // Update the code display
+    function updateCodeDisplay(widthClass, styleClass, offsetClass) {
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Classes */</span>
+<span class="utility">${widthClass} ${styleClass} ${offsetClass}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">outline-width:</span> <span class="css-value">${currentOutlineWidth}px</span>;
+<span class="css-prop">outline-style:</span> <span class="css-value">${currentOutlineStyle}</span>;
+<span class="css-prop">outline-offset:</span> <span class="css-value">${currentOutlineOffset}px</span>;
+<span class="css-prop">outline-color:</span> <span class="css-value">${currentOutlineColor}</span>;`;
+    }
+
+    // Event listeners for outline width buttons
+    outlineWidthBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        outlineWidthBtns.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        currentOutlineWidth = button.dataset.width;
+        updateOutline();
+      });
+    });
+
+    // Event listeners for outline style buttons
+    outlineStyleBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        outlineStyleBtns.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        currentOutlineStyle = button.dataset.style;
+        updateOutline();
+      });
+    });
+
+    // Event listeners for outline offset buttons
+    outlineOffsetBtns.forEach(button => {
+      button.addEventListener('click', () => {
+        outlineOffsetBtns.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        currentOutlineOffset = button.dataset.offset;
+        updateOutline();
+      });
+    });
+
+    // Event listeners for color buttons
+    colorButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        colorButtons.forEach(btn => btn.classList.remove('selected'));
+        button.classList.add('selected');
+        currentOutlineColor = button.dataset.color;
+        updateOutline();
+      });
+    });
+
+    // Initialize
+    updateOutline();
+  </script>
+</body>
+</html>
