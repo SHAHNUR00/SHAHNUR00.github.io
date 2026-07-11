@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Relative Units Visualization</title>
+    <style>
+        *{
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+        /* Nord Theme Color Variables */
+        :root {
+            /* Polar Night */
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            
+            /* Snow Storm */
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            
+            /* Frost */
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            
+            /* Aurora */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+            
+            --root-font-size: 16px;
+            font-size: var(--root-font-size);
+            box-sizing: border-box;
+        }
+        
+        *, *:before, *:after {
+            box-sizing: inherit;
+        }
+        
+        body {
+            font-family: -apple-system, 'Ubuntu Sans Mono', sans-serif !important;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding-bottom: 100px; /* Add padding for floating buttons */
+        }
+        
+        .title {
+            text-align: center;
+            margin-bottom: 30px;
+            color: var(--nord6);
+            font-size: 2rem;
+        }
+        
+        .container {
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            margin: 0 auto;
+            gap: 50px;
+        }
+        
+        .unit-section {
+            background-color: var(--nord1);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .unit-title {
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: var(--nord8);
+            font-size: 1.8rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--nord3);
+        }
+        
+        .states-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        .state {
+            margin-bottom: 10px;
+        }
+        
+        /* Fix viewport box to have more clear hierarchy */
+        .viewport-box {
+            background-color: var(--nord2);
+            border: 2px solid var(--nord9);
+            border-radius: 8px;
+            padding: 30px;
+            position: relative;
+            min-height: 250px; /* Ensure minimum height for viewport */
+        }
+        
+        /* Fix parent box to have clear distinction from viewport */
+        .parent-box {
+            background-color: var(--nord3);
+            border: 2px solid var(--nord15);
+            border-radius: 6px;
+            padding: 90px 30px 30px; /* More top padding to avoid overlap with label */
+            margin: 20px auto;
+            position: relative;
+            min-height: 180px; /* Ensure minimum height for parent */
+        }
+        
+        /* Fix child box to clearly sit inside parent */
+        .child-box {
+            background-color: var(--nord8);
+            border: 2px solid var(--nord14);
+            border-radius: 4px;
+            height: 60px;
+            position: relative;
+            margin-top: 20px; /* Add spacing from parent label */
+        }
+        
+        .box-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.95rem;
+            font-weight: bold;
+            color: var(--nord6);
+            background-color: rgba(46, 52, 64, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+            z-index: 10; /* Ensure labels appear on top */
+        }
+        
+        .dimension-label {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 0.9rem;
+            color: var(--nord6);
+            background-color: rgba(46, 52, 64, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+            z-index: 10; /* Ensure labels appear on top */
+        }
+        
+        .state-label {
+            text-align: center;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--nord6);
+            background-color: var(--nord2);
+            padding: 8px;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .explanation {
+            background-color: var(--nord2);
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1rem;
+            color: var(--nord4);
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+        
+        .toggle-section {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 100;
+            padding: 15px;
+            background-color: var(--nord1);
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            background-color: var(--nord9);
+            transform: translateY(-2px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .before-value {
+            color: var(--nord8);
+            font-weight: bold;
+        }
+        
+        .after-value {
+            color: var(--nord13);
+            font-weight: bold;
+        }
+        
+        .arrow {
+            margin: 0 5px;
+            color: var(--nord4);
+        }
+        
+        .indicators-container {
+            text-align: center;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .indicator {
+            background-color: var(--nord1);
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-weight: bold;
+            color: var(--nord8);
+            border: 1px solid var(--nord3);
+        }
+    </style>
+</head>
+<body>
+    <h1 class="title">CSS Relative Units Visualization</h1>
+    
+    <div class="indicators-container">
+        <div class="indicator">
+            Current Viewport Width: <span id="viewportWidth">1200</span>px
+        </div>
+        <div class="indicator">
+            Root Font Size: <span id="rootFontSize">16</span>px
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Percentage Unit Section -->
+        <div class="unit-section" id="percentSection">
+            <h2 class="unit-title">Percentage (%)</h2>
+            
+            <div class="states-container">
+                <div class="state original">
+                    <div class="state-label">Original State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1200px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px</span>
+                            
+                            <div class="child-box" style="width: 50%;">
+                                <span class="box-label">Child (50%)</span>
+                                <span class="dimension-label">Width: 300px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="state changed" style="display: none;">
+                    <div class="state-label">Changed State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1000px</span>
+                        
+                        <div class="parent-box" style="width: 800px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 800px</span>
+                            
+                            <div class="child-box" style="width: 50%;">
+                                <span class="box-label">Child (50%)</span>
+                                <span class="dimension-label">Width: 400px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <p>Percentage units calculate dimensions relative to their parent element. The child is 50% of its parent's width, so when the parent grows from <span class="before-value">600px</span> <span class="arrow">→</span> <span class="after-value">800px</span>, the child grows proportionally from <span class="before-value">300px</span> <span class="arrow">→</span> <span class="after-value">400px</span>.</p>
+            </div>
+        </div>
+        
+        <!-- EM Unit Section -->
+        <div class="unit-section" id="emSection">
+            <h2 class="unit-title">EM Unit</h2>
+            
+            <div class="states-container">
+                <div class="state original">
+                    <div class="state-label">Original State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1200px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px, Font-size: 20px</span>
+                            
+                            <div class="child-box" style="width: 300px;">
+                                <span class="box-label">Child (15em)</span>
+                                <span class="dimension-label">Width: 300px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="state changed" style="display: none;">
+                    <div class="state-label">Changed State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1000px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px, Font-size: 25px</span>
+                            
+                            <div class="child-box" style="width: 375px;">
+                                <span class="box-label">Child (15em)</span>
+                                <span class="dimension-label">Width: 375px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <p>EM units are relative to the font-size of their parent element. The child is 15em wide, which equals 15 × parent's font-size. When the parent's font-size changes from <span class="before-value">20px</span> <span class="arrow">→</span> <span class="after-value">25px</span>, the child's width changes from <span class="before-value">300px</span> <span class="arrow">→</span> <span class="after-value">375px</span>.</p>
+            </div>
+        </div>
+        
+        <!-- REM Unit Section -->
+        <div class="unit-section" id="remSection">
+            <h2 class="unit-title">REM Unit</h2>
+            
+            <div class="states-container">
+                <div class="state original">
+                    <div class="state-label">Original State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1200px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px</span>
+                            
+                            <div class="child-box" style="width: 300px;">
+                                <span class="box-label">Child (18.75rem)</span>
+                                <span class="dimension-label">Width: 300px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="state changed" style="display: none;">
+                    <div class="state-label">Changed State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1000px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px</span>
+                            
+                            <div class="child-box" style="width: 375px;">
+                                <span class="box-label">Child (18.75rem)</span>
+                                <span class="dimension-label">Width: 375px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <p>REM units are relative to the root element's font-size (the :root or html element). The child is 18.75rem wide, which equals 18.75 × root font-size. When the root font-size changes from <span class="before-value">16px</span> <span class="arrow">→</span> <span class="after-value">20px</span>, the child's width changes from <span class="before-value">300px</span> <span class="arrow">→</span> <span class="after-value">375px</span>, regardless of the parent's font-size.</p>
+            </div>
+        </div>
+        
+        <!-- Viewport Units Section -->
+        <div class="unit-section" id="viewportSection">
+            <h2 class="unit-title">Viewport Units (vw/vh)</h2>
+            
+            <div class="states-container">
+                <div class="state original">
+                    <div class="state-label">Original State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1200px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px</span>
+                            
+                            <div class="child-box" style="width: 300px;">
+                                <span class="box-label">Child (25vw)</span>
+                                <span class="dimension-label">Width: 300px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="state changed" style="display: none;">
+                    <div class="state-label">Changed State</div>
+                    <div class="viewport-box">
+                        <span class="box-label">Viewport</span>
+                        <span class="dimension-label">Width: 1000px</span>
+                        
+                        <div class="parent-box" style="width: 600px;">
+                            <span class="box-label">Parent</span>
+                            <span class="dimension-label">Width: 600px</span>
+                            
+                            <div class="child-box" style="width: 250px;">
+                                <span class="box-label">Child (25vw)</span>
+                                <span class="dimension-label">Width: 250px</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="explanation">
+                <p>Viewport units (vw/vh) are relative to the browser viewport dimensions. The child is 25vw wide, which equals 25% of viewport width. When the viewport width changes from <span class="before-value">1200px</span> <span class="arrow">→</span> <span class="after-value">1000px</span>, the child's width changes from <span class="before-value">300px</span> <span class="arrow">→</span> <span class="after-value">250px</span>, regardless of the parent's width.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="toggle-section">
+        <button id="toggleStates">Toggle Before/After States</button>
+        <button id="resetStates">Reset to Original State</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const toggleButton = document.getElementById('toggleStates');
+            const resetButton = document.getElementById('resetStates');
+            const viewportWidthDisplay = document.getElementById('viewportWidth');
+            const rootFontSizeDisplay = document.getElementById('rootFontSize');
+            
+            let isChanged = false;
+            
+            function updateStates() {
+                const originalStates = document.querySelectorAll('.state.original');
+                const changedStates = document.querySelectorAll('.state.changed');
+                
+                originalStates.forEach(state => {
+                    state.style.display = isChanged ? 'none' : 'block';
+                });
+                
+                changedStates.forEach(state => {
+                    state.style.display = isChanged ? 'block' : 'none';
+                });
+                
+                // Update all indicators
+                viewportWidthDisplay.textContent = isChanged ? '1000' : '1200';
+                rootFontSizeDisplay.textContent = isChanged ? '20' : '16';
+            }
+            
+            toggleButton.addEventListener('click', function() {
+                isChanged = !isChanged;
+                updateStates();
+            });
+            
+            resetButton.addEventListener('click', function() {
+                isChanged = false;
+                updateStates();
+            });
+        });
+    </script>
+</body>
+</html>

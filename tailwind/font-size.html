@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tailwind CSS Font Size Visualization</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Dark background */
+            --nord1: #3B4252;  /* Darker gray */
+            --nord2: #434C5E;  /* Dark gray */
+            --nord3: #4C566A;  /* Gray */
+            --nord4: #D8DEE9;  /* Light gray */
+            --nord5: #E5E9F0;  /* Lighter gray */
+            --nord6: #ECEFF4;  /* Almost white */
+            --nord7: #8FBCBB;  /* Teal */
+            --nord8: #88C0D0;  /* Light blue */
+            --nord9: #81A1C1;  /* Blue */
+            --nord10: #5E81AC; /* Dark blue */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+        }
+
+        /* Graph paper grid */
+        .graph-paper {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord1) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord1) 1px, transparent 1px);
+            opacity: 0.6;
+            z-index: -1;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 1.5rem;
+            text-align: center;
+            font-size: 2.5rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .btn:hover {
+            background-color: var(--nord2);
+        }
+
+        .btn.active {
+            background-color: var(--nord10);
+            color: var(--nord6);
+        }
+
+        .visualization {
+            background-color: var(--nord1);
+            border-radius: 0.5rem;
+            padding: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+
+        .font-display {
+            display: grid;
+            grid-template-columns: 150px 1fr;
+            gap: 1rem;
+            align-items: center;
+            margin-bottom: 1rem;
+            border-bottom: 1px solid var(--nord3);
+            padding-bottom: 1rem;
+        }
+
+        .font-display:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+
+        .font-name {
+            color: var(--nord9);
+            font-family: monospace;
+            font-weight: bold;
+        }
+
+        .font-example {
+            color: var(--nord4);
+            transition: all 0.3s;
+        }
+
+        .font-info {
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            color: var(--nord9);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        .ruler {
+            height: 24px;
+            background-color: var(--nord3);
+            margin-bottom: 0.5rem;
+            position: relative;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .ruler-fill {
+            height: 100%;
+            background-color: var(--nord8);
+            transition: width 0.3s ease;
+        }
+
+        .info-card {
+            background-color: var(--nord2);
+            border-radius: 0.375rem;
+            padding: 1.5rem;
+            margin-top: 1rem;
+        }
+
+        .info-card h3 {
+            color: var(--nord8);
+            margin-bottom: 0.75rem;
+        }
+
+        .info-card p {
+            margin-bottom: 0.5rem;
+            line-height: 1.6;
+        }
+
+        .text-xs { font-size: 0.75rem; line-height: 1rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-lg { font-size: 1.125rem; line-height: 1.75rem; }
+        .text-xl { font-size: 1.25rem; line-height: 1.75rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-5xl { font-size: 3rem; line-height: 1; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .text-7xl { font-size: 4.5rem; line-height: 1; }
+        .text-8xl { font-size: 6rem; line-height: 1; }
+        .text-9xl { font-size: 8rem; line-height: 1; }
+
+        /* Variants */
+        .tight-variant .font-example { line-height: 1; }
+        .normal-variant .font-example { line-height: 1.5; }
+        .loose-variant .font-example { line-height: 2; }
+        
+        .tracking-tight .font-example { letter-spacing: -0.025em; }
+        .tracking-normal .font-example { letter-spacing: 0; }
+        .tracking-wide .font-example { letter-spacing: 0.025em; }
+        
+        .font-light .font-example { font-weight: 300; }
+        .font-normal .font-example { font-weight: 400; }
+        .font-bold .font-example { font-weight: 700; }
+
+        footer {
+            text-align: center;
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="graph-paper"></div>
+        <h1>Tailwind CSS Font Size Visualization</h1>
+        
+        <div class="controls">
+            <button class="btn active" data-variant="line-height">Line Height</button>
+            <button class="btn" data-variant="letter-spacing">Letter Spacing</button>
+            <button class="btn" data-variant="font-weight">Font Weight</button>
+        </div>
+        
+        <div class="variant-container line-height">
+            <div class="controls">
+                <button class="btn line-height-btn active" data-line-height="normal">Normal</button>
+                <button class="btn line-height-btn" data-line-height="tight">Tight</button>
+                <button class="btn line-height-btn" data-line-height="loose">Loose</button>
+            </div>
+        </div>
+        
+        <div class="variant-container letter-spacing" style="display: none;">
+            <div class="controls">
+                <button class="btn tracking-btn active" data-tracking="normal">Normal</button>
+                <button class="btn tracking-btn" data-tracking="tight">Tight</button>
+                <button class="btn tracking-btn" data-tracking="wide">Wide</button>
+            </div>
+        </div>
+        
+        <div class="variant-container font-weight" style="display: none;">
+            <div class="controls">
+                <button class="btn weight-btn active" data-weight="normal">Normal</button>
+                <button class="btn weight-btn" data-weight="light">Light</button>
+                <button class="btn weight-btn" data-weight="bold">Bold</button>
+            </div>
+        </div>
+        
+        <div class="visualization">
+            <div class="font-display">
+                <div class="font-name">text-xs</div>
+                <div>
+                    <div class="font-example text-xs">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 7.7%;"></div></div>
+                    <div class="font-info">0.75rem / 12px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-sm</div>
+                <div>
+                    <div class="font-example text-sm">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 9%;"></div></div>
+                    <div class="font-info">0.875rem / 14px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-base</div>
+                <div>
+                    <div class="font-example text-base">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 10.3%;"></div></div>
+                    <div class="font-info">1rem / 16px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-lg</div>
+                <div>
+                    <div class="font-example text-lg">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 11.5%;"></div></div>
+                    <div class="font-info">1.125rem / 18px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-xl</div>
+                <div>
+                    <div class="font-example text-xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 12.8%;"></div></div>
+                    <div class="font-info">1.25rem / 20px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-2xl</div>
+                <div>
+                    <div class="font-example text-2xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 15.4%;"></div></div>
+                    <div class="font-info">1.5rem / 24px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-3xl</div>
+                <div>
+                    <div class="font-example text-3xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 19.2%;"></div></div>
+                    <div class="font-info">1.875rem / 30px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-4xl</div>
+                <div>
+                    <div class="font-example text-4xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 23.1%;"></div></div>
+                    <div class="font-info">2.25rem / 36px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-5xl</div>
+                <div>
+                    <div class="font-example text-5xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 30.8%;"></div></div>
+                    <div class="font-info">3rem / 48px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-6xl</div>
+                <div>
+                    <div class="font-example text-6xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 38.5%;"></div></div>
+                    <div class="font-info">3.75rem / 60px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-7xl</div>
+                <div>
+                    <div class="font-example text-7xl">The quick brown fox jumps over the lazy dog.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 46.2%;"></div></div>
+                    <div class="font-info">4.5rem / 72px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-8xl</div>
+                <div>
+                    <div class="font-example text-8xl">The quick brown fox jumps.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 61.5%;"></div></div>
+                    <div class="font-info">6rem / 96px</div>
+                </div>
+            </div>
+            
+            <div class="font-display">
+                <div class="font-name">text-9xl</div>
+                <div>
+                    <div class="font-example text-9xl">The quick fox.</div>
+                    <div class="ruler"><div class="ruler-fill" style="width: 82.1%;"></div></div>
+                    <div class="font-info">8rem / 128px</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-card">
+            <h3>About Tailwind CSS Font Sizes</h3>
+            <p>Tailwind provides a comprehensive set of font size utilities that follow a predictable pattern. The default font sizes range from <code>text-xs</code> (0.75rem) to <code>text-9xl</code> (8rem).</p>
+            <p>Each font size class also comes with a default line-height appropriate for that size, which can be overridden using line-height utilities.</p>
+        </div>
+
+        <footer>
+            <p>Created by shanur00 on 2025-07-25</p>
+        </footer>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Variant toggle
+            const variantBtns = document.querySelectorAll('.controls .btn[data-variant]');
+            const variantContainers = document.querySelectorAll('.variant-container');
+            
+            variantBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    variantBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // Show selected variant container
+                    const variant = this.dataset.variant;
+                    variantContainers.forEach(container => {
+                        container.style.display = container.classList.contains(variant) ? 'block' : 'none';
+                    });
+                    
+                    // Reset all classes and set active variant
+                    document.body.classList.remove('normal-variant', 'tight-variant', 'loose-variant', 
+                                                 'tracking-normal', 'tracking-tight', 'tracking-wide',
+                                                 'font-normal', 'font-light', 'font-bold');
+                    
+                    if (variant === 'line-height') {
+                        const activeLineHeight = document.querySelector('.line-height-btn.active').dataset.lineHeight;
+                        document.body.classList.add(`${activeLineHeight}-variant`);
+                    } else if (variant === 'letter-spacing') {
+                        const activeTracking = document.querySelector('.tracking-btn.active').dataset.tracking;
+                        document.body.classList.add(`tracking-${activeTracking}`);
+                    } else if (variant === 'font-weight') {
+                        const activeWeight = document.querySelector('.weight-btn.active').dataset.weight;
+                        document.body.classList.add(`font-${activeWeight}`);
+                    }
+                });
+            });
+            
+            // Line height toggle
+            const lineHeightBtns = document.querySelectorAll('.line-height-btn');
+            lineHeightBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    lineHeightBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.body.classList.remove('normal-variant', 'tight-variant', 'loose-variant');
+                    document.body.classList.add(`${this.dataset.lineHeight}-variant`);
+                });
+            });
+            
+            // Letter spacing toggle
+            const trackingBtns = document.querySelectorAll('.tracking-btn');
+            trackingBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    trackingBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.body.classList.remove('tracking-normal', 'tracking-tight', 'tracking-wide');
+                    document.body.classList.add(`tracking-${this.dataset.tracking}`);
+                });
+            });
+            
+            // Font weight toggle
+            const weightBtns = document.querySelectorAll('.weight-btn');
+            weightBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    weightBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    document.body.classList.remove('font-normal', 'font-light', 'font-bold');
+                    document.body.classList.add(`font-${this.dataset.weight}`);
+                });
+            });
+            
+            // Initialize with default settings
+            document.body.classList.add('normal-variant');
+        });
+    </script>
+</body>
+</html>

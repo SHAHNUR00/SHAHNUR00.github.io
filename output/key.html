@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nord Animation</title>
+  <style>
+    body {
+      background-color: #2E3440; /* Nord0 - dark background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    .animation-container {
+      position: relative;
+      width: 200px;
+      height: 200px;
+    }
+    
+    .class {
+      height: 100px;
+      width: 100px;
+      border: 2px solid #BF616A; /* Nord11 - red */
+      background-color: #4C566A; /* Nord3 - gray */
+      animation: myframe 5s infinite;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 12px;
+      color: #ECEFF4; /* Nord6 - white text */
+      text-align: center;
+      padding: 5px;
+      box-sizing: border-box;
+    }
+
+    @keyframes myframe {
+      0%   {top: 0px; left: 0px; background: #BF616A;} /* Nord11 - red */
+      25%  {top: 0px; left: 100px; background: #5E81AC;} /* Nord10 - blue */
+      50%  {top: 100px; left: 100px; background: #EBCB8B;} /* Nord13 - yellow */
+      75%  {top: 100px; left: 0px; background: #A3BE8C;} /* Nord14 - green */
+      100% {top: 0px; left: 0px; background: #BF616A;} /* Nord11 - red */
+    }
+  </style>
+</head>
+<body>
+  <div class="animation-container">
+    <div class="class"></div>
+  </div>
+</body>
+</html>

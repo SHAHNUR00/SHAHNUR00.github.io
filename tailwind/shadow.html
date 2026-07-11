@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Shadow Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono', 'Consolas', monospace;
+    }
+
+    body {
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px;
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Shadow variants selection */
+    .shadow-variants {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .variant-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .variant-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .variant-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Custom settings */
+    .custom-settings {
+      margin-top: 20px;
+    }
+
+    .settings-row {
+      margin-bottom: 15px;
+    }
+
+    .settings-label {
+      display: block;
+      margin-bottom: 5px;
+      color: var(--nord6);
+    }
+
+    .settings-input {
+      width: 100%;
+      padding: 8px;
+      background-color: var(--nord2);
+      border: none;
+      border-radius: 4px;
+      color: var(--nord4);
+    }
+
+    .color-inputs {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .color-picker {
+      width: 40px;
+      height: 30px;
+      padding: 0;
+      border: none;
+      border-radius: 4px;
+      background-color: var(--nord2);
+      cursor: pointer;
+    }
+
+    .apply-button {
+      margin-top: 15px;
+      padding: 8px 15px;
+      background-color: var(--nord8);
+      border: none;
+      border-radius: 4px;
+      color: var(--nord0);
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    /* Shadow box display */
+    .shadow-display {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 400px;
+      background-color: var(--nord0); /* Darker background for better contrast */
+      border-radius: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .shadow-box {
+      width: 220px;
+      height: 220px;
+      background-color: var(--nord6);
+      border-radius: 8px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--nord0);
+      font-weight: bold;
+      position: relative;
+      transition: all 0.3s ease;
+      font-size: 16px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.15; /* Reduced opacity for better shadow visibility */
+      pointer-events: none;
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    .css-var {
+      color: var(--nord15);
+    }
+
+    /* Color themes for shadow */
+    .color-theme-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .color-theme-button {
+      width: 30px;
+      height: 30px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .color-theme-button.dark {
+      background-color: rgba(0, 0, 0, 0.5); /* Increased opacity */
+    }
+
+    .color-theme-button.blue {
+      background-color: rgba(94, 129, 172, 0.6); /* Increased opacity */
+    }
+
+    .color-theme-button.red {
+      background-color: rgba(191, 97, 106, 0.6); /* Increased opacity */
+    }
+
+    .color-theme-button.green {
+      background-color: rgba(163, 190, 140, 0.6); /* Increased opacity */
+    }
+
+    .color-theme-button.purple {
+      background-color: rgba(180, 142, 173, 0.6); /* Increased opacity */
+    }
+
+    .color-theme-button.active {
+      outline: 2px solid var(--nord8);
+    }
+
+    /* Shadow comparison */
+    .shadow-comparison {
+      display: flex;
+      margin-top: 20px;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .comparison-title {
+      font-size: 14px;
+      margin-bottom: 10px;
+      color: var(--nord8);
+    }
+
+    .before-shadow, .after-shadow {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .comparison-box {
+      width: 100px;
+      height: 100px;
+      background-color: var(--nord6);
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: var(--nord0);
+    }
+
+    .comparison-label {
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .shadow-intensity {
+      margin-top: 15px;
+      width: 100%;
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Current value display */
+    .current-value {
+      display: inline-block;
+      margin-left: 10px;
+      font-size: 14px;
+      color: var(--nord13);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Shadow Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utility classes for adding box shadows to elements. This visualizer demonstrates different shadow variants and allows you to create custom shadows.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Shadow Variants</h2>
+        <div class="shadow-variants">
+          <button class="variant-button" data-variant="shadow-sm">shadow-sm</button>
+          <button class="variant-button" data-variant="shadow-md">shadow-md</button>
+          <button class="variant-button active" data-variant="shadow-lg">shadow-lg</button>
+          <button class="variant-button" data-variant="shadow-xl">shadow-xl</button>
+          <button class="variant-button" data-variant="shadow-2xl">shadow-2xl</button>
+          <button class="variant-button" data-variant="shadow-none">shadow-none</button>
+        </div>
+
+        <div class="custom-settings">
+          <h2>Custom Shadow</h2>
+          
+          <div class="settings-row">
+            <label class="settings-label">Horizontal Offset (px) <span class="current-value" id="h-offset-value">0</span></label>
+            <input type="range" min="-30" max="30" value="0" class="settings-input" id="h-offset">
+          </div>
+          
+          <div class="settings-row">
+            <label class="settings-label">Vertical Offset (px) <span class="current-value" id="v-offset-value">4</span></label>
+            <input type="range" min="-30" max="30" value="4" class="settings-input" id="v-offset">
+          </div>
+          
+          <div class="settings-row">
+            <label class="settings-label">Blur Radius (px) <span class="current-value" id="blur-value">6</span></label>
+            <input type="range" min="0" max="100" value="6" class="settings-input" id="blur">
+          </div>
+          
+          <div class="settings-row">
+            <label class="settings-label">Spread Radius (px) <span class="current-value" id="spread-value">0</span></label>
+            <input type="range" min="-20" max="40" value="0" class="settings-input" id="spread">
+          </div>
+          
+          <div class="settings-row">
+            <label class="settings-label">Shadow Opacity <span class="current-value" id="opacity-value">0.5</span></label>
+            <input type="range" min="0.1" max="1" step="0.05" value="0.5" class="settings-input" id="shadow-opacity">
+          </div>
+          
+          <button class="apply-button" id="apply-custom">Apply Custom Shadow</button>
+          <button class="apply-button" id="generate-class" style="background-color: var(--nord7); margin-left: 10px;">Generate Class</button>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="shadow-display">
+          <div class="grid-background"></div>
+          <div class="shadow-box" id="shadow-box">
+            shadow-lg
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">shadow-lg</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-var">var(--tw-shadow-lg);</span> <span class="comment">/* 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1) */</span></code></pre>
+        </div>
+
+        <div class="shadow-comparison">
+          <div class="before-shadow">
+            <div class="comparison-title">Original Shadow</div>
+            <div class="comparison-box" id="original-shadow-box"></div>
+            <div class="comparison-label" id="original-shadow-label">shadow-lg</div>
+          </div>
+          <div class="after-shadow">
+            <div class="comparison-title">Custom Shadow</div>
+            <div class="comparison-box" id="custom-shadow-box"></div>
+            <div class="comparison-label" id="custom-shadow-label">Custom</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: shanur00 | Current Time: 2025-07-25 16:00:35
+    </div>
+  </div>
+
+  <script>
+    // Define shadow values equivalent to Tailwind's defaults - with red color
+    const shadowValues = {
+      'shadow-sm': '0 1px 2px 0 rgba(191, 97, 106, 0.5)',
+      'shadow-md': '0 4px 6px -1px rgba(191, 97, 106, 0.5), 0 2px 4px -2px rgba(191, 97, 106, 0.5)',
+      'shadow-lg': '0 10px 15px -3px rgba(191, 97, 106, 0.5), 0 4px 6px -4px rgba(191, 97, 106, 0.5)',
+      'shadow-xl': '0 20px 25px -5px rgba(191, 97, 106, 0.5), 0 8px 10px -6px rgba(191, 97, 106, 0.5)',
+      'shadow-2xl': '0 25px 50px -12px rgba(191, 97, 106, 0.5)',
+      'shadow-none': 'none'
+    };
+
+    // Define CSS variables for shadow values
+    document.documentElement.style.setProperty('--tw-shadow-sm', shadowValues['shadow-sm']);
+    document.documentElement.style.setProperty('--tw-shadow-md', shadowValues['shadow-md']);
+    document.documentElement.style.setProperty('--tw-shadow-lg', shadowValues['shadow-lg']);
+    document.documentElement.style.setProperty('--tw-shadow-xl', shadowValues['shadow-xl']);
+    document.documentElement.style.setProperty('--tw-shadow-2xl', shadowValues['shadow-2xl']);
+
+    // DOM elements
+    const shadowBox = document.getElementById('shadow-box');
+    const codeDisplay = document.getElementById('code-display');
+    const variantButtons = document.querySelectorAll('.variant-button');
+    const originalShadowBox = document.getElementById('original-shadow-box');
+    const customShadowBox = document.getElementById('custom-shadow-box');
+    const originalShadowLabel = document.getElementById('original-shadow-label');
+    const customShadowLabel = document.getElementById('custom-shadow-label');
+    
+    // Custom shadow controls
+    const hOffsetInput = document.getElementById('h-offset');
+    const vOffsetInput = document.getElementById('v-offset');
+    const blurInput = document.getElementById('blur');
+    const spreadInput = document.getElementById('spread');
+    const shadowOpacityInput = document.getElementById('shadow-opacity');
+    const applyCustomBtn = document.getElementById('apply-custom');
+    const generateClassBtn = document.getElementById('generate-class');
+
+    // Value displays
+    const hOffsetValue = document.getElementById('h-offset-value');
+    const vOffsetValue = document.getElementById('v-offset-value');
+    const blurValue = document.getElementById('blur-value');
+    const spreadValue = document.getElementById('spread-value');
+    const opacityValue = document.getElementById('opacity-value');
+
+    // Initialize with shadow-lg
+    let currentShadow = 'shadow-lg';
+    updateShadow(currentShadow);
+
+    // Event listeners for variant buttons
+    variantButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const variant = button.dataset.variant;
+        
+        // Update active state
+        variantButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Update shadow
+        currentShadow = variant;
+        updateShadow(variant);
+
+        // Update shadow box text
+        shadowBox.textContent = variant;
+        originalShadowLabel.textContent = variant;
+      });
+    });
+
+    // Event listener for custom shadow application
+    applyCustomBtn.addEventListener('click', () => {
+      applyCustomShadow();
+    });
+
+    // Event listener for generating class
+    generateClassBtn.addEventListener('click', () => {
+      generateCustomShadowClass();
+    });
+
+    // Update value displays when sliders change
+    hOffsetInput.addEventListener('input', () => {
+      hOffsetValue.textContent = hOffsetInput.value;
+    });
+
+    vOffsetInput.addEventListener('input', () => {
+      vOffsetValue.textContent = vOffsetInput.value;
+    });
+
+    blurInput.addEventListener('input', () => {
+      blurValue.textContent = blurInput.value;
+    });
+
+    spreadInput.addEventListener('input', () => {
+      spreadValue.textContent = spreadInput.value;
+    });
+
+    shadowOpacityInput.addEventListener('input', () => {
+      opacityValue.textContent = shadowOpacityInput.value;
+      applyCustomShadow();
+    });
+
+    // Update shadow based on variant
+    function updateShadow(variant) {
+      if (variant === 'shadow-none') {
+        shadowBox.style.boxShadow = 'none';
+        originalShadowBox.style.boxShadow = 'none';
+      } else {
+        shadowBox.style.boxShadow = shadowValues[variant];
+        originalShadowBox.style.boxShadow = shadowValues[variant];
+      }
+      
+      updateCodeDisplay(variant);
+    }
+
+    // Apply custom shadow based on inputs
+    function applyCustomShadow() {
+      const hOffset = hOffsetInput.value;
+      const vOffset = vOffsetInput.value;
+      const blur = blurInput.value;
+      const spread = spreadInput.value;
+      const opacity = shadowOpacityInput.value;
+      
+      // Fixed red shadow color
+      const shadowColor = `rgba(191, 97, 106, ${opacity})`;
+      
+      const shadowValue = `${hOffset}px ${vOffset}px ${blur}px ${spread}px ${shadowColor}`;
+      shadowBox.style.boxShadow = shadowValue;
+      customShadowBox.style.boxShadow = shadowValue;
+      
+      // Reset variant buttons active state
+      variantButtons.forEach(btn => btn.classList.remove('active'));
+      
+      // Update shadow box text to show it's custom
+      shadowBox.textContent = 'Custom';
+      customShadowLabel.textContent = 'Custom';
+      
+      // Update code display
+      updateCodeDisplayCustom(shadowValue);
+    }
+
+    // Generate a shadow class based on current settings
+    function generateCustomShadowClass() {
+      const hOffset = hOffsetInput.value;
+      const vOffset = vOffsetInput.value;
+      const blur = blurInput.value;
+      const spread = spreadInput.value;
+      const opacity = shadowOpacityInput.value;
+      
+      // Fixed red shadow color
+      const shadowColor = `rgba(191, 97, 106, ${opacity})`;
+      
+      // Format for Tailwind arbitrary value syntax
+      const shadowValue = `${hOffset}px_${vOffset}px_${blur}px_${spread}px_rgba(191,97,106,${opacity})`;
+      const shadowClass = `shadow-[${shadowValue}]`;
+      
+      // Update shadow box text
+      shadowBox.textContent = shadowClass;
+      customShadowLabel.textContent = shadowClass;
+      
+      // Update code display
+      updateCodeDisplayArbitrary(shadowClass, `${hOffset}px ${vOffset}px ${blur}px ${spread}px ${shadowColor}`);
+    }
+
+    // Update code display for predefined variants
+    function updateCodeDisplay(variant) {
+      const shadowValue = shadowValues[variant];
+      
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${variant}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-value">${shadowValue};</span>`;
+    }
+
+    // Update code display for custom shadow
+    function updateCodeDisplayCustom(shadowValue) {
+      codeDisplay.innerHTML = `<span class="comment">/* Custom Shadow */</span>
+<span class="utility">shadow-[...]</span> <span class="comment">/* Use 'Generate Class' to see the exact class */</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-value">${shadowValue};</span>`;
+    }
+
+    // Update code display for arbitrary shadow class
+    function updateCodeDisplayArbitrary(shadowClass, shadowValue) {
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Arbitrary Value */</span>
+<span class="utility">${shadowClass}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">box-shadow:</span> <span class="css-value">${shadowValue};</span>`;
+    }
+
+    // Set current date in footer
+    document.querySelector('.footer').innerHTML = `User: shanur00 | Current Time: 2025-07-25 16:00:35`;
+
+    // Set initial values
+    function initializeCustomControls() {
+      // Parse the default shadow-lg value to set initial control values
+      const defaultShadow = shadowValues['shadow-lg'].split(', ')[0];
+      const parts = defaultShadow.match(/([0-9-]+)px\s+([0-9-]+)px\s+([0-9-]+)px\s+(?:([0-9-]+)px\s+)?(rgba?\(.+\))/);
+      
+      if (parts) {
+        hOffsetInput.value = parts[1] || 0;
+        vOffsetInput.value = parts[2] || 10;
+        blurInput.value = parts[3] || 15;
+        spreadInput.value = parts[4] || 0;
+        
+        hOffsetValue.textContent = parts[1] || 0;
+        vOffsetValue.textContent = parts[2] || 10;
+        blurValue.textContent = parts[3] || 15;
+        spreadValue.textContent = parts[4] || 0;
+        
+        // Extract opacity from the rgba value
+        const opacityMatch = parts[5].match(/rgba\(.*,\s*([\d.]+)\)/);
+        if (opacityMatch) {
+          shadowOpacityInput.value = opacityMatch[1];
+          opacityValue.textContent = opacityMatch[1];
+        }
+      }
+      
+      // Initialize comparison boxes with red shadow
+      originalShadowBox.style.boxShadow = shadowValues['shadow-lg'];
+      customShadowBox.style.boxShadow = "0px 10px 15px 0px rgba(191, 97, 106, 0.5)";
+    }
+
+    // Initialize custom controls with default values
+    initializeCustomControls();
+
+    // Add live preview as sliders change
+    hOffsetInput.addEventListener('input', applyCustomShadow);
+    vOffsetInput.addEventListener('input', applyCustomShadow);
+    blurInput.addEventListener('input', applyCustomShadow);
+    spreadInput.addEventListener('input', applyCustomShadow);
+  </script>
+</body>
+</html>

@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CSS Grid Template Visualization</title>
+	<style>
+		:root {
+			/* Nord Dark Theme */
+			--nord0: #2e3440;
+			--nord1: #3b4252;
+			--nord2: #434c5e;
+			--nord3: #4c566a;
+			--nord4: #d8dee9;
+			--nord5: #e5e9f0;
+			--nord6: #eceff4;
+			--nord7: #8fbcbb;
+			--nord8: #88c0d0;
+			--nord9: #81a1c1;
+			--nord10: #5e81ac;
+			--nord11: #bf616a;
+			--nord12: #d08770;
+			--nord13: #ebcb8b;
+			--nord14: #a3be8c;
+			--nord15: #b48ead;
+			
+			/* Theme Variables */
+			--bg-primary: var(--nord0);
+			--bg-secondary: var(--nord1);
+			--bg-tertiary: var(--nord2);
+			--border-color: var(--nord3);
+			--text-primary: var(--nord4);
+			--text-secondary: var(--nord5);
+			--text-bright: var(--nord6);
+			--accent-primary: var(--nord8);
+			--accent-secondary: var(--nord13);
+			--accent-tertiary: var(--nord14);
+		}
+		
+		[data-theme="light"] {
+			/* Nord Light Theme */
+			--bg-primary: #eceff4;
+			--bg-secondary: #e5e9f0;
+			--bg-tertiary: #d8dee9;
+			--border-color: #4c566a;
+			--text-primary: #2e3440;
+			--text-secondary: #3b4252;
+			--text-bright: #2e3440;
+			--accent-primary: #5e81ac;
+			--accent-secondary: #d08770;
+			--accent-tertiary: #a3be8c;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Ubuntu Sans Mono Medium', sans-serif !important;
+		}
+		
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: var(--bg-primary);
+			color: var(--text-primary);
+			line-height: 1.6;
+			padding: 20px;
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+		
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+		
+		h1 {
+			color: var(--accent-primary);
+			font-size: 2.5em;
+			margin: 0;
+		}
+		
+		.theme-toggle {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			background: var(--bg-secondary);
+			padding: 8px 16px;
+			border-radius: 25px;
+			border: 2px solid var(--border-color);
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.theme-toggle:hover {
+			background: var(--bg-tertiary);
+			transform: translateY(-1px);
+		}
+		
+		.theme-toggle-icon {
+			font-size: 18px;
+			transition: transform 0.3s ease;
+		}
+		
+		.theme-toggle-text {
+			font-size: 14px;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+		
+		.section {
+			margin-bottom: 40px;
+			background: var(--bg-secondary);
+			padding: 30px;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			border: 1px solid var(--border-color);
+			transition: all 0.3s ease;
+		}
+		
+		.section h2 {
+			color: var(--accent-secondary);
+			margin-bottom: 20px;
+			font-size: 1.8em;
+		}
+		
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			margin-bottom: 30px;
+			align-items: center;
+		}
+		
+		.control-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+		
+		label {
+			color: var(--accent-tertiary);
+			font-weight: 600;
+			font-size: 0.9em;
+		}
+		
+		select, input {
+			padding: 8px 12px;
+			border: 2px solid var(--border-color);
+			border-radius: 5px;
+			background: var(--bg-tertiary);
+			color: var(--text-primary);
+			font-size: 14px;
+			min-width: 140px;
+			transition: all 0.3s ease;
+		}
+		
+		select:focus, input:focus {
+			outline: none;
+			border-color: var(--accent-primary);
+			box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.1);
+		}
+		
+		.grid-container {
+			display: grid;
+			gap: 3px;
+			background: var(--border-color);
+			padding: 10px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			transition: all 0.3s ease;
+		}
+		
+		.grid-item {
+			background: var(--nord9);
+			border: 2px solid var(--nord10);
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 600;
+			font-size: 16px;
+			color: var(--nord6);
+			min-height: 60px;
+			transition: all 0.3s ease;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			padding: 8px;
+		}
+		
+		.grid-item:nth-child(1) { background: var(--nord11); }
+		.grid-item:nth-child(2) { background: var(--nord12); }
+		.grid-item:nth-child(3) { background: var(--nord13); color: var(--nord0); }
+		.grid-item:nth-child(4) { background: var(--nord14); color: var(--nord0); }
+		.grid-item:nth-child(5) { background: var(--nord15); }
+		.grid-item:nth-child(6) { background: var(--nord7); color: var(--nord0); }
+		.grid-item:nth-child(7) { background: var(--nord8); color: var(--nord0); }
+		.grid-item:nth-child(8) { background: var(--nord9); }
+		.grid-item:nth-child(9) { background: var(--nord10); }
+		
+		.code-display {
+			background: var(--bg-primary);
+			border: 1px solid var(--border-color);
+			border-radius: 5px;
+			padding: 15px;
+			font-family: 'Courier New', monospace;
+			color: var(--accent-tertiary);
+			font-size: 14px;
+			overflow-x: auto;
+			white-space: pre;
+			transition: all 0.3s ease;
+		}
+		
+		.explanation {
+			background: var(--bg-tertiary);
+			border-left: 4px solid var(--accent-primary);
+			padding: 15px;
+			margin-top: 15px;
+			border-radius: 0 5px 5px 0;
+			transition: all 0.3s ease;
+		}
+		
+		.explanation h3 {
+			color: var(--accent-primary);
+			margin-bottom: 10px;
+		}
+		
+		.explanation ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.explanation li {
+			margin-bottom: 8px;
+			padding-left: 20px;
+			position: relative;
+		}
+		
+		.explanation li:before {
+			content: "•";
+			color: var(--accent-primary);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		
+		.fr-demo {
+			margin-top: 20px;
+		}
+		
+		.fr-example {
+			display: grid;
+			grid-template-columns: 1fr 2fr 1fr;
+			gap: 5px;
+			background: var(--border-color);
+			padding: 10px;
+			border-radius: 8px;
+			margin: 10px 0;
+		}
+		
+		.fr-item {
+			background: var(--nord15);
+			color: var(--nord0);
+			padding: 15px;
+			border-radius: 4px;
+			text-align: center;
+			font-weight: 600;
+			min-height: 50px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+		}
+		
+		.preset-buttons {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 20px;
+			flex-wrap: wrap;
+		}
+		
+		.preset-btn {
+			padding: 8px 16px;
+			background: var(--nord10);
+			color: var(--nord6);
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: all 0.3s ease;
+		}
+		
+		.preset-btn:hover {
+			background: var(--nord9);
+			transform: translateY(-1px);
+		}
+		
+		.info-box {
+			background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+			border: 1px solid var(--border-color);
+			border-radius: 8px;
+			padding: 20px;
+			margin-top: 20px;
+			transition: all 0.3s ease;
+		}
+		
+		.info-box h4 {
+			color: var(--accent-secondary);
+			margin-bottom: 15px;
+		}
+		
+		.info-box ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.info-box li {
+			padding: 8px 0;
+			border-bottom: 1px solid var(--border-color);
+			position: relative;
+			padding-left: 20px;
+		}
+		
+		.info-box li:before {
+			content: "•";
+			color: var(--accent-primary);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 8px;
+		}
+		
+		.info-box li:last-child {
+			border-bottom: none;
+		}
+		
+		.info-box code {
+			background: var(--bg-primary);
+			color: var(--accent-tertiary);
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 0.9em;
+			border: 1px solid var(--border-color);
+		}
+		
+		@media (max-width: 768px) {
+			.header {
+				flex-direction: column;
+				text-align: center;
+			}
+			
+			.controls {
+				flex-direction: column;
+				align-items: stretch;
+			}
+			
+			.control-group {
+				width: 100%;
+			}
+			
+			select, input {
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="header">
+		<h1>CSS Grid Template Visualization</h1>
+		<div class="theme-toggle" onclick="toggleTheme()">
+			<span class="theme-toggle-icon" id="theme-icon">🌙</span>
+			<span class="theme-toggle-text" id="theme-text">Dark Mode</span>
+		</div>
+	</div>
+	
+	<!-- Grid Template Columns Section -->
+	<div class="section">
+		<h2>grid-template-columns</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setColumnsPreset('1fr 1fr 1fr')">Equal Columns</button>
+			<button class="preset-btn" onclick="setColumnsPreset('1fr 2fr 1fr')">1:2:1 Ratio</button>
+			<button class="preset-btn" onclick="setColumnsPreset('100px 1fr 50px')">Fixed + Flexible</button>
+			<button class="preset-btn" onclick="setColumnsPreset('repeat(4, 1fr)')">Repeat 4 Equal</button>
+			<button class="preset-btn" onclick="setColumnsPreset('minmax(100px, 1fr) 200px')">Minmax + Fixed</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="columns">Grid Template Columns:</label>
+				<input type="text" id="columns" value="1fr 1fr 1fr" placeholder="e.g., 1fr 2fr 1fr">
+			</div>
+			<div class="control-group">
+				<label for="colItems">Number of Items:</label>
+				<select id="colItems">
+					<option value="3">3 items</option>
+					<option value="4">4 items</option>
+					<option value="5">5 items</option>
+					<option value="6" selected>6 items</option>
+					<option value="9">9 items</option>
+				</select>
+			</div>
+		</div>
+		
+		<div id="columnsGrid" class="grid-container"></div>
+		
+		<div class="code-display" id="columnsCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding grid-template-columns:</h3>
+			<p>This property defines the width of each column in your grid. You can use various units:</p>
+			<ul>
+				<li><strong>fr (fractional units):</strong> Distributes available space proportionally</li>
+				<li><strong>px, em, rem:</strong> Fixed sizes</li>
+				<li><strong>%:</strong> Percentage of container width</li>
+				<li><strong>auto:</strong> Size based on content</li>
+				<li><strong>minmax():</strong> Set minimum and maximum sizes</li>
+				<li><strong>repeat():</strong> Repeat a pattern</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- Grid Template Rows Section -->
+	<div class="section">
+		<h2>grid-template-rows</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setRowsPreset('1fr 1fr')">Equal Rows</button>
+			<button class="preset-btn" onclick="setRowsPreset('auto 1fr auto')">Header-Content-Footer</button>
+			<button class="preset-btn" onclick="setRowsPreset('100px 200px')">Fixed Heights</button>
+			<button class="preset-btn" onclick="setRowsPreset('repeat(3, 1fr)')">Repeat 3 Equal</button>
+			<button class="preset-btn" onclick="setRowsPreset('minmax(50px, auto) 1fr')">Minmax + Flexible</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="rows">Grid Template Rows:</label>
+				<input type="text" id="rows" value="1fr 1fr" placeholder="e.g., auto 1fr auto">
+			</div>
+			<div class="control-group">
+				<label for="rowItems">Number of Items:</label>
+				<select id="rowItems">
+					<option value="3">3 items</option>
+					<option value="4">4 items</option>
+					<option value="6" selected>6 items</option>
+					<option value="9">9 items</option>
+				</select>
+			</div>
+		</div>
+		
+		<div id="rowsGrid" class="grid-container"></div>
+		
+		<div class="code-display" id="rowsCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding grid-template-rows:</h3>
+			<p>This property defines the height of each row in your grid. Uses the same units as columns:</p>
+			<ul>
+				<li><strong>fr units:</strong> Distribute available vertical space</li>
+				<li><strong>auto:</strong> Height based on content</li>
+				<li><strong>Fixed units:</strong> px, em, rem for exact heights</li>
+				<li><strong>minmax():</strong> Set minimum and maximum row heights</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- FR Units Explanation -->
+	<div class="section">
+		<h2>Understanding 'fr' Units</h2>
+		
+		<div class="fr-demo">
+			<h3>Example: 1fr 2fr 1fr</h3>
+			<p>The 'fr' unit represents a fraction of the available space. In this example:</p>
+			<div class="fr-example">
+				<div class="fr-item">1fr<br>(25%)</div>
+				<div class="fr-item">2fr<br>(50%)</div>
+				<div class="fr-item">1fr<br>(25%)</div>
+			</div>
+			<p>Total: 1 + 2 + 1 = 4 fractions. Each 'fr' gets 1/4 of the space.</p>
+		</div>
+		
+		<div class="info-box">
+			<h4>Common Patterns:</h4>
+			<ul>
+				<li><code>1fr</code> - Single column takes all space</li>
+				<li><code>1fr 1fr</code> - Two equal columns (50% each)</li>
+				<li><code>1fr 2fr</code> - Second column is twice as wide</li>
+				<li><code>repeat(3, 1fr)</code> - Three equal columns</li>
+				<li><code>200px 1fr</code> - Fixed sidebar, flexible content</li>
+				<li><code>minmax(200px, 1fr) 1fr</code> - Responsive with minimum</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Theme management
+	function toggleTheme() {
+		const body = document.body;
+		const themeIcon = document.getElementById('theme-icon');
+		const themeText = document.getElementById('theme-text');
+		
+		const currentTheme = body.getAttribute('data-theme');
+		
+		if (currentTheme === 'light') {
+			body.removeAttribute('data-theme');
+			themeIcon.textContent = '🌙';
+			themeText.textContent = 'Dark Mode';
+			localStorage.setItem('theme', 'dark');
+		} else {
+			body.setAttribute('data-theme', 'light');
+			themeIcon.textContent = '☀️';
+			themeText.textContent = 'Light Mode';
+			localStorage.setItem('theme', 'light');
+		}
+	}
+	
+	// Load saved theme
+	function loadTheme() {
+		const savedTheme = localStorage.getItem('theme');
+		const body = document.body;
+		const themeIcon = document.getElementById('theme-icon');
+		const themeText = document.getElementById('theme-text');
+		
+		if (savedTheme === 'light') {
+			body.setAttribute('data-theme', 'light');
+			themeIcon.textContent = '☀️';
+			themeText.textContent = 'Light Mode';
+		} else {
+			body.removeAttribute('data-theme');
+			themeIcon.textContent = '🌙';
+			themeText.textContent = 'Dark Mode';
+		}
+	}
+	
+	// Initialize grids
+	function createGrid(containerId, items, isColumns = true) {
+		const container = document.getElementById(containerId);
+		container.innerHTML = '';
+		
+		for (let i = 1; i <= items; i++) {
+			const item = document.createElement('div');
+			item.className = 'grid-item';
+			item.textContent = `Item ${i}`;
+			container.appendChild(item);
+		}
+	}
+	
+	function updateColumnsGrid() {
+		const columnsValue = document.getElementById('columns').value;
+		const itemsCount = parseInt(document.getElementById('colItems').value);
+		const container = document.getElementById('columnsGrid');
+		const codeDisplay = document.getElementById('columnsCode');
+		
+		container.style.gridTemplateColumns = columnsValue;
+		container.style.gridTemplateRows = 'auto';
+		
+		createGrid('columnsGrid', itemsCount, true);
+		
+		codeDisplay.textContent = `.grid-container {
+  display: grid;
+  grid-template-columns: ${columnsValue};
+  gap: 3px;
+}`;
+	}
+	
+	function updateRowsGrid() {
+		const rowsValue = document.getElementById('rows').value;
+		const itemsCount = parseInt(document.getElementById('rowItems').value);
+		const container = document.getElementById('rowsGrid');
+		const codeDisplay = document.getElementById('rowsCode');
+		
+		container.style.gridTemplateRows = rowsValue;
+		container.style.gridTemplateColumns = 'repeat(3, 1fr)';
+		
+		createGrid('rowsGrid', itemsCount, false);
+		
+		codeDisplay.textContent = `.grid-container {
+  display: grid;
+  grid-template-rows: ${rowsValue};
+  grid-template-columns: repeat(3, 1fr);
+  gap: 3px;
+}`;
+	}
+	
+	function setColumnsPreset(value) {
+		document.getElementById('columns').value = value;
+		updateColumnsGrid();
+	}
+	
+	function setRowsPreset(value) {
+		document.getElementById('rows').value = value;
+		updateRowsGrid();
+	}
+	
+	// Event listeners
+	document.getElementById('columns').addEventListener('input', updateColumnsGrid);
+	document.getElementById('colItems').addEventListener('change', updateColumnsGrid);
+	document.getElementById('rows').addEventListener('input', updateRowsGrid);
+	document.getElementById('rowItems').addEventListener('change', updateRowsGrid);
+	
+	// Initialize on page load
+	loadTheme();
+	updateColumnsGrid();
+	updateRowsGrid();
+</script>
+</body>
+</html>

@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CSS Grid Auto-Flow Visualizer</title>
+	<style>
+		/* Nord Color Palette */
+		:root {
+			/* Dark Theme (Nord) */
+			--nord0: #2e3440;
+			--nord1: #3b4252;
+			--nord2: #434c5e;
+			--nord3: #4c566a;
+			--nord4: #d8dee9;
+			--nord5: #e5e9f0;
+			--nord6: #eceff4;
+			--nord7: #8fbcbb;
+			--nord8: #88c0d0;
+			--nord9: #81a1c1;
+			--nord10: #5e81ac;
+			--nord11: #bf616a;
+			--nord12: #d08770;
+			--nord13: #ebcb8b;
+			--nord14: #a3be8c;
+			--nord15: #b48ead;
+			
+			/* Theme Variables */
+			--bg-primary: var(--nord0);
+			--bg-secondary: var(--nord1);
+			--bg-tertiary: var(--nord2);
+			--text-primary: var(--nord6);
+			--text-secondary: var(--nord4);
+			--accent: var(--nord8);
+			--accent-secondary: var(--nord9);
+			--border: var(--nord3);
+			--grid-line: var(--nord3);
+			--coordinate-bg: var(--nord7);
+			--coordinate-text: var(--nord0);
+			--item-a: var(--nord12);
+			--item-b: var(--nord10);
+			--item-c: var(--nord14);
+			--item-d: var(--nord11);
+			--item-e: var(--nord15);
+			--item-f: var(--nord13);
+		}
+		
+		[data-theme="light"] {
+			--bg-primary: var(--nord6);
+			--bg-secondary: var(--nord5);
+			--bg-tertiary: var(--nord4);
+			--text-primary: var(--nord0);
+			--text-secondary: var(--nord2);
+			--accent: var(--nord10);
+			--accent-secondary: var(--nord9);
+			--border: var(--nord4);
+			--grid-line: var(--nord3);
+			--coordinate-bg: var(--nord8);
+			--coordinate-text: var(--nord6);
+			--item-a: var(--nord12);
+			--item-b: var(--nord10);
+			--item-c: var(--nord14);
+			--item-d: var(--nord11);
+			--item-e: var(--nord15);
+			--item-f: var(--nord13);
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Ubuntu Sans Mono', sans-serif !important;
+		}
+		
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background-color: var(--bg-primary);
+			color: var(--text-primary);
+			line-height: 1.6;
+			min-height: 100vh;
+			transition: all 0.3s ease;
+		}
+		
+		.container {
+			max-width: 1400px;
+			margin: 0 auto;
+			padding: 20px;
+		}
+		
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			padding-bottom: 20px;
+			border-bottom: 2px solid var(--border);
+		}
+		
+		.header h1 {
+			color: var(--accent);
+			font-size: 2.5rem;
+			font-weight: 300;
+		}
+		
+		.theme-toggle {
+			background: var(--bg-secondary);
+			border: 2px solid var(--border);
+			color: var(--text-primary);
+			padding: 10px 15px;
+			border-radius: 8px;
+			cursor: pointer;
+			font-size: 1.2rem;
+			transition: all 0.3s ease;
+		}
+		
+		.theme-toggle:hover {
+			background: var(--accent);
+			transform: scale(1.1);
+		}
+		
+		.controls {
+			display: flex;
+			gap: 20px;
+			margin-bottom: 30px;
+			flex-wrap: wrap;
+			background: var(--bg-secondary);
+			padding: 20px;
+			border-radius: 12px;
+			border: 2px solid var(--border);
+		}
+		
+		.control-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+		
+		.control-group label {
+			font-weight: 600;
+			color: var(--text-secondary);
+			font-size: 0.9rem;
+		}
+		
+		.control-group select,
+		.control-group input {
+			padding: 10px;
+			border: 2px solid var(--border);
+			border-radius: 6px;
+			background: var(--bg-primary);
+			color: var(--text-primary);
+			font-size: 1rem;
+			transition: all 0.3s ease;
+		}
+		
+		.control-group select:focus,
+		.control-group input:focus {
+			outline: none;
+			border-color: var(--accent);
+			box-shadow: 0 0 0 3px rgba(136, 192, 208, 0.2);
+		}
+		
+		.grid-wrapper {
+			position: relative;
+			margin-bottom: 30px;
+			background: var(--bg-secondary);
+			padding: 20px;
+			border-radius: 12px;
+			border: 2px solid var(--border);
+		}
+		
+		.grid-background {
+			position: absolute;
+			top: 20px;
+			left: 20px;
+			right: 20px;
+			bottom: 20px;
+			pointer-events: none;
+			z-index: 1;
+		}
+		
+		.grid-container {
+			display: grid;
+			gap: 10px;
+			position: relative;
+			z-index: 2;
+			grid-template-columns: repeat(5, 1fr);
+			grid-template-rows: repeat(4, 1fr);
+			grid-auto-flow: row;
+			min-height: 500px;
+		}
+		
+		.grid-item {
+			border: 2px solid var(--border);
+			border-radius: 8px;
+			padding: 12px;
+			display: flex;
+			flex-direction: column;
+			transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+			position: relative;
+			min-height: 100px;
+			backdrop-filter: blur(10px);
+			box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		}
+		
+		.grid-item[data-item="1"] {
+			background: var(--item-a);
+			color: var(--nord0);
+		}
+		
+		.grid-item[data-item="2"] {
+			background: var(--item-b);
+			color: var(--nord6);
+		}
+		
+		.grid-item[data-item="3"] {
+			background: var(--item-c);
+			color: var(--nord0);
+		}
+		
+		.grid-item[data-item="4"] {
+			background: var(--item-d);
+			color: var(--nord6);
+		}
+		
+		.grid-item[data-item="5"] {
+			background: var(--item-e);
+			color: var(--nord6);
+		}
+		
+		.grid-item[data-item="6"] {
+			background: var(--item-f);
+			color: var(--nord0);
+		}
+		
+		.grid-item:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+		}
+		
+		.item-header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 8px;
+		}
+		
+		.item-label {
+			font-weight: 700;
+			font-size: 1.1rem;
+			letter-spacing: 0.5px;
+		}
+		
+		.reset-btn {
+			background: transparent;
+			border: 1px solid currentColor;
+			color: inherit;
+			padding: 2px 6px;
+			border-radius: 4px;
+			cursor: pointer;
+			font-size: 0.9rem;
+			transition: all 0.3s ease;
+		}
+		
+		.reset-btn:hover {
+			background: rgba(255, 255, 255, 0.2);
+		}
+		
+		.item-controls {
+			display: flex;
+			gap: 4px;
+			flex-direction: column;
+			margin-bottom: 8px;
+		}
+		
+		.item-controls input {
+			padding: 4px 6px;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+			border-radius: 4px;
+			background: rgba(255, 255, 255, 0.1);
+			color: inherit;
+			font-size: 0.75rem;
+			text-align: center;
+			font-family: monospace;
+		}
+		
+		.item-controls input:focus {
+			outline: none;
+			border-color: rgba(255, 255, 255, 0.6);
+			background: rgba(255, 255, 255, 0.2);
+		}
+		
+		.item-position-info {
+			font-size: 0.7rem;
+			font-family: monospace;
+			opacity: 0.8;
+			text-align: center;
+			margin-top: auto;
+		}
+		
+		.grid-cell {
+			position: absolute;
+			border: 1px solid var(--grid-line);
+			border-radius: 4px;
+			background: rgba(255, 255, 255, 0.02);
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 0.8rem;
+			font-weight: 600;
+			color: var(--coordinate-text);
+			pointer-events: none;
+			transition: all 0.3s ease;
+		}
+		
+		.grid-cell.highlight {
+			background: rgba(136, 192, 208, 0.1);
+			border-color: var(--accent);
+		}
+		
+		.coordinate-label {
+			background: var(--coordinate-bg);
+			color: var(--coordinate-text);
+			padding: 2px 6px;
+			border-radius: 4px;
+			font-size: 0.7rem;
+			font-weight: 700;
+			font-family: monospace;
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+		}
+		
+		.info-panel {
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+			gap: 20px;
+		}
+		
+		.info-section {
+			background: var(--bg-secondary);
+			padding: 20px;
+			border-radius: 12px;
+			border: 2px solid var(--border);
+		}
+		
+		.info-section h3 {
+			color: var(--accent);
+			margin-bottom: 15px;
+			font-size: 1.2rem;
+		}
+		
+		.info-section div {
+			margin-bottom: 8px;
+			font-family: monospace;
+			font-size: 0.9rem;
+			color: var(--text-secondary);
+		}
+		
+		.position-info {
+			background: var(--bg-tertiary);
+			padding: 8px;
+			margin: 5px 0;
+			border-radius: 6px;
+			border-left: 4px solid var(--accent);
+		}
+		
+		.flow-explanation {
+			background: var(--bg-tertiary);
+			padding: 12px;
+			border-radius: 6px;
+			border-left: 4px solid var(--accent-secondary);
+			margin: 8px 0;
+		}
+		
+		/* Animation for position changes */
+		.grid-item.moving {
+			transform: scale(1.05);
+			box-shadow: 0 8px 32px rgba(136, 192, 208, 0.3);
+		}
+		
+		/* Responsive Design */
+		@media (max-width: 768px) {
+			.container {
+				padding: 10px;
+			}
+			
+			.header h1 {
+				font-size: 2rem;
+			}
+			
+			.controls {
+				flex-direction: column;
+				gap: 15px;
+			}
+			
+			.grid-container {
+				grid-template-columns: repeat(3, 1fr);
+				grid-template-rows: repeat(3, 1fr);
+				min-height: 400px;
+			}
+			
+			.info-panel {
+				grid-template-columns: 1fr;
+			}
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<header class="header">
+		<h1>CSS Grid Auto-Flow Visualizer</h1>
+		<button id="theme-toggle" class="theme-toggle">🌙</button>
+	</header>
+	
+	<div class="controls">
+		<div class="control-group">
+			<label for="auto-flow">Grid Auto-Flow:</label>
+			<select id="auto-flow">
+				<option value="row">Row</option>
+				<option value="column">Column</option>
+				<option value="row dense">Row Dense</option>
+				<option value="column dense">Column Dense</option>
+			</select>
+		</div>
+		
+		<div class="control-group">
+			<label for="grid-columns">Grid Columns:</label>
+			<input type="number" id="grid-columns" min="3" max="8" value="5">
+		</div>
+		
+		<div class="control-group">
+			<label for="grid-rows">Grid Rows:</label>
+			<input type="number" id="grid-rows" min="3" max="8" value="4">
+		</div>
+		
+		<div class="control-group">
+			<label for="gap-size">Gap Size:</label>
+			<input type="number" id="gap-size" min="5" max="30" value="10">
+		</div>
+	</div>
+	
+	<div class="grid-wrapper">
+		<div class="grid-background" id="grid-background"></div>
+		<div class="grid-container" id="grid-container">
+			<div class="grid-item" data-item="1" style="grid-column: 1 / 3; grid-row: 1 / 3;">
+				<div class="item-header">
+					<span class="item-label">Item-A</span>
+					<button class="reset-btn" data-item="1">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row (e.g., 1 / 3)" data-prop="gridRow" value="1 / 3">
+					<input type="text" placeholder="grid-column (e.g., 1 / 3)" data-prop="gridColumn" value="1 / 3">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+			
+			<div class="grid-item" data-item="2">
+				<div class="item-header">
+					<span class="item-label">Item-B</span>
+					<button class="reset-btn" data-item="2">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row" data-prop="gridRow">
+					<input type="text" placeholder="grid-column" data-prop="gridColumn">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+			
+			<div class="grid-item" data-item="3">
+				<div class="item-header">
+					<span class="item-label">Item-C</span>
+					<button class="reset-btn" data-item="3">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row" data-prop="gridRow">
+					<input type="text" placeholder="grid-column" data-prop="gridColumn">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+			
+			<div class="grid-item" data-item="4">
+				<div class="item-header">
+					<span class="item-label">Item-D</span>
+					<button class="reset-btn" data-item="4">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row" data-prop="gridRow">
+					<input type="text" placeholder="grid-column" data-prop="gridColumn">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+			
+			<div class="grid-item" data-item="5">
+				<div class="item-header">
+					<span class="item-label">Item-E</span>
+					<button class="reset-btn" data-item="5">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row" data-prop="gridRow">
+					<input type="text" placeholder="grid-column" data-prop="gridColumn">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+			
+			<div class="grid-item" data-item="6">
+				<div class="item-header">
+					<span class="item-label">Item-F</span>
+					<button class="reset-btn" data-item="6">↻</button>
+				</div>
+				<div class="item-controls">
+					<input type="text" placeholder="grid-row" data-prop="gridRow">
+					<input type="text" placeholder="grid-column" data-prop="gridColumn">
+				</div>
+				<div class="item-position-info"></div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="info-panel">
+		<div class="info-section">
+			<h3>Current Settings</h3>
+			<div id="current-flow">Grid Auto-Flow: row</div>
+			<div id="current-size">Grid Size: 5×4</div>
+			<div id="current-gap">Gap: 10px</div>
+		</div>
+		
+		<div class="info-section">
+			<h3>Item Positions</h3>
+			<div id="item-positions"></div>
+		</div>
+		
+		<div class="info-section">
+			<h3>Flow Explanation</h3>
+			<div id="flow-explanation"></div>
+		</div>
+	</div>
+</div>
+
+<script>
+	class GridAutoFlowVisualizer {
+		constructor() {
+			this.gridContainer = document.getElementById('grid-container');
+			this.gridBackground = document.getElementById('grid-background');
+			this.autoFlowSelect = document.getElementById('auto-flow');
+			this.gridColumnsInput = document.getElementById('grid-columns');
+			this.gridRowsInput = document.getElementById('grid-rows');
+			this.gapSizeInput = document.getElementById('gap-size');
+			this.themeToggle = document.getElementById('theme-toggle');
+			this.currentFlowDisplay = document.getElementById('current-flow');
+			this.currentSizeDisplay = document.getElementById('current-size');
+			this.currentGapDisplay = document.getElementById('current-gap');
+			this.itemPositionsDisplay = document.getElementById('item-positions');
+			this.flowExplanationDisplay = document.getElementById('flow-explanation');
+			
+			this.currentTheme = 'dark';
+			this.gridColumns = 5;
+			this.gridRows = 4;
+			this.gapSize = 10;
+			
+			this.init();
+		}
+		
+		init() {
+			this.setupEventListeners();
+			this.updateGrid();
+			this.updateGridBackground();
+			this.updateInfo();
+			this.updateFlowExplanation();
+		}
+		
+		setupEventListeners() {
+			// Auto-flow change
+			this.autoFlowSelect.addEventListener('change', () => {
+				this.updateGrid();
+				this.updateInfo();
+				this.updateFlowExplanation();
+				this.animateItemMovement();
+			});
+			
+			// Grid size changes
+			this.gridColumnsInput.addEventListener('input', () => {
+				this.gridColumns = parseInt(this.gridColumnsInput.value);
+				this.updateGrid();
+				this.updateGridBackground();
+				this.updateInfo();
+			});
+			
+			this.gridRowsInput.addEventListener('input', () => {
+				this.gridRows = parseInt(this.gridRowsInput.value);
+				this.updateGrid();
+				this.updateGridBackground();
+				this.updateInfo();
+			});
+			
+			// Gap size change
+			this.gapSizeInput.addEventListener('input', () => {
+				this.gapSize = parseInt(this.gapSizeInput.value);
+				this.updateGrid();
+				this.updateGridBackground();
+				this.updateInfo();
+			});
+			
+			// Theme toggle
+			this.themeToggle.addEventListener('click', () => {
+				this.toggleTheme();
+			});
+			
+			// Item control inputs
+			this.setupItemControlListeners();
+		}
+		
+		setupItemControlListeners() {
+			const items = document.querySelectorAll('.grid-item');
+			items.forEach(item => {
+				const inputs = item.querySelectorAll('input');
+				const resetBtn = item.querySelector('.reset-btn');
+				
+				inputs.forEach(input => {
+					input.addEventListener('input', (e) => {
+						this.updateItemProperty(item, e.target.dataset.prop, e.target.value);
+						this.animateItemMovement();
+					});
+					
+					input.addEventListener('focus', () => {
+						this.highlightItemArea(item);
+					});
+					
+					input.addEventListener('blur', () => {
+						this.removeHighlight();
+					});
+				});
+				
+				resetBtn.addEventListener('click', () => {
+					this.resetItemPosition(item);
+				});
+			});
+		}
+		
+		updateItemProperty(item, property, value) {
+			if (value.trim() === '') {
+				item.style[property] = '';
+			} else {
+				item.style[property] = value;
+			}
+			
+			// Update input value display
+			const input = item.querySelector(`input[data-prop="${property}"]`);
+			if (input) {
+				input.value = value;
+			}
+			
+			// Update info panel
+			setTimeout(() => {
+				this.updateInfo();
+				this.updateItemPositionInfo(item);
+			}, 100);
+		}
+		
+		resetItemPosition(item) {
+			const inputs = item.querySelectorAll('input');
+			inputs.forEach(input => {
+				input.value = '';
+				item.style[input.dataset.prop] = '';
+			});
+			
+			// Special case for Item-A (reset to spanning 2x2)
+			if (item.dataset.item === '1') {
+				item.style.gridColumn = '1 / 3';
+				item.style.gridRow = '1 / 3';
+				item.querySelector('input[data-prop="gridColumn"]').value = '1 / 3';
+				item.querySelector('input[data-prop="gridRow"]').value = '1 / 3';
+			}
+			
+			this.updateInfo();
+			this.updateItemPositionInfo(item);
+			this.animateItemMovement();
+		}
+		
+		updateGrid() {
+			const autoFlow = this.autoFlowSelect.value;
+			
+			this.gridContainer.style.gridTemplateColumns = `repeat(${this.gridColumns}, 1fr)`;
+			this.gridContainer.style.gridTemplateRows = `repeat(${this.gridRows}, 1fr)`;
+			this.gridContainer.style.gridAutoFlow = autoFlow;
+			this.gridContainer.style.gap = `${this.gapSize}px`;
+			
+			// Apply existing item styles
+			const items = document.querySelectorAll('.grid-item');
+			items.forEach(item => {
+				const inputs = item.querySelectorAll('input');
+				inputs.forEach(input => {
+					if (input.value.trim() !== '') {
+						item.style[input.dataset.prop] = input.value;
+					}
+				});
+				this.updateItemPositionInfo(item);
+			});
+		}
+		
+		updateGridBackground() {
+			this.gridBackground.innerHTML = '';
+			
+			const containerRect = this.gridContainer.getBoundingClientRect();
+			const backgroundRect = this.gridBackground.getBoundingClientRect();
+			
+			// Calculate cell dimensions
+			const cellWidth = (containerRect.width - (this.gridColumns - 1) * this.gapSize) / this.gridColumns;
+			const cellHeight = (containerRect.height - (this.gridRows - 1) * this.gapSize) / this.gridRows;
+			
+			for (let row = 1; row <= this.gridRows; row++) {
+				for (let col = 1; col <= this.gridColumns; col++) {
+					const cell = document.createElement('div');
+					cell.className = 'grid-cell';
+					
+					const left = (col - 1) * (cellWidth + this.gapSize);
+					const top = (row - 1) * (cellHeight + this.gapSize);
+					
+					cell.style.left = `${left}px`;
+					cell.style.top = `${top}px`;
+					cell.style.width = `${cellWidth}px`;
+					cell.style.height = `${cellHeight}px`;
+					
+					const coordinate = document.createElement('div');
+					coordinate.className = 'coordinate-label';
+					coordinate.textContent = `${col},${row}`;
+					cell.appendChild(coordinate);
+					
+					this.gridBackground.appendChild(cell);
+				}
+			}
+		}
+		
+		highlightItemArea(item) {
+			const cells = document.querySelectorAll('.grid-cell');
+			cells.forEach(cell => cell.classList.remove('highlight'));
+			
+			const computedStyle = getComputedStyle(item);
+			const gridColumnStart = parseInt(computedStyle.gridColumnStart) || 1;
+			const gridColumnEnd = parseInt(computedStyle.gridColumnEnd) || gridColumnStart + 1;
+			const gridRowStart = parseInt(computedStyle.gridRowStart) || 1;
+			const gridRowEnd = parseInt(computedStyle.gridRowEnd) || gridRowStart + 1;
+			
+			for (let row = gridRowStart; row < gridRowEnd; row++) {
+				for (let col = gridColumnStart; col < gridColumnEnd; col++) {
+					const cellIndex = (row - 1) * this.gridColumns + (col - 1);
+					if (cells[cellIndex]) {
+						cells[cellIndex].classList.add('highlight');
+					}
+				}
+			}
+		}
+		
+		removeHighlight() {
+			const cells = document.querySelectorAll('.grid-cell');
+			cells.forEach(cell => cell.classList.remove('highlight'));
+		}
+		
+		updateItemPositionInfo(item) {
+			const positionInfo = item.querySelector('.item-position-info');
+			const computedStyle = getComputedStyle(item);
+			
+			const gridColumnStart = computedStyle.gridColumnStart;
+			const gridColumnEnd = computedStyle.gridColumnEnd;
+			const gridRowStart = computedStyle.gridRowStart;
+			const gridRowEnd = computedStyle.gridRowEnd;
+			
+			positionInfo.textContent = `(${gridColumnStart},${gridRowStart}) → (${gridColumnEnd},${gridRowEnd})`;
+		}
+		
+		animateItemMovement() {
+			const items = document.querySelectorAll('.grid-item');
+			items.forEach(item => {
+				item.classList.add('moving');
+				setTimeout(() => {
+					item.classList.remove('moving');
+				}, 400);
+			});
+		}
+		
+		updateInfo() {
+			const autoFlow = this.autoFlowSelect.value;
+			this.currentFlowDisplay.textContent = `Grid Auto-Flow: ${autoFlow}`;
+			this.currentSizeDisplay.textContent = `Grid Size: ${this.gridColumns}×${this.gridRows}`;
+			this.currentGapDisplay.textContent = `Gap: ${this.gapSize}px`;
+			
+			// Update item positions
+			const items = document.querySelectorAll('.grid-item');
+			let positionsHTML = '';
+			
+			items.forEach((item, index) => {
+				const itemLabel = item.querySelector('.item-label').textContent;
+				const computedStyle = getComputedStyle(item);
+				const gridRow = item.style.gridRow || 'auto';
+				const gridColumn = item.style.gridColumn || 'auto';
+				
+				const gridColumnStart = computedStyle.gridColumnStart;
+				const gridRowStart = computedStyle.gridRowStart;
+				
+				positionsHTML += `<div class="position-info">
+                        <strong>${itemLabel}</strong>:
+                        row: ${gridRow},
+                        column: ${gridColumn}
+                        <br><small>Computed: (${gridColumnStart},${gridRowStart})</small>
+                    </div>`;
+			});
+			
+			this.itemPositionsDisplay.innerHTML = positionsHTML;
+		}
+		
+		updateFlowExplanation() {
+			const autoFlow = this.autoFlowSelect.value;
+			let explanation = '';
+			
+			switch(autoFlow) {
+				case 'row':
+					explanation = 'Items flow in row direction (left to right, then top to bottom). Auto-placed items fill the next available cell in the current row.';
+					break;
+				case 'column':
+					explanation = 'Items flow in column direction (top to bottom, then left to right). Auto-placed items fill the next available cell in the current column.';
+					break;
+				case 'row dense':
+					explanation = 'Items flow in row direction, but the algorithm attempts to fill holes earlier in the grid if smaller items come up later.';
+					break;
+				case 'column dense':
+					explanation = 'Items flow in column direction, but the algorithm attempts to fill holes earlier in the grid if smaller items come up later.';
+					break;
+			}
+			
+			this.flowExplanationDisplay.innerHTML = `<div class="flow-explanation">${explanation}</div>`;
+		}
+		
+		toggleTheme() {
+			this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+			document.body.setAttribute('data-theme', this.currentTheme);
+			this.themeToggle.textContent = this.currentTheme === 'dark' ? '🌙' : '☀️';
+			
+			// Update grid background after theme change
+			setTimeout(() => {
+				this.updateGridBackground();
+			}, 100);
+		}
+	}
+	
+	// Initialize the visualizer when DOM is loaded
+	document.addEventListener('DOMContentLoaded', () => {
+		window.visualizer = new GridAutoFlowVisualizer();
+	});
+	
+	// Handle window resize
+	window.addEventListener('resize', () => {
+		setTimeout(() => {
+			if (window.visualizer) {
+				window.visualizer.updateGridBackground();
+			}
+		}, 100);
+	});
+</script>
+</body>
+</html>

@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Transitions Visualization</title>
+    <style>
+        /* Nord Theme Color Variables */
+        :root {
+            /* Polar Night */
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            
+            /* Snow Storm */
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            
+            /* Frost */
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            
+            /* Aurora */
+            --nord11: #BF616A; /* Red */
+            --nord12: #D08770; /* Orange */
+            --nord13: #EBCB8B; /* Yellow */
+            --nord14: #A3BE8C; /* Green */
+            --nord15: #B48EAD; /* Purple */
+        }
+
+        *{
+            font-family: 'Ubuntu Sans Mono', monospace !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1, h2, h3 {
+            color: var(--nord8);
+            text-align: center;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+            font-size: 2.2rem;
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .card {
+            background-color: var(--nord1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        .visualization {
+            height: 300px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .demo-element {
+            width: 150px;
+            height: 150px;
+            background-color: var(--nord7);
+            border: 3px solid var(--nord9);
+            border-radius: 8px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: var(--nord0);
+            font-weight: bold;
+            font-size: 18px;
+            /* Transitions will be applied via JavaScript */
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .control-group {
+            margin-bottom: 15px;
+        }
+
+        .control-title {
+            color: var(--nord8);
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--nord4);
+        }
+
+        select, input {
+            background-color: var(--nord2);
+            color: var(--nord6);
+            border: 1px solid var(--nord3);
+            border-radius: 4px;
+            padding: 8px;
+            width: 100%;
+            font-family: 'Ubuntu Mono', monospace;
+        }
+
+        input[type="range"] {
+            accent-color: var(--nord9);
+        }
+
+        .value-display {
+            color: var(--nord13);
+            font-weight: bold;
+            margin-left: 5px;
+        }
+
+        .button-row {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-family: 'Ubuntu Mono', monospace;
+            transition: all 0.2s;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+            transform: translateY(-2px);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Radio button styling */
+        .radio-options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 12px;
+            background-color: var(--nord2);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .radio-option:hover {
+            background-color: var(--nord3);
+        }
+
+        .radio-option.active {
+            background-color: var(--nord3);
+            border: 1px solid var(--nord8);
+        }
+
+        .radio-button {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 2px solid var(--nord4);
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .radio-button::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: var(--nord8);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .radio-option.active .radio-button::after {
+            opacity: 1;
+        }
+
+        /* Timing function visualization */
+        .timing-function-viz {
+            height: 150px;
+            background-color: var(--nord2);
+            border-radius: 8px;
+            margin-top: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timing-curve {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            stroke: var(--nord14);
+            stroke-width: 3;
+            fill: none;
+        }
+
+        .timing-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            background-color: var(--nord11);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .axis {
+            position: absolute;
+            background-color: var(--nord4);
+            opacity: 0.3;
+        }
+
+        .x-axis {
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 1px;
+        }
+
+        .y-axis {
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 1px;
+        }
+
+        .code-display {
+            background-color: var(--nord2);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Ubuntu Mono', monospace;
+            overflow-x: auto;
+            white-space: pre-wrap;
+            margin-top: 20px;
+        }
+
+        .code-property {
+            color: var(--nord9);
+        }
+        
+        .code-value {
+            color: var(--nord14);
+        }
+        
+        .code-number {
+            color: var(--nord13);
+        }
+        
+        .code-unit {
+            color: var(--nord7);
+        }
+        
+        .code-comment {
+            color: var(--nord3);
+            font-style: italic;
+        }
+
+        .info-section p {
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .info-section strong {
+            color: var(--nord8);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid var(--nord3);
+        }
+
+        th {
+            color: var(--nord8);
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <h1>CSS Transitions Interactive Visualization</h1>
+
+        <div class="card">
+            <h2>Transition Demo</h2>
+            <div class="visualization">
+                <div class="demo-element" id="demoElement">
+                    Hover Me!
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Transition Controls</h2>
+            <div class="controls">
+                <div>
+                    <div class="control-group">
+                        <div class="control-title">Transition Property</div>
+                        <div class="radio-options" id="propertyOptions">
+                            <div class="radio-option active" data-property="width">
+                                <div class="radio-button"></div>
+                                <span>width</span>
+                            </div>
+                            <div class="radio-option" data-property="background-color">
+                                <div class="radio-button"></div>
+                                <span>background-color</span>
+                            </div>
+                            <div class="radio-option" data-property="transform">
+                                <div class="radio-button"></div>
+                                <span>transform</span>
+                            </div>
+                            <div class="radio-option" data-property="all">
+                                <div class="radio-button"></div>
+                                <span>all</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-title">Transition Duration</div>
+                        <label>
+                            <input type="range" id="durationRange" min="0.1" max="3" step="0.1" value="1">
+                            <span id="durationValue" class="value-display">1s</span>
+                        </label>
+                    </div>
+
+                    <div class="control-group">
+                        <div class="control-title">Transition Delay</div>
+                        <label>
+                            <input type="range" id="delayRange" min="0" max="2" step="0.1" value="0">
+                            <span id="delayValue" class="value-display">0s</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div>
+                    <div class="control-group">
+                        <div class="control-title">Timing Function</div>
+                        <div class="radio-options" id="timingOptions">
+                            <div class="radio-option active" data-timing="ease">
+                                <div class="radio-button"></div>
+                                <span>ease</span>
+                            </div>
+                            <div class="radio-option" data-timing="linear">
+                                <div class="radio-button"></div>
+                                <span>linear</span>
+                            </div>
+                            <div class="radio-option" data-timing="ease-in">
+                                <div class="radio-button"></div>
+                                <span>ease-in</span>
+                            </div>
+                            <div class="radio-option" data-timing="ease-out">
+                                <div class="radio-button"></div>
+                                <span>ease-out</span>
+                            </div>
+                            <div class="radio-option" data-timing="ease-in-out">
+                                <div class="radio-button"></div>
+                                <span>ease-in-out</span>
+                            </div>
+                        </div>
+
+                        <div class="timing-function-viz" id="timingFunctionViz">
+                            <div class="axis x-axis"></div>
+                            <div class="axis y-axis"></div>
+                            <svg width="100%" height="100%" viewBox="0 0 100 100" preserveAspectRatio="none">
+                                <path id="timingCurve" class="timing-curve" d="M0,100 C25,100 25,0 100,0" />
+                            </svg>
+                            <div class="timing-marker" id="timingMarker" style="left: 0; top: 100%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="button-row">
+                <button id="resetButton">Reset to Defaults</button>
+                <button id="triggerButton">Trigger Transition</button>
+            </div>
+            
+            <div class="code-display" id="codeDisplay">
+                <span class="code-property">transition-property:</span> <span class="code-value">width</span>;
+<span class="code-property">transition-duration:</span> <span class="code-number">1</span><span class="code-unit">s</span>;
+<span class="code-property">transition-timing-function:</span> <span class="code-value">ease</span>;
+<span class="code-property">transition-delay:</span> <span class="code-number">0</span><span class="code-unit">s</span>;
+
+<span class="code-comment">/* Shorthand notation: */</span>
+<span class="code-property">transition:</span> <span class="code-value">width</span> <span class="code-number">1</span><span class="code-unit">s</span> <span class="code-value">ease</span> <span class="code-number">0</span><span class="code-unit">s</span>;
+            </div>
+        </div>
+
+        <div class="card info-section">
+            <h2>Understanding CSS Transitions</h2>
+            
+            <p>CSS transitions provide a way to control animation speed when changing CSS properties. Instead of having property changes take effect immediately, you can cause the changes to take place over a period of time.</p>
+            
+            <p>A transition consists of:</p>
+            
+            <table>
+                <tr>
+                    <th>Property</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td><strong>transition-property</strong></td>
+                    <td>Specifies the name of the CSS property the transition effect is for</td>
+                </tr>
+                <tr>
+                    <td><strong>transition-duration</strong></td>
+                    <td>Specifies how many seconds or milliseconds the transition will take</td>
+                </tr>
+                <tr>
+                    <td><strong>transition-timing-function</strong></td>
+                    <td>Specifies the speed curve of the transition effect</td>
+                </tr>
+                <tr>
+                    <td><strong>transition-delay</strong></td>
+                    <td>Defines when the transition will start</td>
+                </tr>
+            </table>
+            
+            <h3>Timing Functions Explained</h3>
+            
+            <p>The timing function controls the acceleration of the transition:</p>
+            
+            <ul>
+                <li><strong>ease</strong> - Starts slow, speeds up, and then slows down (default)</li>
+                <li><strong>linear</strong> - Same speed from start to finish</li>
+                <li><strong>ease-in</strong> - Starts slow, then speeds up</li>
+                <li><strong>ease-out</strong> - Starts fast, then slows down</li>
+                <li><strong>ease-in-out</strong> - Starts and ends slow, faster in the middle</li>
+            </ul>
+            
+            <p>The curve shown in the visualization represents how the transition progresses over time. The horizontal axis represents time (from start to end), and the vertical axis represents completion progress (from 0% to 100%).</p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Elements
+            const demoElement = document.getElementById('demoElement');
+            const propertyOptions = document.querySelectorAll('#propertyOptions .radio-option');
+            const timingOptions = document.querySelectorAll('#timingOptions .radio-option');
+            const durationRange = document.getElementById('durationRange');
+            const durationValue = document.getElementById('durationValue');
+            const delayRange = document.getElementById('delayRange');
+            const delayValue = document.getElementById('delayValue');
+            const resetButton = document.getElementById('resetButton');
+            const triggerButton = document.getElementById('triggerButton');
+            const codeDisplay = document.getElementById('codeDisplay');
+            const timingCurve = document.getElementById('timingCurve');
+            const timingMarker = document.getElementById('timingMarker');
+            
+            // Variables to track state
+            let currentProperty = 'width';
+            let currentTiming = 'ease';
+            let currentDuration = 1;
+            let currentDelay = 0;
+            let isTransitioned = false;
+            let animationFrameId = null;
+            let transitionStartTime = 0;
+            
+            // Apply initial transition to the demo element
+            updateTransition();
+            
+            // Setup event listeners for property options
+            propertyOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    propertyOptions.forEach(opt => opt.classList.remove('active'));
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    // Update current property
+                    currentProperty = this.dataset.property;
+                    // Update transition
+                    updateTransition();
+                });
+            });
+            
+            // Setup event listeners for timing function options
+            timingOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    // Remove active class from all options
+                    timingOptions.forEach(opt => opt.classList.remove('active'));
+                    // Add active class to clicked option
+                    this.classList.add('active');
+                    // Update current timing
+                    currentTiming = this.dataset.timing;
+                    // Update transition
+                    updateTransition();
+                    // Update timing function curve
+                    updateTimingCurve();
+                });
+            });
+            
+            // Duration range input
+            durationRange.addEventListener('input', function() {
+                currentDuration = parseFloat(this.value);
+                durationValue.textContent = currentDuration + 's';
+                updateTransition();
+            });
+            
+            // Delay range input
+            delayRange.addEventListener('input', function() {
+                currentDelay = parseFloat(this.value);
+                delayValue.textContent = currentDelay + 's';
+                updateTransition();
+            });
+            
+            // Reset button
+            resetButton.addEventListener('click', function() {
+                resetToDefaults();
+            });
+            
+            // Trigger transition button
+            triggerButton.addEventListener('click', function() {
+                triggerTransition();
+            });
+            
+            // Mouse hover events for the demo element
+            demoElement.addEventListener('mouseenter', function() {
+                applyHoverState();
+            });
+            
+            demoElement.addEventListener('mouseleave', function() {
+                removeHoverState();
+            });
+            
+            // Function to update transition properties
+            function updateTransition() {
+                // Create the transition CSS
+                const transitionCSS = `${currentProperty} ${currentDuration}s ${currentTiming} ${currentDelay}s`;
+                
+                // Apply to demo element
+                demoElement.style.transition = transitionCSS;
+                
+                // Update code display
+                updateCodeDisplay();
+                
+                // Update timing function visualization
+                updateTimingCurve();
+            }
+            
+            // Function to trigger the transition manually
+            function triggerTransition() {
+                if (isTransitioned) {
+                    removeHoverState();
+                } else {
+                    applyHoverState();
+                }
+                isTransitioned = !isTransitioned;
+            }
+            
+            // Function to apply hover state based on selected property
+            function applyHoverState() {
+                switch(currentProperty) {
+                    case 'width':
+                        demoElement.style.width = '300px';
+                        break;
+                    case 'background-color':
+                        demoElement.style.backgroundColor = 'var(--nord14)';
+                        break;
+                    case 'transform':
+                        demoElement.style.transform = 'rotate(180deg) scale(1.2)';
+                        break;
+                    case 'all':
+                        demoElement.style.width = '300px';
+                        demoElement.style.backgroundColor = 'var(--nord14)';
+                        demoElement.style.transform = 'rotate(180deg) scale(1.2)';
+                        break;
+                }
+                
+                // Start timing marker animation
+                startTimingMarkerAnimation();
+            }
+            
+            // Function to remove hover state
+            function removeHoverState() {
+                demoElement.style.width = '';
+                demoElement.style.backgroundColor = '';
+                demoElement.style.transform = '';
+                
+                // Start timing marker animation
+                startTimingMarkerAnimation();
+            }
+            
+            // Function to reset to default values
+            function resetToDefaults() {
+                // Reset property
+                propertyOptions.forEach(opt => {
+                    if (opt.dataset.property === 'width') {
+                        opt.classList.add('active');
+                    } else {
+                        opt.classList.remove('active');
+                    }
+                });
+                currentProperty = 'width';
+                
+                // Reset timing function
+                timingOptions.forEach(opt => {
+                    if (opt.dataset.timing === 'ease') {
+                        opt.classList.add('active');
+                    } else {
+                        opt.classList.remove('active');
+                    }
+                });
+                currentTiming = 'ease';
+                
+                // Reset duration and delay
+                durationRange.value = 1;
+                currentDuration = 1;
+                durationValue.textContent = '1s';
+                
+                delayRange.value = 0;
+                currentDelay = 0;
+                delayValue.textContent = '0s';
+                
+                // Reset demo element
+                removeHoverState();
+                isTransitioned = false;
+                
+                // Update transition
+                updateTransition();
+            }
+            
+            // Function to update code display
+            function updateCodeDisplay() {
+                codeDisplay.innerHTML = `<span class="code-property">transition-property:</span> <span class="code-value">${currentProperty}</span>;
+<span class="code-property">transition-duration:</span> <span class="code-number">${currentDuration}</span><span class="code-unit">s</span>;
+<span class="code-property">transition-timing-function:</span> <span class="code-value">${currentTiming}</span>;
+<span class="code-property">transition-delay:</span> <span class="code-number">${currentDelay}</span><span class="code-unit">s</span>;
+
+<span class="code-comment">/* Shorthand notation: */</span>
+<span class="code-property">transition:</span> <span class="code-value">${currentProperty}</span> <span class="code-number">${currentDuration}</span><span class="code-unit">s</span> <span class="code-value">${currentTiming}</span> <span class="code-number">${currentDelay}</span><span class="code-unit">s</span>;`;
+            }
+            
+            // Function to update timing curve
+            function updateTimingCurve() {
+                // Define SVG path for different timing functions
+                let path;
+                
+                switch(currentTiming) {
+                    case 'linear':
+                        path = 'M0,100 L100,0';
+                        break;
+                    case 'ease-in':
+                        path = 'M0,100 C40,100 80,30 100,0';
+                        break;
+                    case 'ease-out':
+                        path = 'M0,100 C20,70 60,0 100,0';
+                        break;
+                    case 'ease-in-out':
+                        path = 'M0,100 C40,100 60,0 100,0';
+                        break;
+                    default: // ease
+                        path = 'M0,100 C25,100 25,0 100,0';
+                        break;
+                }
+                
+                timingCurve.setAttribute('d', path);
+                
+                // Reset timing marker position
+                timingMarker.style.left = '0%';
+                timingMarker.style.top = '100%';
+            }
+            
+            // Function to animate timing marker
+            function startTimingMarkerAnimation() {
+                // Cancel any existing animation
+                if (animationFrameId) {
+                    cancelAnimationFrame(animationFrameId);
+                }
+                
+                // Record start time
+                transitionStartTime = performance.now();
+                
+                // Calculate total transition time including delay
+                const totalTime = (currentDuration + currentDelay) * 1000;
+                
+                // Start animation loop
+                function animateMarker(timestamp) {
+                    // Calculate elapsed time
+                    const elapsedTime = timestamp - transitionStartTime;
+                    
+                    if (elapsedTime <= totalTime) {
+                        // If we're still in the delay period
+                        if (elapsedTime < currentDelay * 1000) {
+                            timingMarker.style.left = '0%';
+                            timingMarker.style.top = '100%';
+                        } else {
+                            // Calculate progress (0 to 1) accounting for delay
+                            const progress = (elapsedTime - currentDelay * 1000) / (currentDuration * 1000);
+                            if (progress > 1) return;
+                            
+                            // Calculate position along the x-axis (time)
+                            const xPos = progress * 100;
+                            
+                            // Calculate y position based on timing function
+                            let yPos;
+                            
+                            switch(currentTiming) {
+                                case 'linear':
+                                    yPos = 100 - progress * 100;
+                                    break;
+                                case 'ease-in':
+                                    yPos = 100 - Math.pow(progress, 2) * 100;
+                                    break;
+                                case 'ease-out':
+                                    yPos = 100 - (1 - Math.pow(1 - progress, 2)) * 100;
+                                    break;
+                                case 'ease-in-out':
+                                    yPos = 100 - (progress < 0.5 ? 2 * Math.pow(progress, 2) : 1 - Math.pow(-2 * progress + 2, 2) / 2) * 100;
+                                    break;
+                                default: // ease
+                                    yPos = 100 - (progress < 0.5 ? 4 * Math.pow(progress, 3) : 1 - Math.pow(-2 * progress + 2, 3) / 2) * 100;
+                                    break;
+                            }
+                            
+                            // Update marker position
+                            timingMarker.style.left = xPos + '%';
+                            timingMarker.style.top = yPos + '%';
+                        }
+                        
+                        // Continue animation
+                        animationFrameId = requestAnimationFrame(animateMarker);
+                    } else {
+                        // End of animation
+                        timingMarker.style.left = '100%';
+                        timingMarker.style.top = '0%';
+                        animationFrameId = null;
+                    }
+                }
+                
+                // Start the animation
+                animationFrameId = requestAnimationFrame(animateMarker);
+            }
+            
+            // Initialize timing curve
+            updateTimingCurve();
+        });
+    </script>
+</body>
+</html>

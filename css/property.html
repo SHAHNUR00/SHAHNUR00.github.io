@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS @property Inheritance Visualization</title>
+  <style>
+    /* Nord Theme Colors */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A; /* Red */
+      --nord12: #D08770; /* Orange */
+      --nord13: #EBCB8B; /* Yellow */
+      --nord14: #A3BE8C; /* Green */
+      --nord15: #B48EAD; /* Purple */
+    }
+    
+    *{
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      background-color: var(--nord0);
+      color: var(--nord6);
+      margin: 0;
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1, h2, h3 {
+      color: var(--nord8);
+      margin-top: 0;
+    }
+
+    .page-header {
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--nord3);
+      color: var(--nord6);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) {
+      .container {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .panel {
+      background-color: var(--nord1);
+      border-radius: 6px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .panel-header {
+      color: var(--nord8);
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--nord3);
+    }
+
+    .panel-content {
+      color: var(--nord4);
+    }
+
+    .control-group {
+      margin-bottom: 20px;
+    }
+
+    .control-title {
+      color: var(--nord9);
+      margin-bottom: 10px;
+      font-weight: 500;
+    }
+
+    .btn {
+      background-color: var(--nord3);
+      color: var(--nord6);
+      border: none;
+      padding: 8px 14px;
+      margin: 0 5px 5px 0;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--nord9);
+    }
+
+    .btn.active {
+      background-color: var(--nord10);
+    }
+
+    .btn.reset {
+      background-color: var(--nord2);
+      color: var(--nord6);
+      border: 1px solid var(--nord3);
+    }
+
+    .code-block {
+      background-color: var(--nord0);
+      border-radius: 6px;
+      padding: 15px;
+      font-family: 'Courier New', monospace;
+      color: var(--nord4);
+      overflow-x: auto;
+      margin: 15px 0;
+      box-shadow: inset 0 0 0 1px var(--nord3);
+    }
+
+    .syntax-keyword {
+      color: var(--nord9);
+    }
+
+    .syntax-value {
+      color: var(--nord14);
+    }
+
+    .syntax-string {
+      color: var(--nord13);
+    }
+
+    .syntax-comment {
+      color: var(--nord3);
+      font-style: italic;
+    }
+
+    /* Demo box styles */
+    .demo-box {
+      border-radius: 6px;
+      padding: 15px;
+      margin: 15px 0;
+      color: var(--nord6); /* Default white text */
+      font-weight: 500;
+      position: relative;
+    }
+
+    /* Parent divs with yellow border */
+    .parent-true, .parent-false {
+      border: 2px solid var(--nord13); /* Nord yellow border */
+    }
+
+    .box-label {
+      margin-bottom: 8px;
+      font-weight: bold;
+    }
+
+    .box-description {
+      font-size: 0.9em;
+      opacity: 0.8;
+    }
+
+    .box-child {
+      margin-top: 15px;
+      border-radius: 6px;
+      padding: 15px;
+    }
+
+    .box-grandchild {
+      margin-top: 15px;
+      border-radius: 6px;
+      padding: 15px;
+    }
+
+    /* Black text for colored states (will be applied via JS) */
+    .colored-state {
+      color: var(--nord0);
+    }
+
+    /* Explanation box */
+    .explanation {
+      background-color: var(--nord2);
+      border-radius: 6px;
+      padding: 15px;
+      margin-top: 20px;
+      border-left: 4px solid var(--nord9);
+    }
+
+    .explanation h3 {
+      color: var(--nord8);
+      margin-top: 0;
+    }
+
+    .explanation ul {
+      padding-left: 20px;
+    }
+
+    .explanation li {
+      margin-bottom: 5px;
+    }
+
+    .highlight {
+      font-weight: bold;
+      color: var(--nord11);
+    }
+
+    /* Custom properties */
+    @property --inherits-true-color {
+      syntax: "<color>";
+      inherits: true;
+      initial-value: var(--nord5);
+    }
+
+    @property --inherits-false-color {
+      syntax: "<color>";
+      inherits: false;
+      initial-value: var(--nord5);
+    }
+
+    /* Demo styling */
+    .parent-true {
+      background-color: var(--inherits-true-color);
+    }
+
+    .child-true {
+      background-color: var(--inherits-true-color);
+    }
+
+    .grandchild-true {
+      background-color: var(--inherits-true-color);
+    }
+
+    .parent-false {
+      background-color: var(--inherits-false-color);
+    }
+
+    .child-false {
+      background-color: var(--inherits-false-color);
+    }
+
+    .grandchild-false {
+      background-color: var(--inherits-false-color);
+    }
+  </style>
+</head>
+<body>
+  <h1 class="page-header" style="margin-left: 14rem;">Inherits parameter affects custom properties</h1>
+
+  <div class="container">
+    <!-- Controls Panel -->
+    <div class="panel">
+      <h2 class="panel-header">Controls</h2>
+      <div class="panel-content">
+        <div class="control-group">
+          <h3 class="control-title">Change Parent Colors:</h3>
+          <button id="btn-gray-parent" class="btn">Nord Gray</button>
+          <button id="btn-red-parent" class="btn">Nord Green</button>
+          <button id="btn-reset-parent" class="btn reset active">Reset</button>
+        </div>
+
+        <div class="control-group">
+          <h3 class="control-title">Change Middle Child Color (Only):</h3>
+          <button id="btn-gray-middle" class="btn">Nord Gray</button>
+          <button id="btn-red-middle" class="btn">Nord Green</button>
+          <button id="btn-reset-middle" class="btn reset active">Reset</button>
+        </div>
+
+        <div class="code-block">
+<span class="syntax-comment">/* With inherits: true */</span>
+<span class="syntax-keyword"> <br>@property</span> --inherits-true-color {
+  <span class="syntax-keyword" style="margin-left: 2rem;"> syntax:</span> <span class="syntax-string">"&lt;color&gt;"</span>;<br>
+  <span class="syntax-keyword" style="margin-left: 2rem;">inherits:</span> <span class="syntax-value">true</span>;<br>
+  <span class="syntax-keyword" style="margin-left: 2rem;">initial-value:</span> <span class="syntax-value">lightgray</span>;<br>
+}
+<br><span class="syntax-comment">/* With inherits: false */</span><br>
+<span class="syntax-keyword">@property</span> --inherits-false-color {
+  <span class="syntax-keyword" style="margin-left: 2rem;">syntax:</span> <span class="syntax-string">"&lt;color&gt;"</span>;<br>
+  <span class="syntax-keyword" style="margin-left: 2rem;">inherits:</span> <span class="syntax-value">false</span>;<br>
+  <span class="syntax-keyword" style="margin-left: 2rem;">initial-value:</span> <span class="syntax-value">lightgray</span>;<br>
+}
+        </div>
+      </div>
+    </div>
+
+    <!-- inherits: true Panel -->
+    <div class="panel">
+      <h2 class="panel-header">inherits: true</h2>
+      <div class="panel-content">
+        <p>Changes to the custom property are inherited by child elements</p>
+        
+        <div class="demo-box parent-true" id="parent-true">
+          <div class="box-label">Parent Div</div>
+          <div class="box-description">Background uses: var(--inherits-true-color)</div>
+          
+          <div class="box-child child-true">
+            <div class="box-label">Child Div</div>
+            <div class="box-description">Background uses: var(--inherits-true-color)</div>
+            
+            <div class="box-grandchild grandchild-true">
+              <div class="box-label">Grandchild Div</div>
+              <div class="box-description">Background uses: var(--inherits-true-color)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <h3>How inherits: true Works</h3>
+          <p>When <code>inherits: true</code> is set:</p>
+          <ul>
+            <li>If parent element changes the value, <span class="highlight">all children inherit</span> that value</li>
+            <li>If middle element changes the value, only it and its children get the new value</li>
+            <li>Child elements don't need to explicitly declare the property</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- inherits: false Panel -->
+    <div class="panel">
+      <h2 class="panel-header">inherits: false</h2>
+      <div class="panel-content">
+        <p>Changes to the custom property are NOT inherited by child elements</p>
+        
+        <div class="demo-box parent-false" id="parent-false">
+          <div class="box-label">Parent Div</div>
+          <div class="box-description">Background uses: var(--inherits-false-color)</div>
+          
+          <div class="box-child child-false" id="child-false">
+            <div class="box-label">Child Div</div>
+            <div class="box-description">Background uses: var(--inherits-false-color)</div>
+            
+            <div class="box-grandchild grandchild-false">
+              <div class="box-label">Grandchild Div</div>
+              <div class="box-description">Background uses: var(--inherits-false-color)</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="explanation">
+          <h3>How inherits: false Works</h3>
+          <p>When <code>inherits: false</code> is set:</p>
+          <ul>
+            <li>If parent element changes the value, children <span class="highlight">do not inherit</span> that value</li>
+            <li>Each element gets the initial-value unless explicitly set</li>
+            <li>Each element that wants to use the property must set it explicitly</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const parentTrue = document.getElementById('parent-true');
+      const parentFalse = document.getElementById('parent-false');
+      const childFalse = document.getElementById('child-false');
+      
+      // Nord colors
+      const nordGray = '#D8DEE9'; // Nord light gray (Nord5)
+      const nordRed = '#A3BE8C';   // Nord green (Nord14)
+      
+      // Function to add colored state class to elements (for black text)
+      function addColoredState(elements) {
+        if (Array.isArray(elements)) {
+          elements.forEach(el => el.classList.add('colored-state'));
+        } else {
+          elements.classList.add('colored-state');
+        }
+      }
+      
+      // Function to remove colored state class from elements (for white text)
+      function removeColoredState(elements) {
+        if (Array.isArray(elements)) {
+          elements.forEach(el => el.classList.remove('colored-state'));
+        } else {
+          elements.classList.remove('colored-state');
+        }
+      }
+      
+      // Get all text elements in true inheritance side
+      const trueElements = [
+        parentTrue,
+        ...parentTrue.querySelectorAll('.box-label, .box-description')
+      ];
+      
+      // Get all text elements in false inheritance side
+      const falseElements = [
+        parentFalse,
+        ...parentFalse.querySelectorAll('.box-label, .box-description')
+      ];
+      
+      // Get all text elements in child-false div
+      const childFalseElements = [
+        childFalse,
+        ...childFalse.querySelectorAll('.box-label, .box-description')
+      ];
+      
+      // Function to reset active button state in a group
+      function resetButtonState(buttonGroup) {
+        buttonGroup.forEach(btn => btn.classList.remove('active'));
+      }
+
+      // Parent color buttons
+      const grayParentBtn = document.getElementById('btn-gray-parent');
+      const redParentBtn = document.getElementById('btn-red-parent');
+      const resetParentBtn = document.getElementById('btn-reset-parent');
+      
+      const parentButtons = [grayParentBtn, redParentBtn, resetParentBtn];
+
+      grayParentBtn.addEventListener('click', () => {
+        parentTrue.style.setProperty('--inherits-true-color', nordGray);
+        parentFalse.style.setProperty('--inherits-false-color', nordGray);
+        
+        // Set text to black
+        addColoredState(trueElements);
+        addColoredState(falseElements);
+        
+        resetButtonState(parentButtons);
+        grayParentBtn.classList.add('active');
+      });
+
+      redParentBtn.addEventListener('click', () => {
+        parentTrue.style.setProperty('--inherits-true-color', nordRed);
+        parentFalse.style.setProperty('--inherits-false-color', nordRed);
+        
+        // Set text to black
+        addColoredState(trueElements);
+        addColoredState(falseElements);
+        
+        resetButtonState(parentButtons);
+        redParentBtn.classList.add('active');
+      });
+
+      resetParentBtn.addEventListener('click', () => {
+        parentTrue.style.removeProperty('--inherits-true-color');
+        parentFalse.style.removeProperty('--inherits-false-color');
+        
+        // Set text back to white
+        removeColoredState(trueElements);
+        removeColoredState(falseElements);
+        
+        resetButtonState(parentButtons);
+        resetParentBtn.classList.add('active');
+      });
+
+      // Middle child buttons
+      const grayMiddleBtn = document.getElementById('btn-gray-middle');
+      const redMiddleBtn = document.getElementById('btn-red-middle');
+      const resetMiddleBtn = document.getElementById('btn-reset-middle');
+      
+      const middleButtons = [grayMiddleBtn, redMiddleBtn, resetMiddleBtn];
+
+      grayMiddleBtn.addEventListener('click', () => {
+        childFalse.style.setProperty('--inherits-false-color', nordGray);
+        
+        // Set child text to black
+        addColoredState(childFalseElements);
+        
+        resetButtonState(middleButtons);
+        grayMiddleBtn.classList.add('active');
+      });
+
+      redMiddleBtn.addEventListener('click', () => {
+        childFalse.style.setProperty('--inherits-false-color', nordRed);
+        
+        // Set child text to black
+        addColoredState(childFalseElements);
+        
+        resetButtonState(middleButtons);
+        redMiddleBtn.classList.add('active');
+      });
+
+      resetMiddleBtn.addEventListener('click', () => {
+        childFalse.style.removeProperty('--inherits-false-color');
+        
+        // Set child text back to white
+        removeColoredState(childFalseElements);
+        
+        resetButtonState(middleButtons);
+        resetMiddleBtn.classList.add('active');
+      });
+
+      // Make sure text is white initially since we're in reset state
+      removeColoredState(trueElements);
+      removeColoredState(falseElements);
+      removeColoredState(childFalseElements);
+    });
+  </script>
+</body>
+</html>

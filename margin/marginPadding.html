@@ -1,0 +1,1319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Container & Boxes Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    /* Base Styles */
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 24px;
+    }
+
+    /* Layout */
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .viewport {
+      background-color: var(--nord1);
+      border-radius: 8px;
+      padding: 20px;
+      height: 450px;
+      position: relative;
+      overflow: auto;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+    }
+
+    /* Box Styling */
+    .outer-container {
+      position: relative;
+      width: calc(100% - 40px);
+      height: calc(100% - 40px);
+    }
+
+    .outer-margin {
+      background-color: rgba(191, 97, 106, 0.2); /* nord11 with transparency */
+      border: 1px dashed var(--nord11);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .outer-border {
+      background-color: var(--nord13);
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .outer-padding {
+      background-color: rgba(163, 190, 140, 0.2); /* nord14 with transparency */
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+    }
+
+    .outer-content {
+      background-color: var(--nord2);
+      position: relative;
+      width: 100%;
+      height: 100%;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-wrap: wrap;
+      align-content: flex-start;
+      overflow: hidden;
+    }
+
+    /* Box styling - positioned INSIDE container */
+    .box {
+      position: relative;
+      display: inline-block;
+      margin: 0;
+      transition: all 0.3s ease;
+    }
+
+    .box-margin {
+      background-color: rgba(136, 192, 208, 0.2); /* nord8 with transparency */
+      border: 1px dashed var(--nord8);
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .box-border {
+      background-color: var(--nord7);
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .box-padding {
+      background-color: rgba(180, 142, 173, 0.2); /* nord15 with transparency */
+      display: inline-block;
+      transition: all 0.3s ease;
+    }
+
+    .box-content {
+      background-color: var(--nord9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-weight: bold;
+      color: var(--nord0);
+      transition: all 0.3s ease;
+    }
+
+    /* Controls Styling */
+    .tab-buttons {
+      display: flex;
+      margin-bottom: 15px;
+      border-bottom: 1px solid var(--nord3);
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 16px;
+      cursor: pointer;
+      border-radius: 4px 4px 0 0;
+      margin-right: 2px;
+    }
+
+    .tab-button.active {
+      background-color: var(--nord8);
+      color: var(--nord0);
+      font-weight: bold;
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .control-section {
+      margin-bottom: 15px;
+      padding-bottom: 15px;
+      border-bottom: 1px solid var(--nord3);
+    }
+
+    .section-header {
+      color: var(--nord7);
+      margin-bottom: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      margin: 8px 0;
+    }
+
+    .control-label {
+      width: 70px;
+      flex-shrink: 0;
+    }
+
+    .control-input {
+      flex-grow: 1;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input[type="range"] {
+      flex-grow: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: var(--nord3);
+      border-radius: 3px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border: none;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    .value-display {
+      width: 40px;
+      text-align: center;
+      color: var(--nord8);
+      font-size: 14px;
+    }
+
+    /* Visibility Controls */
+    .visibility-controls {
+      margin-bottom: 15px;
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .visibility-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .visibility-checkbox input {
+      cursor: pointer;
+    }
+
+    .visibility-checkbox label {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    /* Code Display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+      overflow: auto;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .prop {
+      color: var(--nord8);
+    }
+
+    .val {
+      color: var(--nord14);
+    }
+
+    .selector {
+      color: var(--nord7);
+    }
+
+    .comment {
+      color: var(--nord10);
+    }
+
+    /* Legend */
+    .legend {
+      display: flex;
+      gap: 15px;
+      flex-wrap: wrap;
+      margin-bottom: 15px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 14px;
+    }
+
+    .legend-color {
+      width: 15px;
+      height: 15px;
+      border-radius: 3px;
+    }
+
+    .container-margin {
+      background-color: rgba(191, 97, 106, 0.2);
+      border: 1px dashed var(--nord11);
+    }
+
+    .container-border {
+      background-color: var(--nord13);
+    }
+
+    .container-padding {
+      background-color: rgba(163, 190, 140, 0.2);
+      border: 1px solid var(--nord14);
+    }
+
+    .container-content {
+      background-color: var(--nord2);
+    }
+
+    .box-margin-legend {
+      background-color: rgba(136, 192, 208, 0.2);
+      border: 1px dashed var(--nord8);
+    }
+
+    .box-border-legend {
+      background-color: var(--nord7);
+    }
+
+    .box-padding-legend {
+      background-color: rgba(180, 142, 173, 0.2);
+      border: 1px solid var(--nord15);
+    }
+
+    .box-content-legend {
+      background-color: var(--nord9);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      border-top: 1px solid var(--nord3);
+      padding-top: 10px;
+    }
+
+    /* Reset Button */
+    .reset-button {
+      background-color: var(--nord10);
+      border: none;
+      color: var(--nord0);
+      padding: 4px 8px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+
+    .reset-button:hover {
+      background-color: var(--nord9);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Container & Boxes Margin/Padding Visualizer</h1>
+
+    <div class="legend">
+      <div class="legend-item">
+        <div class="legend-color container-margin"></div>
+        <span>Container Margin</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color container-border"></div>
+        <span>Container Border</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color container-padding"></div>
+        <span>Container Padding</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color container-content"></div>
+        <span>Container Content</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color box-margin-legend"></div>
+        <span>Box Margin</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color box-border-legend"></div>
+        <span>Box Border</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color box-padding-legend"></div>
+        <span>Box Padding</span>
+      </div>
+      <div class="legend-item">
+        <div class="legend-color box-content-legend"></div>
+        <span>Box Content</span>
+      </div>
+    </div>
+
+    <div class="visibility-controls">
+      <div class="visibility-checkbox">
+        <input type="checkbox" id="show-box1" checked>
+        <label for="show-box1">Box 1</label>
+      </div>
+      <div class="visibility-checkbox">
+        <input type="checkbox" id="show-box2" checked>
+        <label for="show-box2">Box 2</label>
+      </div>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <div class="tab-buttons">
+          <button class="tab-button active" data-tab="container-tab">Container</button>
+          <button class="tab-button" data-tab="box1-tab">Box 1</button>
+          <button class="tab-button" data-tab="box2-tab">Box 2</button>
+        </div>
+
+        <!-- Container Controls -->
+        <div class="tab-content active" id="container-tab">
+          <div class="control-section">
+            <div class="section-header">
+              <span>Container Margin</span>
+              <button class="reset-button" id="reset-container-margin">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="container-margin-top" min="0" max="50" value="20">
+                <span class="value-display" id="container-margin-top-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="container-margin-right" min="0" max="50" value="20">
+                <span class="value-display" id="container-margin-right-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="container-margin-bottom" min="0" max="50" value="20">
+                <span class="value-display" id="container-margin-bottom-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="container-margin-left" min="0" max="50" value="20">
+                <span class="value-display" id="container-margin-left-value">20px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Container Border</span>
+              <button class="reset-button" id="reset-container-border">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Width:</div>
+              <div class="control-input">
+                <input type="range" id="container-border-width" min="0" max="20" value="5">
+                <span class="value-display" id="container-border-width-value">5px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Container Padding</span>
+              <button class="reset-button" id="reset-container-padding">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="container-padding-top" min="0" max="50" value="20">
+                <span class="value-display" id="container-padding-top-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="container-padding-right" min="0" max="50" value="20">
+                <span class="value-display" id="container-padding-right-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="container-padding-bottom" min="0" max="50" value="20">
+                <span class="value-display" id="container-padding-bottom-value">20px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="container-padding-left" min="0" max="50" value="20">
+                <span class="value-display" id="container-padding-left-value">20px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 1 Controls -->
+        <div class="tab-content" id="box1-tab">
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 1 Margin</span>
+              <button class="reset-button" id="reset-box1-margin">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="box1-margin-top" min="0" max="50" value="10">
+                <span class="value-display" id="box1-margin-top-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="box1-margin-right" min="0" max="50" value="10">
+                <span class="value-display" id="box1-margin-right-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="box1-margin-bottom" min="0" max="50" value="10">
+                <span class="value-display" id="box1-margin-bottom-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="box1-margin-left" min="0" max="50" value="10">
+                <span class="value-display" id="box1-margin-left-value">10px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 1 Border</span>
+              <button class="reset-button" id="reset-box1-border">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Width:</div>
+              <div class="control-input">
+                <input type="range" id="box1-border-width" min="0" max="10" value="2">
+                <span class="value-display" id="box1-border-width-value">2px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 1 Padding</span>
+              <button class="reset-button" id="reset-box1-padding">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="box1-padding-top" min="0" max="40" value="10">
+                <span class="value-display" id="box1-padding-top-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="box1-padding-right" min="0" max="40" value="10">
+                <span class="value-display" id="box1-padding-right-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="box1-padding-bottom" min="0" max="40" value="10">
+                <span class="value-display" id="box1-padding-bottom-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="box1-padding-left" min="0" max="40" value="10">
+                <span class="value-display" id="box1-padding-left-value">10px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Box 2 Controls -->
+        <div class="tab-content" id="box2-tab">
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 2 Margin</span>
+              <button class="reset-button" id="reset-box2-margin">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="box2-margin-top" min="0" max="50" value="10">
+                <span class="value-display" id="box2-margin-top-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="box2-margin-right" min="0" max="50" value="10">
+                <span class="value-display" id="box2-margin-right-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="box2-margin-bottom" min="0" max="50" value="10">
+                <span class="value-display" id="box2-margin-bottom-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="box2-margin-left" min="0" max="50" value="10">
+                <span class="value-display" id="box2-margin-left-value">10px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 2 Border</span>
+              <button class="reset-button" id="reset-box2-border">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Width:</div>
+              <div class="control-input">
+                <input type="range" id="box2-border-width" min="0" max="10" value="2">
+                <span class="value-display" id="box2-border-width-value">2px</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="control-section">
+            <div class="section-header">
+              <span>Box 2 Padding</span>
+              <button class="reset-button" id="reset-box2-padding">Reset</button>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Top:</div>
+              <div class="control-input">
+                <input type="range" id="box2-padding-top" min="0" max="40" value="10">
+                <span class="value-display" id="box2-padding-top-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Right:</div>
+              <div class="control-input">
+                <input type="range" id="box2-padding-right" min="0" max="40" value="10">
+                <span class="value-display" id="box2-padding-right-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Bottom:</div>
+              <div class="control-input">
+                <input type="range" id="box2-padding-bottom" min="0" max="40" value="10">
+                <span class="value-display" id="box2-padding-bottom-value">10px</span>
+              </div>
+            </div>
+            <div class="control-row">
+              <div class="control-label">Left:</div>
+              <div class="control-input">
+                <input type="range" id="box2-padding-left" min="0" max="40" value="10">
+                <span class="value-display" id="box2-padding-left-value">10px</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="viewport">
+          <!-- Container and boxes will be created by JavaScript -->
+        </div>
+
+        <div class="code-display">
+          <pre><code id="css-code"><span class="comment">/* Container */</span>
+<span class="selector">.container</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">20px</span>;
+  <span class="prop">margin-right:</span> <span class="val">20px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">20px</span>;
+  <span class="prop">margin-left:</span> <span class="val">20px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">5px solid #EBCB8B</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">20px</span>;
+  <span class="prop">padding-right:</span> <span class="val">20px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">20px</span>;
+  <span class="prop">padding-left:</span> <span class="val">20px</span>;
+}
+
+<span class="comment">/* Box 1 */</span>
+<span class="selector">.box1</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">10px</span>;
+  <span class="prop">margin-right:</span> <span class="val">10px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">10px</span>;
+  <span class="prop">margin-left:</span> <span class="val">10px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">2px solid #8FBCBB</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">10px</span>;
+  <span class="prop">padding-right:</span> <span class="val">10px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">10px</span>;
+  <span class="prop">padding-left:</span> <span class="val">10px</span>;
+}
+
+<span class="comment">/* Box 2 */</span>
+<span class="selector">.box2</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">10px</span>;
+  <span class="prop">margin-right:</span> <span class="val">10px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">10px</span>;
+  <span class="prop">margin-left:</span> <span class="val">10px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">2px solid #8FBCBB</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">10px</span>;
+  <span class="prop">padding-right:</span> <span class="val">10px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">10px</span>;
+  <span class="prop">padding-left:</span> <span class="val">10px</span>;
+}</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Last Updated: 2025-07-24 04:58:41 UTC
+    </div>
+  </div>
+
+  <script>
+    // State for container and boxes
+    const state = {
+      container: {
+        margin: { top: 20, right: 20, bottom: 20, left: 20 },
+        border: { width: 5 },
+        padding: { top: 20, right: 20, bottom: 20, left: 20 },
+        // Width and height will be calculated
+        width: 0,
+        height: 0
+      },
+      box1: {
+        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        border: { width: 2 },
+        padding: { top: 10, right: 10, bottom: 10, left: 10 },
+        content: { width: 100, height: 80 },
+        visible: true
+      },
+      box2: {
+        margin: { top: 10, right: 10, bottom: 10, left: 10 },
+        border: { width: 2 },
+        padding: { top: 10, right: 10, bottom: 10, left: 10 },
+        content: { width: 100, height: 80 },
+        visible: true
+      }
+    };
+
+    // DOM Elements
+    const viewport = document.querySelector('.viewport');
+    const cssCode = document.getElementById('css-code');
+    
+    // Create elements for the visualization
+    function createVisualization() {
+      viewport.innerHTML = `
+        <div class="outer-container">
+          <div class="outer-margin" id="container-margin">
+            <div class="outer-border" id="container-border">
+              <div class="outer-padding" id="container-padding">
+                <div class="outer-content" id="container-content">
+                  <!-- Boxes are now inside the container content -->
+                  <div class="box" id="box1">
+                    <div class="box-margin" id="box1-margin">
+                      <div class="box-border" id="box1-border">
+                        <div class="box-padding" id="box1-padding">
+                          <div class="box-content" id="box1-content">Box 1</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="box" id="box2">
+                    <div class="box-margin" id="box2-margin">
+                      <div class="box-border" id="box2-border">
+                        <div class="box-padding" id="box2-padding">
+                          <div class="box-content" id="box2-content">Box 2</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Create initial visualization
+    createVisualization();
+
+    // Update the visualization based on current state
+    function updateVisualization() {
+      // Container elements
+      const containerOuterMargin = document.getElementById('container-margin');
+      const containerBorder = document.getElementById('container-border');
+      const containerPadding = document.getElementById('container-padding');
+      const containerContent = document.getElementById('container-content');
+
+      // Apply container margin properties
+      containerOuterMargin.style.padding = 
+        `${state.container.margin.top}px ${state.container.margin.right}px ${state.container.margin.bottom}px ${state.container.margin.left}px`;
+
+      // Apply container border properties
+      containerBorder.style.border = `${state.container.border.width}px solid var(--nord13)`;
+
+      // Apply container padding properties
+      containerPadding.style.padding = 
+        `${state.container.padding.top}px ${state.container.padding.right}px ${state.container.padding.bottom}px ${state.container.padding.left}px`;
+
+      // Box 1
+      const box1Element = document.getElementById('box1');
+      const box1Margin = document.getElementById('box1-margin');
+      const box1Border = document.getElementById('box1-border');
+      const box1Padding = document.getElementById('box1-padding');
+      const box1Content = document.getElementById('box1-content');
+
+      // Apply box 1 margin properties
+      box1Margin.style.padding = 
+        `${state.box1.margin.top}px ${state.box1.margin.right}px ${state.box1.margin.bottom}px ${state.box1.margin.left}px`;
+
+      // Apply box 1 border properties
+      box1Border.style.border = `${state.box1.border.width}px solid var(--nord7)`;
+
+      // Apply box 1 padding properties
+      box1Padding.style.padding = 
+        `${state.box1.padding.top}px ${state.box1.padding.right}px ${state.box1.padding.bottom}px ${state.box1.padding.left}px`;
+
+      // Apply box 1 content dimensions
+      box1Content.style.width = `${state.box1.content.width}px`;
+      box1Content.style.height = `${state.box1.content.height}px`;
+
+      // Box 2
+      const box2Element = document.getElementById('box2');
+      const box2Margin = document.getElementById('box2-margin');
+      const box2Border = document.getElementById('box2-border');
+      const box2Padding = document.getElementById('box2-padding');
+      const box2Content = document.getElementById('box2-content');
+
+      // Apply box 2 margin properties
+      box2Margin.style.padding = 
+        `${state.box2.margin.top}px ${state.box2.margin.right}px ${state.box2.margin.bottom}px ${state.box2.margin.left}px`;
+
+      // Apply box 2 border properties
+      box2Border.style.border = `${state.box2.border.width}px solid var(--nord7)`;
+
+      // Apply box 2 padding properties
+      box2Padding.style.padding = 
+        `${state.box2.padding.top}px ${state.box2.padding.right}px ${state.box2.padding.bottom}px ${state.box2.padding.left}px`;
+
+      // Apply box 2 content dimensions
+      box2Content.style.width = `${state.box2.content.width}px`;
+      box2Content.style.height = `${state.box2.content.height}px`;
+
+      // Apply visibility
+      box1Element.style.display = state.box1.visible ? 'inline-block' : 'none';
+      box2Element.style.display = state.box2.visible ? 'inline-block' : 'none';
+
+      // Update the code display
+      updateCodeDisplay();
+    }
+
+    // Update the CSS code display
+    function updateCodeDisplay() {
+      const container = state.container;
+      const box1 = state.box1;
+      const box2 = state.box2;
+
+      // Format the CSS code
+      cssCode.innerHTML = `<span class="comment">/* Container */</span>
+<span class="selector">.container</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">${container.margin.top}px</span>;
+  <span class="prop">margin-right:</span> <span class="val">${container.margin.right}px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">${container.margin.bottom}px</span>;
+  <span class="prop">margin-left:</span> <span class="val">${container.margin.left}px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">${container.border.width}px solid #EBCB8B</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">${container.padding.top}px</span>;
+  <span class="prop">padding-right:</span> <span class="val">${container.padding.right}px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">${container.padding.bottom}px</span>;
+  <span class="prop">padding-left:</span> <span class="val">${container.padding.left}px</span>;
+}
+
+<span class="comment">/* Box 1 */</span>
+<span class="selector">.box1</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">${box1.margin.top}px</span>;
+  <span class="prop">margin-right:</span> <span class="val">${box1.margin.right}px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">${box1.margin.bottom}px</span>;
+  <span class="prop">margin-left:</span> <span class="val">${box1.margin.left}px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">${box1.border.width}px solid #8FBCBB</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">${box1.padding.top}px</span>;
+  <span class="prop">padding-right:</span> <span class="val">${box1.padding.right}px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">${box1.padding.bottom}px</span>;
+  <span class="prop">padding-left:</span> <span class="val">${box1.padding.left}px</span>;
+}
+
+<span class="comment">/* Box 2 */</span>
+<span class="selector">.box2</span> {
+  <span class="comment">/* Margin */</span>
+  <span class="prop">margin-top:</span> <span class="val">${box2.margin.top}px</span>;
+  <span class="prop">margin-right:</span> <span class="val">${box2.margin.right}px</span>;
+  <span class="prop">margin-bottom:</span> <span class="val">${box2.margin.bottom}px</span>;
+  <span class="prop">margin-left:</span> <span class="val">${box2.margin.left}px</span>;
+
+  <span class="comment">/* Border */</span>
+  <span class="prop">border:</span> <span class="val">${box2.border.width}px solid #8FBCBB</span>;
+
+  <span class="comment">/* Padding */</span>
+  <span class="prop">padding-top:</span> <span class="val">${box2.padding.top}px</span>;
+  <span class="prop">padding-right:</span> <span class="val">${box2.padding.right}px</span>;
+  <span class="prop">padding-bottom:</span> <span class="val">${box2.padding.bottom}px</span>;
+  <span class="prop">padding-left:</span> <span class="val">${box2.padding.left}px</span>;
+}`;
+    }
+
+    // Tab switching
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove active class from all buttons and tabs
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(tab => tab.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding tab
+        button.classList.add('active');
+        const tabId = button.dataset.tab;
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Visibility toggles
+    document.getElementById('show-box1').addEventListener('change', function() {
+      state.box1.visible = this.checked;
+      updateVisualization();
+    });
+
+    document.getElementById('show-box2').addEventListener('change', function() {
+      state.box2.visible = this.checked;
+      updateVisualization();
+    });
+
+    // Setup event listeners for all sliders
+    function setupSliderEvents() {
+      // Container margin controls
+      document.getElementById('container-margin-top').addEventListener('input', function() {
+        state.container.margin.top = parseInt(this.value);
+        document.getElementById('container-margin-top-value').textContent = `${state.container.margin.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-margin-right').addEventListener('input', function() {
+        state.container.margin.right = parseInt(this.value);
+        document.getElementById('container-margin-right-value').textContent = `${state.container.margin.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-margin-bottom').addEventListener('input', function() {
+        state.container.margin.bottom = parseInt(this.value);
+        document.getElementById('container-margin-bottom-value').textContent = `${state.container.margin.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-margin-left').addEventListener('input', function() {
+        state.container.margin.left = parseInt(this.value);
+        document.getElementById('container-margin-left-value').textContent = `${state.container.margin.left}px`;
+        updateVisualization();
+      });
+
+      // Container border control
+      document.getElementById('container-border-width').addEventListener('input', function() {
+        state.container.border.width = parseInt(this.value);
+        document.getElementById('container-border-width-value').textContent = `${state.container.border.width}px`;
+        updateVisualization();
+      });
+
+      // Container padding controls
+      document.getElementById('container-padding-top').addEventListener('input', function() {
+        state.container.padding.top = parseInt(this.value);
+        document.getElementById('container-padding-top-value').textContent = `${state.container.padding.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-padding-right').addEventListener('input', function() {
+        state.container.padding.right = parseInt(this.value);
+        document.getElementById('container-padding-right-value').textContent = `${state.container.padding.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-padding-bottom').addEventListener('input', function() {
+        state.container.padding.bottom = parseInt(this.value);
+        document.getElementById('container-padding-bottom-value').textContent = `${state.container.padding.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('container-padding-left').addEventListener('input', function() {
+        state.container.padding.left = parseInt(this.value);
+        document.getElementById('container-padding-left-value').textContent = `${state.container.padding.left}px`;
+        updateVisualization();
+      });
+
+      // Box 1 margin controls
+      document.getElementById('box1-margin-top').addEventListener('input', function() {
+        state.box1.margin.top = parseInt(this.value);
+        document.getElementById('box1-margin-top-value').textContent = `${state.box1.margin.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-margin-right').addEventListener('input', function() {
+        state.box1.margin.right = parseInt(this.value);
+        document.getElementById('box1-margin-right-value').textContent = `${state.box1.margin.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-margin-bottom').addEventListener('input', function() {
+        state.box1.margin.bottom = parseInt(this.value);
+        document.getElementById('box1-margin-bottom-value').textContent = `${state.box1.margin.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-margin-left').addEventListener('input', function() {
+        state.box1.margin.left = parseInt(this.value);
+        document.getElementById('box1-margin-left-value').textContent = `${state.box1.margin.left}px`;
+        updateVisualization();
+      });
+
+      // Box 1 border control
+      document.getElementById('box1-border-width').addEventListener('input', function() {
+        state.box1.border.width = parseInt(this.value);
+        document.getElementById('box1-border-width-value').textContent = `${state.box1.border.width}px`;
+        updateVisualization();
+      });
+
+      // Box 1 padding controls
+      document.getElementById('box1-padding-top').addEventListener('input', function() {
+        state.box1.padding.top = parseInt(this.value);
+        document.getElementById('box1-padding-top-value').textContent = `${state.box1.padding.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-padding-right').addEventListener('input', function() {
+        state.box1.padding.right = parseInt(this.value);
+        document.getElementById('box1-padding-right-value').textContent = `${state.box1.padding.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-padding-bottom').addEventListener('input', function() {
+        state.box1.padding.bottom = parseInt(this.value);
+        document.getElementById('box1-padding-bottom-value').textContent = `${state.box1.padding.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box1-padding-left').addEventListener('input', function() {
+        state.box1.padding.left = parseInt(this.value);
+        document.getElementById('box1-padding-left-value').textContent = `${state.box1.padding.left}px`;
+        updateVisualization();
+      });
+
+      // Box 2 margin controls
+      document.getElementById('box2-margin-top').addEventListener('input', function() {
+        state.box2.margin.top = parseInt(this.value);
+        document.getElementById('box2-margin-top-value').textContent = `${state.box2.margin.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-margin-right').addEventListener('input', function() {
+        state.box2.margin.right = parseInt(this.value);
+        document.getElementById('box2-margin-right-value').textContent = `${state.box2.margin.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-margin-bottom').addEventListener('input', function() {
+        state.box2.margin.bottom = parseInt(this.value);
+        document.getElementById('box2-margin-bottom-value').textContent = `${state.box2.margin.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-margin-left').addEventListener('input', function() {
+        state.box2.margin.left = parseInt(this.value);
+        document.getElementById('box2-margin-left-value').textContent = `${state.box2.margin.left}px`;
+        updateVisualization();
+      });
+
+      // Box 2 border control
+      document.getElementById('box2-border-width').addEventListener('input', function() {
+        state.box2.border.width = parseInt(this.value);
+        document.getElementById('box2-border-width-value').textContent = `${state.box2.border.width}px`;
+        updateVisualization();
+      });
+
+      // Box 2 padding controls
+      document.getElementById('box2-padding-top').addEventListener('input', function() {
+        state.box2.padding.top = parseInt(this.value);
+        document.getElementById('box2-padding-top-value').textContent = `${state.box2.padding.top}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-padding-right').addEventListener('input', function() {
+        state.box2.padding.right = parseInt(this.value);
+        document.getElementById('box2-padding-right-value').textContent = `${state.box2.padding.right}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-padding-bottom').addEventListener('input', function() {
+        state.box2.padding.bottom = parseInt(this.value);
+        document.getElementById('box2-padding-bottom-value').textContent = `${state.box2.padding.bottom}px`;
+        updateVisualization();
+      });
+
+      document.getElementById('box2-padding-left').addEventListener('input', function() {
+        state.box2.padding.left = parseInt(this.value);
+        document.getElementById('box2-padding-left-value').textContent = `${state.box2.padding.left}px`;
+        updateVisualization();
+      });
+
+      // Reset buttons
+      document.getElementById('reset-container-margin').addEventListener('click', function() {
+        state.container.margin = { top: 20, right: 20, bottom: 20, left: 20 };
+        document.getElementById('container-margin-top').value = 20;
+        document.getElementById('container-margin-right').value = 20;
+        document.getElementById('container-margin-bottom').value = 20;
+        document.getElementById('container-margin-left').value = 20;
+        document.getElementById('container-margin-top-value').textContent = '20px';
+        document.getElementById('container-margin-right-value').textContent = '20px';
+        document.getElementById('container-margin-bottom-value').textContent = '20px';
+        document.getElementById('container-margin-left-value').textContent = '20px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-container-border').addEventListener('click', function() {
+        state.container.border = { width: 5 };
+        document.getElementById('container-border-width').value = 5;
+        document.getElementById('container-border-width-value').textContent = '5px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-container-padding').addEventListener('click', function() {
+        state.container.padding = { top: 20, right: 20, bottom: 20, left: 20 };
+        document.getElementById('container-padding-top').value = 20;
+        document.getElementById('container-padding-right').value = 20;
+        document.getElementById('container-padding-bottom').value = 20;
+        document.getElementById('container-padding-left').value = 20;
+        document.getElementById('container-padding-top-value').textContent = '20px';
+        document.getElementById('container-padding-right-value').textContent = '20px';
+        document.getElementById('container-padding-bottom-value').textContent = '20px';
+        document.getElementById('container-padding-left-value').textContent = '20px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box1-margin').addEventListener('click', function() {
+        state.box1.margin = { top: 10, right: 10, bottom: 10, left: 10 };
+        document.getElementById('box1-margin-top').value = 10;
+        document.getElementById('box1-margin-right').value = 10;
+        document.getElementById('box1-margin-bottom').value = 10;
+        document.getElementById('box1-margin-left').value = 10;
+        document.getElementById('box1-margin-top-value').textContent = '10px';
+        document.getElementById('box1-margin-right-value').textContent = '10px';
+        document.getElementById('box1-margin-bottom-value').textContent = '10px';
+        document.getElementById('box1-margin-left-value').textContent = '10px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box1-border').addEventListener('click', function() {
+        state.box1.border = { width: 2 };
+        document.getElementById('box1-border-width').value = 2;
+        document.getElementById('box1-border-width-value').textContent = '2px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box1-padding').addEventListener('click', function() {
+        state.box1.padding = { top: 10, right: 10, bottom: 10, left: 10 };
+        document.getElementById('box1-padding-top').value = 10;
+        document.getElementById('box1-padding-right').value = 10;
+        document.getElementById('box1-padding-bottom').value = 10;
+        document.getElementById('box1-padding-left').value = 10;
+        document.getElementById('box1-padding-top-value').textContent = '10px';
+        document.getElementById('box1-padding-right-value').textContent = '10px';
+        document.getElementById('box1-padding-bottom-value').textContent = '10px';
+        document.getElementById('box1-padding-left-value').textContent = '10px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box2-margin').addEventListener('click', function() {
+        state.box2.margin = { top: 10, right: 10, bottom: 10, left: 10 };
+        document.getElementById('box2-margin-top').value = 10;
+        document.getElementById('box2-margin-right').value = 10;
+        document.getElementById('box2-margin-bottom').value = 10;
+        document.getElementById('box2-margin-left').value = 10;
+        document.getElementById('box2-margin-top-value').textContent = '10px';
+        document.getElementById('box2-margin-right-value').textContent = '10px';
+        document.getElementById('box2-margin-bottom-value').textContent = '10px';
+        document.getElementById('box2-margin-left-value').textContent = '10px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box2-border').addEventListener('click', function() {
+        state.box2.border = { width: 2 };
+        document.getElementById('box2-border-width').value = 2;
+        document.getElementById('box2-border-width-value').textContent = '2px';
+        updateVisualization();
+      });
+
+      document.getElementById('reset-box2-padding').addEventListener('click', function() {
+        state.box2.padding = { top: 10, right: 10, bottom: 10, left: 10 };
+        document.getElementById('box2-padding-top').value = 10;
+        document.getElementById('box2-padding-right').value = 10;
+        document.getElementById('box2-padding-bottom').value = 10;
+        document.getElementById('box2-padding-left').value = 10;
+        document.getElementById('box2-padding-top-value').textContent = '10px';
+        document.getElementById('box2-padding-right-value').textContent = '10px';
+        document.getElementById('box2-padding-bottom-value').textContent = '10px';
+        document.getElementById('box2-padding-left-value').textContent = '10px';
+        updateVisualization();
+      });
+    }
+
+    // Initialize the event listeners
+    setupSliderEvents();
+
+    // Initialize the visualization
+    updateVisualization();
+
+    // Handle window resize
+    window.addEventListener('resize', updateVisualization);
+  </script>
+</body>
+</html>

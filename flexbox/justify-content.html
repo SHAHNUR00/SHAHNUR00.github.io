@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Justify-Content Visualization - Nord Theme</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Polar Night (darkest) */
+            --nord1: #3B4252;  /* Polar Night */
+            --nord2: #434C5E;  /* Polar Night */
+            --nord3: #4C566A;  /* Polar Night */
+            --nord4: #D8DEE9;  /* Snow Storm */
+            --nord5: #E5E9F0;  /* Snow Storm */
+            --nord6: #ECEFF4;  /* Snow Storm (lightest) */
+            --nord7: #8FBCBB;  /* Frost */
+            --nord8: #88C0D0;  /* Frost */
+            --nord9: #81A1C1;  /* Frost */
+            --nord10: #5E81AC; /* Frost */
+            --nord11: #BF616A; /* Aurora (red) */
+            --nord12: #D08770; /* Aurora (orange) */
+            --nord13: #EBCB8B; /* Aurora (yellow) */
+            --nord14: #A3BE8C; /* Aurora (green) */
+            --nord15: #B48EAD; /* Aurora (purple) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        p {
+            color: var(--nord4);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .controls-section {
+            background-color: var(--nord1);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            background-color: var(--nord2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--nord8);
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 1rem;
+            color: var(--nord8);
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .control-btn {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.7rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .control-btn:hover {
+            background-color: var(--nord10);
+            transform: translateY(-2px);
+        }
+
+        .control-btn.active {
+            background-color: var(--nord8);
+            color: var(--nord0);
+            box-shadow: 0 4px 8px rgba(136, 192, 208, 0.3);
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin-bottom: 2rem;
+            background: var(--nord1);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Graph paper grid */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord2) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord2) 1px, transparent 1px);
+            opacity: 0.6;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .flex-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            padding: 20px;
+            transition: all 0.4s ease;
+            border: 3px dashed var(--nord11);
+            margin: 10px;
+            height: calc(100% - 20px);
+            width: calc(100% - 20px);
+        }
+
+        .flex-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            border-radius: 8px;
+            margin: 5px;
+            color: var(--nord0);
+            font-size: 1.1rem;
+            flex-shrink: 0;
+        }
+
+        .flex-item:nth-child(1) { 
+            background-color: var(--nord7); 
+            width: 80px;
+            height: 60px;
+        }
+        .flex-item:nth-child(2) { 
+            background-color: var(--nord8); 
+            width: 120px;
+            height: 60px;
+        }
+        .flex-item:nth-child(3) { 
+            background-color: var(--nord9); 
+            width: 60px;
+            height: 60px;
+        }
+        .flex-item:nth-child(4) { 
+            background-color: var(--nord10); 
+            width: 100px;
+            height: 60px;
+        }
+
+        .info-panel {
+            background-color: var(--nord1);
+            padding: 2rem;
+            border-radius: 12px;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            color: var(--nord13);
+            margin-bottom: 1rem;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+
+        .property-display {
+            font-family: 'Courier New', monospace;
+            background-color: var(--nord2);
+            padding: 1.5rem;
+            border-radius: 8px;
+            color: var(--nord14);
+            margin: 1rem 0;
+            font-size: 1.1rem;
+            border-left: 4px solid var(--nord14);
+            white-space: pre-line;
+            line-height: 1.8;
+        }
+
+        .description {
+            color: var(--nord4);
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .axis-indicators {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 3;
+        }
+
+        .main-axis-line {
+            position: absolute;
+            background-color: var(--nord11);
+            z-index: 3;
+        }
+
+        .cross-axis-line {
+            position: absolute;
+            background-color: var(--nord13);
+            z-index: 3;
+        }
+
+        .axis-label {
+            position: absolute;
+            font-weight: bold;
+            font-size: 0.9rem;
+            z-index: 4;
+            padding: 0.3rem 0.6rem;
+            border-radius: 4px;
+            background-color: rgba(46, 52, 64, 0.8);
+        }
+
+        .main-axis-label {
+            color: var(--nord11);
+        }
+
+        .cross-axis-label {
+            color: var(--nord13);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .controls-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .visualization {
+                height: 300px;
+            }
+            
+            .flex-item {
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>Interactive Flexbox Justify-Content Visualization</h1>
+    <p>
+        Explore how <code>justify-content</code> affects the positioning of flex items along the main axis. 
+        Try different combinations of <code>flex-direction</code> and <code>justify-content</code> to see how the main axis changes.
+    </p>
+
+    <div class="container">
+        <div class="controls-section">
+            <div class="controls-grid">
+                <div class="control-group">
+                    <label class="control-label">Flex Direction</label>
+                    <div class="button-group">
+                        <button class="control-btn active" onclick="setFlexDirection('row')">row</button>
+                        <button class="control-btn" onclick="setFlexDirection('column')">column</button>
+                        <button class="control-btn" onclick="setFlexDirection('row-reverse')">row-reverse</button>
+                        <button class="control-btn" onclick="setFlexDirection('column-reverse')">column-reverse</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label class="control-label">Justify Content</label>
+                    <div class="button-group">
+                        <button class="control-btn active" onclick="setJustifyContent('flex-start')">flex-start</button>
+                        <button class="control-btn" onclick="setJustifyContent('center')">center</button>
+                        <button class="control-btn" onclick="setJustifyContent('flex-end')">flex-end</button>
+                        <button class="control-btn" onclick="setJustifyContent('space-between')">space-between</button>
+                        <button class="control-btn" onclick="setJustifyContent('space-around')">space-around</button>
+                        <button class="control-btn" onclick="setJustifyContent('space-evenly')">space-evenly</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <div class="grid-background"></div>
+            <div class="axis-indicators" id="axisIndicators"></div>
+            <div class="flex-container" id="flexContainer">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+                <div class="flex-item">4</div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3 class="info-title">Current CSS Properties</h3>
+            <div class="property-display" id="propertyDisplay">.flex-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+}</div>
+            <div class="description" id="description">
+                <strong>flex-start (default):</strong> Items align to the start of the main axis. This is the default behavior where items are packed toward the start of the flex container.
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Created by shanur00 | Nordic-themed Flexbox Justify-Content Visualization | &copy; 2025-07-25 05:25:19</p>
+    </div>
+
+    <script>
+        let currentFlexDirection = 'row';
+        let currentJustifyContent = 'flex-start';
+
+        const descriptions = {
+            'flex-start': 'Items align to the start of the main axis. This is the default behavior where items are packed toward the start of the flex container.',
+            'center': 'Items are centered along the main axis. All items are packed together at the center of the flex container.',
+            'flex-end': 'Items align to the end of the main axis. Items are packed toward the end of the flex container.',
+            'space-between': 'Items are evenly distributed along the main axis. First item is at the start, last item is at the end, with equal space between all items.',
+            'space-around': 'Items are evenly distributed with equal space around each item. Each item has equal space on both sides.',
+            'space-evenly': 'Items are evenly distributed with equal space between and around all items. The spacing is the same everywhere.'
+        };
+
+        function setFlexDirection(direction) {
+            currentFlexDirection = direction;
+            updateVisualization();
+            updateActiveButton('flex-direction', direction);
+        }
+
+        function setJustifyContent(justification) {
+            currentJustifyContent = justification;
+            updateVisualization();
+            updateActiveButton('justify-content', justification);
+        }
+
+        function updateActiveButton(property, value) {
+            // Remove active class from all buttons in the relevant group
+            const buttons = document.querySelectorAll('.control-btn');
+            buttons.forEach(btn => {
+                if (btn.textContent === value) {
+                    // Remove active from siblings
+                    btn.parentElement.querySelectorAll('.control-btn').forEach(siblingBtn => {
+                        siblingBtn.classList.remove('active');
+                    });
+                    // Add active to clicked button
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function updateVisualization() {
+            const container = document.getElementById('flexContainer');
+            const propertyDisplay = document.getElementById('propertyDisplay');
+            const description = document.getElementById('description');
+
+            // Apply styles
+            container.style.flexDirection = currentFlexDirection;
+            container.style.justifyContent = currentJustifyContent;
+
+            // Update item sizes based on flex direction
+            const items = container.querySelectorAll('.flex-item');
+            items.forEach((item, index) => {
+                item.style.width = '';
+                item.style.height = '';
+                
+                const widths = ['80px', '120px', '60px', '100px'];
+                const heights = ['60px', '100px', '40px', '80px'];
+                
+                if (currentFlexDirection.includes('column')) {
+                    // For column direction, different heights, same width
+                    item.style.height = heights[index];
+                    item.style.width = '100px';
+                } else {
+                    // For row direction, different widths, same height
+                    item.style.width = widths[index];
+                    item.style.height = '60px';
+                }
+            });
+
+            // Update property display with proper line breaks
+            propertyDisplay.textContent = `.flex-container {
+    display: flex;
+    flex-direction: ${currentFlexDirection};
+    justify-content: ${currentJustifyContent};
+}`;
+
+            // Update description
+            description.innerHTML = `<strong>${currentJustifyContent}:</strong> ${descriptions[currentJustifyContent]}`;
+
+            // Update axis indicators
+            updateAxisIndicators();
+        }
+
+        function updateAxisIndicators() {
+            const axisIndicators = document.getElementById('axisIndicators');
+            
+            // Clear existing indicators
+            axisIndicators.innerHTML = '';
+
+            // Create axis lines based on flex-direction
+            const isRow = currentFlexDirection.includes('row');
+            
+            if (isRow) {
+                // Main axis: horizontal, Cross axis: vertical
+                
+                // Main axis line (horizontal through center)
+                const mainAxisLine = document.createElement('div');
+                mainAxisLine.className = 'main-axis-line';
+                mainAxisLine.style.top = '50%';
+                mainAxisLine.style.left = '30px';
+                mainAxisLine.style.right = '30px';
+                mainAxisLine.style.height = '2px';
+                mainAxisLine.style.transform = 'translateY(-50%)';
+                axisIndicators.appendChild(mainAxisLine);
+
+                // Main axis label
+                const mainAxisLabel = document.createElement('div');
+                mainAxisLabel.className = 'axis-label main-axis-label';
+                mainAxisLabel.textContent = 'Main Axis (justify-content) →';
+                mainAxisLabel.style.top = '50%';
+                mainAxisLabel.style.left = '30px';
+                mainAxisLabel.style.transform = 'translateY(-150%)';
+                axisIndicators.appendChild(mainAxisLabel);
+
+                // Cross axis line (vertical through center)
+                const crossAxisLine = document.createElement('div');
+                crossAxisLine.className = 'cross-axis-line';
+                crossAxisLine.style.left = '50%';
+                crossAxisLine.style.top = '30px';
+                crossAxisLine.style.bottom = '30px';
+                crossAxisLine.style.width = '2px';
+                crossAxisLine.style.transform = 'translateX(-50%)';
+                axisIndicators.appendChild(crossAxisLine);
+
+                // Cross axis label
+                const crossAxisLabel = document.createElement('div');
+                crossAxisLabel.className = 'axis-label cross-axis-label';
+                crossAxisLabel.textContent = 'Cross Axis ↓';
+                crossAxisLabel.style.left = '50%';
+                crossAxisLabel.style.top = '30px';
+                crossAxisLabel.style.transform = 'translateX(20px)';
+                axisIndicators.appendChild(crossAxisLabel);
+
+            } else {
+                // Main axis: vertical, Cross axis: horizontal
+                
+                // Main axis line (vertical through center)
+                const mainAxisLine = document.createElement('div');
+                mainAxisLine.className = 'main-axis-line';
+                mainAxisLine.style.left = '50%';
+                mainAxisLine.style.top = '30px';
+                mainAxisLine.style.bottom = '30px';
+                mainAxisLine.style.width = '2px';
+                mainAxisLine.style.transform = 'translateX(-50%)';
+                axisIndicators.appendChild(mainAxisLine);
+
+                // Main axis label
+                const mainAxisLabel = document.createElement('div');
+                mainAxisLabel.className = 'axis-label main-axis-label';
+                mainAxisLabel.textContent = 'Main Axis (justify-content) ↓';
+                mainAxisLabel.style.left = '50%';
+                mainAxisLabel.style.top = '30px';
+                mainAxisLabel.style.transform = 'translateX(20px)';
+                axisIndicators.appendChild(mainAxisLabel);
+
+                // Cross axis line (horizontal through center)
+                const crossAxisLine = document.createElement('div');
+                crossAxisLine.className = 'cross-axis-line';
+                crossAxisLine.style.top = '50%';
+                crossAxisLine.style.left = '30px';
+                crossAxisLine.style.right = '30px';
+                crossAxisLine.style.height = '2px';
+                crossAxisLine.style.transform = 'translateY(-50%)';
+                axisIndicators.appendChild(crossAxisLine);
+
+                // Cross axis label
+                const crossAxisLabel = document.createElement('div');
+                crossAxisLabel.className = 'axis-label cross-axis-label';
+                crossAxisLabel.textContent = 'Cross Axis →';
+                crossAxisLabel.style.top = '50%';
+                crossAxisLabel.style.left = '30px';
+                crossAxisLabel.style.transform = 'translateY(-150%)';
+                axisIndicators.appendChild(crossAxisLabel);
+            }
+        }
+
+        // Initialize visualization
+        document.addEventListener('DOMContentLoaded', function() {
+            updateVisualization();
+            
+            // Update axis indicators on window resize
+            window.addEventListener('resize', () => {
+                setTimeout(updateAxisIndicators, 100);
+            });
+        });
+    </script>
+</body>
+</html>
