@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>My Notes</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu+Sans+Mono:ital,wght@0,400..700;1,400..700&display=swap');
+:root{
+  --font:"Ubuntu Sans Mono","Ubuntu Mono",ui-monospace,"Cascadia Code",Consolas,monospace;
+  --accent:#ea700b;
+  --accent-strong:#9a3412;
+  --accent-soft:#ffedd5;
+  --accent-softer:#fff7ed;
+  --ink:#1f2328;
+  --ink-soft:#57606a;
+  --border:#f3d9bd;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--accent-softer);color:var(--ink);font-family:var(--font);min-height:100vh}
+.wrap{max-width:880px;margin:0 auto;padding:64px 24px 96px}
+header{margin-bottom:40px}
+h1{margin:0 0 10px;font-size:36px;font-weight:800;letter-spacing:-.02em}
+h1 .accent{color:var(--accent)}
+.tagline{margin:0;color:var(--ink-soft);font-size:15px}
+.tagline b{color:var(--accent-strong)}
+.rule{height:3px;width:72px;background:var(--accent);border-radius:2px;margin:22px 0 0}
+.cards{display:flex;flex-direction:column;gap:14px;margin-top:36px}
+.card{display:flex;align-items:center;gap:18px;padding:20px 22px;text-decoration:none;
+  background:#ffffff;border:1px solid var(--border);border-left:5px solid var(--accent);
+  border-radius:12px;color:var(--ink);transition:background .15s,transform .15s,box-shadow .15s}
+.card:hover{background:var(--accent-soft);transform:translateX(4px);
+  box-shadow:0 4px 16px rgba(234,112,11,.12)}
+.card-num{font-size:22px;font-weight:800;color:var(--accent);min-width:44px}
+.card-body{display:flex;flex-direction:column;gap:4px;min-width:0;flex:1}
+.card-title{font-size:17px;font-weight:700;line-height:1.35}
+.card:hover .card-title{color:var(--accent-strong)}
+.card-sub{font-size:12.5px;color:var(--ink-soft)}
+.card-arrow{font-size:20px;color:var(--accent);opacity:0;transition:opacity .15s}
+.card:hover .card-arrow{opacity:1}
+footer{margin-top:56px;font-size:12.5px;color:var(--ink-soft);border-top:1px solid var(--border);padding-top:18px}
+footer a{color:var(--accent-strong)}
+@media (max-width:560px){.wrap{padding:40px 16px 64px}h1{font-size:28px}.card{padding:16px}.card-num{min-width:34px;font-size:18px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>My <span class="accent">Notes</span></h1>
+    <p class="tagline">Personal study notes on <b>HTML</b>, <b>CSS</b>, <b>Flexbox</b> &amp; <b>Grid</b></p>
+    <div class="rule"></div>
+  </header>
+  <nav class="cards">
+      <a class="card" href="css-end-game.html">
+        <span class="card-num">01</span>
+        <span class="card-body">
+          <span class="card-title">CSS - End Game</span>
+          <span class="card-sub">Personal notes · 28 topics · 57 code examples</span>
+        </span>
+        <span class="card-arrow">&#8594;</span>
+      </a>
+      <a class="card" href="flexbox-grid-part-1.html">
+        <span class="card-num">02</span>
+        <span class="card-body">
+          <span class="card-title">Flexbox And Grid – Guardian Of The Box Sizing (Part-1)</span>
+          <span class="card-sub">Personal notes · 3 topics · 1 code example</span>
+        </span>
+        <span class="card-arrow">&#8594;</span>
+      </a>
+      <a class="card" href="flexbox-grid-part-2.html">
+        <span class="card-num">03</span>
+        <span class="card-body">
+          <span class="card-title">Flexbox And Grid – Guardian Of The Box Sizing (Part-2)</span>
+          <span class="card-sub">Personal notes · 1 topic · 13 code examples</span>
+        </span>
+        <span class="card-arrow">&#8594;</span>
+      </a>
+      <a class="card" href="html-first-of-web.html">
+        <span class="card-num">04</span>
+        <span class="card-body">
+          <span class="card-title">HTML - The First Of Web</span>
+          <span class="card-sub">Personal notes · 12 topics · 26 code examples</span>
+        </span>
+        <span class="card-arrow">&#8594;</span>
+      </a>
+  </nav>
+  <footer>Formatted from Evernote exports &middot; Ubuntu Sans Mono &middot; hosted on GitHub Pages</footer>
+</div>
+</body>
+</html>
