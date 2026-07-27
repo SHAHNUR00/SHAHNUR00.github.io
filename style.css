@@ -399,7 +399,7 @@ nav{
 .fotarea{
   /* border: 2px dotted saddlebrown; */
   margin-top: 8.13rem;
-  width: calc(100% - 28.74rem);
+  width: calc(100% - 10.74rem);
   display: flex;
   justify-content: space-around;
   /* margin-bottom: 9.31rem; */
