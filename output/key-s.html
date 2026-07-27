@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nord Vertical Animation</title>
+  <style>
+    body {
+      background-color: #2E3440; /* Nord0 - dark background */
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      overflow: hidden;
+    }
+    
+    .animation-container {
+      position: relative;
+      width: 100px;
+      height: 300px;
+    }
+    
+    .class {
+      height: 100px;
+      width: 100px;
+      border: 2px solid #BF616A; /* Nord11 - red */
+      background-color: #4C566A; /* Nord3 - gray */
+      animation: myframe 5s infinite;
+      position: absolute;
+    }
+
+    @keyframes myframe {
+      from   {top: 0px; background: #BF616A;} /* Nord11 - red */
+      50% {background: #B48EAD;} /* Nord15 - purple */
+      to {top: 200px; background: #A3BE8C;} /* Nord14 - green */
+    }
+  </style>
+</head>
+<body>
+  <div class="animation-container">
+    <div class="class"></div>
+  </div>
+</body>
+</html>

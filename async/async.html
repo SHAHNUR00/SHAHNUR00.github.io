@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>JavaScript Event Loop Visualization</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap">
+	<style>
+		/* Nord Theme Colors */
+		:root {
+			--nord0: #2E3440;  /* Dark background */
+			--nord1: #3B4252;  /* Lighter background */
+			--nord2: #434C5E;  /* Even lighter background */
+			--nord3: #4C566A;  /* Lightest background */
+			--nord4: #D8DEE9;  /* Light text */
+			--nord5: #E5E9F0;  /* Lighter text */
+			--nord6: #ECEFF4;  /* Lightest text */
+			--nord7: #8FBCBB;  /* Teal */
+			--nord8: #88C0D0;  /* Light blue */
+			--nord9: #81A1C1;  /* Medium blue */
+			--nord10: #5E81AC; /* Dark blue */
+			--nord11: #BF616A; /* Red */
+			--nord12: #D08770; /* Orange */
+			--nord13: #EBCB8B; /* Yellow */
+			--nord14: #A3BE8C; /* Green */
+			--nord15: #B48EAD; /* Purple */
+		}
+		
+		* {
+			box-sizing: border-box;
+			margin: 0;
+			padding: 0;
+			font-family: 'Ubuntu Sans Mono', sans-serif !important;
+		}
+		
+		body {
+			background-color: var(--nord0);
+			color: var(--nord6);
+			font-family: 'Ubuntu Mono', monospace;
+			line-height: 1.6;
+			padding: 20px;
+		}
+		
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		h1 {
+			text-align: center;
+			margin-bottom: 20px;
+			color: var(--nord8);
+		}
+		
+		.user-info {
+			background-color: var(--nord1);
+			border-radius: 5px;
+			padding: 10px;
+			margin-bottom: 20px;
+			display: flex;
+			justify-content: space-between;
+		}
+		
+		.user-info span {
+			color: var(--nord13);
+		}
+		
+		.code-container {
+			background-color: var(--nord1);
+			border-radius: 5px;
+			padding: 15px;
+			margin-bottom: 20px;
+			overflow-x: auto;
+		}
+		
+		pre {
+			font-family: 'Ubuntu Mono', monospace;
+		}
+		
+		code {
+			color: var(--nord6);
+		}
+		
+		.visualization {
+			display: flex;
+			justify-content: space-between;
+			margin-bottom: 20px;
+		}
+		
+		.call-stack, .web-apis, .callback-queue, .event-loop {
+			background-color: var(--nord1);
+			border-radius: 5px;
+			width: 23%;
+			height: 300px;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.header {
+			background-color: var(--nord2);
+			color: var(--nord8);
+			padding: 8px;
+			text-align: center;
+			border-top-left-radius: 5px;
+			border-top-right-radius: 5px;
+			font-weight: bold;
+		}
+		
+		.content {
+			padding: 10px;
+			flex-grow: 1;
+			overflow-y: auto;
+		}
+		
+		.console {
+			background-color: var(--nord1);
+			border-radius: 5px;
+			margin-bottom: 20px;
+			height: 150px;
+			display: flex;
+			flex-direction: column;
+		}
+		
+		.console .content {
+			font-family: 'Ubuntu Mono', monospace;
+			color: var(--nord14);
+		}
+		
+		.stack-item, .web-api-item, .queue-item {
+			background-color: var(--nord3);
+			margin-bottom: 5px;
+			padding: 5px 10px;
+			border-radius: 3px;
+			animation: fadeIn 0.3s ease-in-out;
+		}
+		
+		.stack-item {
+			color: var(--nord13);
+		}
+		
+		.web-api-item {
+			color: var(--nord7);
+		}
+		
+		.queue-item {
+			color: var(--nord15);
+		}
+		
+		.console-line {
+			margin-bottom: 5px;
+			animation: fadeIn 0.3s ease-in-out;
+		}
+		
+		.event-loop .content {
+			display: flex;
+			justify-content: center;
+			align-items: center;
+		}
+		
+		.loop-circle {
+			width: 100px;
+			height: 100px;
+			border: 5px solid var(--nord9);
+			border-radius: 50%;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			position: relative;
+			margin: auto;
+			margin-top: 50px;
+		}
+		
+		.loop-circle::after {
+			content: "";
+			position: absolute;
+			width: 0;
+			height: 0;
+			border-left: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-bottom: 15px solid var(--nord9);
+			transform: rotate(45deg);
+			right: -5px;
+			top: 40px;
+		}
+		
+		.controls {
+			display: flex;
+			justify-content: center;
+			gap: 10px;
+			margin-bottom: 20px;
+		}
+		
+		button {
+			background-color: var(--nord2);
+			color: var(--nord6);
+			border: none;
+			padding: 8px 15px;
+			border-radius: 5px;
+			cursor: pointer;
+			font-family: 'Ubuntu Mono', monospace;
+			transition: background-color 0.2s;
+		}
+		
+		button:hover {
+			background-color: var(--nord3);
+		}
+		
+		button:disabled {
+			background-color: var(--nord1);
+			cursor: not-allowed;
+			opacity: 0.6;
+		}
+		
+		.step-info {
+			background-color: var(--nord1);
+			border-radius: 5px;
+			margin-bottom: 20px;
+		}
+		
+		#step-description {
+			padding: 15px;
+			line-height: 1.5;
+		}
+		
+		@keyframes fadeIn {
+			from { opacity: 0; transform: translateY(10px); }
+			to { opacity: 1; transform: translateY(0); }
+		}
+		
+		.highlight {
+			background-color: var(--nord10);
+			transition: background-color 0.3s;
+		}
+		
+		.timer-running {
+			animation: pulse 2s infinite;
+		}
+		
+		@keyframes pulse {
+			0% { opacity: 1; }
+			50% { opacity: 0.5; }
+			100% { opacity: 1; }
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<h1>JavaScript Event Loop Visualization</h1>
+	
+	<div class="user-info">
+		<div>Current Date/Time: <span>2025-07-18 01:50:52 (UTC)</span></div>
+		<div>User: <span>SHAHNUR00</span></div>
+	</div>
+	
+	<div class="code-container">
+            <pre><code id="code-snippet">const processOrder = (customer) => {
+  console.log(`processing order for customer ${customer}`);
+  
+  setTimeout(() => {
+    console.log('cooking completed');
+  }, 3000);
+  
+  console.log(`order processed for customer ${customer}`);
+};
+
+console.log('take order for customer 1');
+processOrder("SHAHNUR00");
+console.log('completed order for customer 1');</code></pre>
+	</div>
+	
+	<div class="visualization">
+		<div class="call-stack">
+			<div class="header">Call Stack</div>
+			<div class="content" id="call-stack"></div>
+		</div>
+		<div class="web-apis">
+			<div class="header">Web APIs</div>
+			<div class="content" id="web-apis"></div>
+		</div>
+		<div class="callback-queue">
+			<div class="header">Callback Queue</div>
+			<div class="content" id="callback-queue"></div>
+		</div>
+		<div class="event-loop">
+			<div class="header">Event Loop</div>
+			<div class="loop-circle"></div>
+		</div>
+	</div>
+	
+	<div class="console">
+		<div class="header">Console Output</div>
+		<div class="content" id="console-output"></div>
+	</div>
+	
+	<div class="controls">
+		<button id="start-btn">Start Visualization</button>
+		<button id="next-btn" disabled>Next Step</button>
+		<button id="reset-btn">Reset</button>
+	</div>
+	
+	<div class="step-info">
+		<div class="header">Current Step</div>
+		<div id="step-description">Click "Start Visualization" to begin</div>
+	</div>
+</div>
+
+<script>
+	document.addEventListener('DOMContentLoaded', () => {
+		const callStackEl = document.getElementById('call-stack');
+		const webApisEl = document.getElementById('web-apis');
+		const callbackQueueEl = document.getElementById('callback-queue');
+		const consoleOutputEl = document.getElementById('console-output');
+		const stepDescriptionEl = document.getElementById('step-description');
+		const startBtn = document.getElementById('start-btn');
+		const nextBtn = document.getElementById('next-btn');
+		const resetBtn = document.getElementById('reset-btn');
+		
+		let currentStep = 0;
+		
+		// Define all steps of execution
+		const steps = [
+			{
+				description: "Initial state: Program starts execution",
+				callStack: [],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: []
+			},
+			{
+				description: "main() is pushed to the call stack (this represents the global execution context)",
+				callStack: ["main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: []
+			},
+			{
+				description: "console.log('take order for customer 1') is pushed to the call stack",
+				callStack: ["console.log('take order for customer 1')", "main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: []
+			},
+			{
+				description: "console.log() executes and prints to the console",
+				callStack: ["main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1"]
+			},
+			{
+				description: "processOrder('SHAHNUR00') is pushed to the call stack",
+				callStack: ["processOrder('SHAHNUR00')", "main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1"]
+			},
+			{
+				description: "First console.log inside processOrder is pushed to the call stack",
+				callStack: ["console.log('processing order for customer SHAHNUR00')", "processOrder('SHAHNUR00')", "main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1"]
+			},
+			{
+				description: "console.log() executes and prints to the console",
+				callStack: ["processOrder('SHAHNUR00')", "main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00"]
+			},
+			{
+				description: "setTimeout() is pushed to the call stack",
+				callStack: ["setTimeout(() => {...}, 3000)", "processOrder('SHAHNUR00')", "main()"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00"]
+			},
+			{
+				description: "setTimeout() registers the callback in Web APIs and starts the timer",
+				callStack: ["processOrder('SHAHNUR00')", "main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00"]
+			},
+			{
+				description: "Second console.log inside processOrder is pushed to the call stack",
+				callStack: ["console.log('order processed for customer SHAHNUR00')", "processOrder('SHAHNUR00')", "main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00"]
+			},
+			{
+				description: "console.log() executes and prints to the console",
+				callStack: ["processOrder('SHAHNUR00')", "main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00"]
+			},
+			{
+				description: "processOrder() completes and is removed from the call stack",
+				callStack: ["main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00"]
+			},
+			{
+				description: "Last console.log in main is pushed to the call stack",
+				callStack: ["console.log('completed order for customer 1')", "main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00"]
+			},
+			{
+				description: "console.log() executes and prints to the console",
+				callStack: ["main()"],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1"]
+			},
+			{
+				description: "main() completes execution and is removed from the call stack",
+				callStack: [],
+				webApis: ["setTimeout (3000ms) - running..."],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1"]
+			},
+			{
+				description: "After 3000ms, the timer completes and the callback is moved to the Callback Queue",
+				callStack: [],
+				webApis: [],
+				callbackQueue: ["() => { console.log('cooking completed'); }"],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1"]
+			},
+			{
+				description: "Event loop checks if call stack is empty, then moves the callback from the Queue to the Call Stack",
+				callStack: ["() => { console.log('cooking completed'); }"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1"]
+			},
+			{
+				description: "console.log inside the callback is pushed to the call stack",
+				callStack: ["console.log('cooking completed')", "() => { console.log('cooking completed'); }"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1"]
+			},
+			{
+				description: "console.log() executes and prints to the console",
+				callStack: ["() => { console.log('cooking completed'); }"],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1", "cooking completed"]
+			},
+			{
+				description: "Callback completes execution and is removed from the call stack",
+				callStack: [],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1", "cooking completed"]
+			},
+			{
+				description: "Program execution complete",
+				callStack: [],
+				webApis: [],
+				callbackQueue: [],
+				consoleOutput: ["take order for customer 1", "processing order for customer SHAHNUR00", "order processed for customer SHAHNUR00", "completed order for customer 1", "cooking completed"]
+			}
+		];
+		
+		// Function to render a step
+		function renderStep(stepIndex) {
+			if (stepIndex < 0 || stepIndex >= steps.length) return;
+			
+			const step = steps[stepIndex];
+			
+			// Update call stack
+			callStackEl.innerHTML = '';
+			step.callStack.forEach(item => {
+				const div = document.createElement('div');
+				div.className = 'stack-item';
+				div.textContent = item;
+				callStackEl.appendChild(div); // Add to the bottom
+			});
+			
+			// Update Web APIs
+			webApisEl.innerHTML = '';
+			step.webApis.forEach(item => {
+				const div = document.createElement('div');
+				div.className = 'web-api-item';
+				if (item.includes('running')) {
+					div.classList.add('timer-running');
+				}
+				div.textContent = item;
+				webApisEl.appendChild(div);
+			});
+			
+			// Update Callback Queue
+			callbackQueueEl.innerHTML = '';
+			step.callbackQueue.forEach(item => {
+				const div = document.createElement('div');
+				div.className = 'queue-item';
+				div.textContent = item;
+				callbackQueueEl.appendChild(div);
+			});
+			
+			// Update Console Output
+			consoleOutputEl.innerHTML = '';
+			step.consoleOutput.forEach(item => {
+				const div = document.createElement('div');
+				div.className = 'console-line';
+				div.textContent = `> ${item}`;
+				consoleOutputEl.appendChild(div);
+			});
+			
+			// Update step description
+			stepDescriptionEl.textContent = `Step ${stepIndex + 1}/${steps.length}: ${step.description}`;
+		}
+		
+		// Initialize visualization
+		function init() {
+			currentStep = 0;
+			renderStep(currentStep);
+			nextBtn.disabled = true;
+		}
+		
+		// Start the visualization
+		function startVisualization() {
+			startBtn.disabled = true;
+			nextBtn.disabled = false;
+			currentStep = 0;
+			renderStep(currentStep);
+		}
+		
+		// Move to the next step
+		function nextStep() {
+			if (currentStep < steps.length - 1) {
+				currentStep++;
+				renderStep(currentStep);
+				
+				if (currentStep === steps.length - 1) {
+					nextBtn.disabled = true;
+				}
+			}
+		}
+		
+		// Reset the visualization
+		function resetVisualization() {
+			startBtn.disabled = false;
+			nextBtn.disabled = true;
+			init();
+		}
+		
+		// Event listeners
+		startBtn.addEventListener('click', startVisualization);
+		nextBtn.addEventListener('click', nextStep);
+		resetBtn.addEventListener('click', resetVisualization);
+		
+		// Initialize on load
+		init();
+	});
+</script>
+</body>
+</html>

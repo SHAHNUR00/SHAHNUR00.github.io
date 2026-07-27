@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Letter Spacing Visualization - Tailwind CSS</title>
+  <style>
+      /* Nord Theme Color Variables */
+      :root {
+          /* Polar Night */
+          --nord0: #2E3440;
+          --nord1: #3B4252;
+          --nord2: #434C5E;
+          --nord3: #4C566A;
+          /* Snow Storm */
+          --nord4: #D8DEE9;
+          --nord5: #E5E9F0;
+          --nord6: #ECEFF4;
+          /* Frost */
+          --nord7: #8FBCBB;
+          --nord8: #88C0D0;
+          --nord9: #81A1C1;
+          --nord10: #5E81AC;
+          /* Aurora */
+          --nord11: #BF616A; /* Red */
+          --nord12: #D08770; /* Orange */
+          --nord13: #EBCB8B; /* Yellow */
+          --nord14: #A3BE8C; /* Green */
+          --nord15: #B48EAD; /* Purple */
+      }
+
+      *{
+          font-family: 'Ubuntu Sans Mono' !important;
+      }
+
+      body {
+          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+          background-color: var(--nord0);
+          color: var(--nord6);
+          margin: 0;
+          padding: 20px;
+          line-height: 1.6;
+      }
+
+      .container {
+          max-width: 1200px;
+          margin: 0 auto;
+          padding: 20px;
+          background-color: var(--nord1);
+          border-radius: 8px;
+          box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      h1 {
+          color: var(--nord8);
+          border-bottom: 2px solid var(--nord9);
+          padding-bottom: 10px;
+          margin-bottom: 30px;
+          text-align: center;
+      }
+
+      .controls {
+          background-color: var(--nord2);
+          padding: 15px;
+          border-radius: 6px;
+          margin-bottom: 20px;
+      }
+
+      .control-group {
+          display: flex;
+          align-items: center;
+          margin-bottom: 10px;
+      }
+
+      label {
+          margin-right: 10px;
+          color: var(--nord4);
+          min-width: 120px;
+      }
+
+      input, select {
+          background-color: var(--nord3);
+          border: none;
+          color: var(--nord6);
+          padding: 8px 12px;
+          border-radius: 4px;
+          margin-right: 10px;
+      }
+
+      .main-layout {
+          display: flex;
+          gap: 20px;
+      }
+
+      .sidebar {
+          flex: 0 0 250px;
+          background-color: var(--nord2);
+          padding: 20px;
+          border-radius: 6px;
+          display: flex;
+          flex-direction: column;
+          gap: 10px;
+      }
+
+      .spacing-button {
+          background-color: var(--nord3);
+          color: var(--nord6);
+          border: none;
+          padding: 12px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: all 0.2s;
+          text-align: left;
+          display: flex;
+          flex-direction: column;
+      }
+
+      .spacing-button:hover {
+          background-color: var(--nord10);
+      }
+
+      .spacing-button.active {
+          background-color: var(--nord9);
+          border-left: 4px solid var(--nord7);
+      }
+
+      .button-class {
+          font-weight: bold;
+          margin-bottom: 4px;
+      }
+
+      .button-value {
+          font-family: monospace;
+          font-size: 0.85em;
+          color: var(--nord4);
+      }
+
+      /* Paper Grid Background */
+      .visualization-container {
+          flex: 1;
+          position: relative;
+          background-color: var(--nord0);
+          border-radius: 6px;
+          padding: 30px;
+          color: var(--nord6);
+          overflow: hidden;
+          min-height: 400px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          border: 1px solid var(--nord3);
+      }
+
+      .paper-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-size: 20px 20px;
+          background-image:
+                  linear-gradient(to right, var(--nord3) 1px, transparent 1px),
+                  linear-gradient(to bottom, var(--nord3) 1px, transparent 1px);
+          opacity: 0.3;
+          z-index: 0;
+      }
+
+      .visualization {
+          position: relative;
+          z-index: 1;
+          padding: 20px;
+          max-width: 100%;
+          text-align: center;
+      }
+
+      .example-text {
+          position: relative;
+          padding: 10px;
+          border-radius: 4px;
+          transition: all 0.3s;
+          display: inline-block;
+          border: 2px solid transparent;
+          color: var(--nord8);
+          font-size: 24px;
+      }
+
+      .current-class {
+          position: absolute;
+          top: -25px;
+          left: 0;
+          right: 0;
+          text-align: center;
+          font-family: monospace;
+          color: var(--nord7);
+          font-weight: bold;
+      }
+
+      .footer {
+          margin-top: 30px;
+          text-align: center;
+          color: var(--nord4);
+          font-size: 14px;
+      }
+
+      button.control-button {
+          background-color: var(--nord10);
+          color: var(--nord6);
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+          transition: background-color 0.2s;
+      }
+
+      button.control-button:hover {
+          background-color: var(--nord9);
+      }
+
+      /* Letter spacing classes - Tailwind CSS equivalents */
+      .tracking-tighter {
+          letter-spacing: -0.05em;
+      }
+
+      .tracking-tight {
+          letter-spacing: -0.025em;
+      }
+
+      .tracking-normal {
+          letter-spacing: 0;
+      }
+
+      .tracking-wide {
+          letter-spacing: 0.025em;
+      }
+
+      .tracking-wider {
+          letter-spacing: 0.05em;
+      }
+
+      .tracking-widest {
+          letter-spacing: 0.1em;
+      }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Letter Spacing Visualization in Tailwind CSS</h1>
+
+  <div class="controls">
+    <div class="control-group">
+      <label for="sample-text">Sample Text:</label>
+      <input type="text" id="sample-text" value="The quick brown fox jumps over the lazy dog" style="width: 350px;">
+      <button id="update-text" class="control-button">Update</button>
+    </div>
+
+    <div class="control-group">
+      <label for="font-size">Font Size:</label>
+      <input type="range" id="font-size" min="12" max="48" value="24">
+      <span id="font-size-value">24px</span>
+    </div>
+
+    <div class="control-group">
+      <label for="font-weight">Font Weight:</label>
+      <select id="font-weight">
+        <option value="300">Light (300)</option>
+        <option value="400" selected>Regular (400)</option>
+        <option value="500">Medium (500)</option>
+        <option value="600">Semibold (600)</option>
+        <option value="700">Bold (700)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="main-layout">
+    <div class="sidebar" id="spacing-buttons">
+      <!-- Spacing buttons will be dynamically generated -->
+    </div>
+
+    <div class="visualization-container">
+      <div class="paper-grid"></div>
+      <div class="visualization">
+        <div class="current-class" id="current-class"></div>
+        <div class="example-text" id="example-text">
+          The quick brown fox jumps over the lazy dog
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    <p>Colors from the Nord Theme • Using Tailwind CSS letter spacing values</p>
+    <p>Created for shanur00 on 2025-08-29</p>
+  </div>
+</div>
+
+<script>
+    // Tailwind CSS letter spacing variations
+    const letterSpacings = [
+        { class: 'tracking-tighter', value: '-0.05em', description: 'Much tighter tracking' },
+        { class: 'tracking-tight', value: '-0.025em', description: 'Tighter tracking' },
+        { class: 'tracking-normal', value: '0', description: 'Normal tracking (default)' },
+        { class: 'tracking-wide', value: '0.025em', description: 'Wider tracking' },
+        { class: 'tracking-wider', value: '0.05em', description: 'Much wider tracking' },
+        { class: 'tracking-widest', value: '0.1em', description: 'Extremely wide tracking' }
+    ];
+
+    // DOM elements
+    const spacingButtons = document.getElementById('spacing-buttons');
+    const exampleText = document.getElementById('example-text');
+    const currentClass = document.getElementById('current-class');
+    const sampleTextInput = document.getElementById('sample-text');
+    const updateTextButton = document.getElementById('update-text');
+    const fontSizeInput = document.getElementById('font-size');
+    const fontSizeValue = document.getElementById('font-size-value');
+    const fontWeightSelect = document.getElementById('font-weight');
+
+    // Initialize with default text
+    let sampleText = sampleTextInput.value;
+    let fontSize = fontSizeInput.value;
+    let fontWeight = fontWeightSelect.value;
+    let currentSpacing = 'tracking-normal';
+
+    // Generate spacing buttons
+    function generateButtons() {
+        spacingButtons.innerHTML = '';
+
+        letterSpacings.forEach(spacing => {
+            const button = document.createElement('button');
+            button.className = 'spacing-button';
+            button.dataset.class = spacing.class;
+            button.dataset.value = spacing.value;
+
+            if (spacing.class === currentSpacing) {
+                button.classList.add('active');
+            }
+
+            button.innerHTML = `
+                    <span class="button-class">${spacing.class}</span>
+                    <span class="button-value">letter-spacing: ${spacing.value}</span>
+                `;
+
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                document.querySelectorAll('.spacing-button').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+
+                // Add active class to clicked button
+                this.classList.add('active');
+
+                // Update current spacing class
+                currentSpacing = this.dataset.class;
+
+                // Update visualization
+                updateVisualization();
+            });
+
+            spacingButtons.appendChild(button);
+        });
+    }
+
+    // Update the visualization based on current settings
+    function updateVisualization() {
+        // Remove all tracking classes from example text
+        letterSpacings.forEach(spacing => {
+            exampleText.classList.remove(spacing.class);
+        });
+
+        // Add current tracking class
+        exampleText.classList.add(currentSpacing);
+
+        // Update text content and styles
+        exampleText.textContent = sampleText;
+        exampleText.style.fontSize = `${fontSize}px`;
+        exampleText.style.fontWeight = fontWeight;
+
+        // Update current class display
+        const currentSpacingObj = letterSpacings.find(s => s.class === currentSpacing);
+        currentClass.textContent = `${currentSpacing} (${currentSpacingObj.value})`;
+    }
+
+    // Event listeners
+    updateTextButton.addEventListener('click', function() {
+        sampleText = sampleTextInput.value;
+        updateVisualization();
+    });
+
+    fontSizeInput.addEventListener('input', function() {
+        fontSize = this.value;
+        fontSizeValue.textContent = `${fontSize}px`;
+        updateVisualization();
+    });
+
+    fontWeightSelect.addEventListener('change', function() {
+        fontWeight = this.value;
+        updateVisualization();
+    });
+
+    // Initialize
+    generateButtons();
+    updateVisualization();
+</script>
+</body>
+</html>

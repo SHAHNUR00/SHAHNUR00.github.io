@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Border Radius Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono',sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px; /* Set to 1550px as requested */
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .option-row input {
+      cursor: pointer;
+    }
+
+    /* Size controls */
+    .size-controls {
+      margin-bottom: 20px;
+    }
+
+    .size-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      gap: 10px;
+    }
+
+    .size-label {
+      min-width: 70px;
+    }
+
+    input[type="range"] {
+      flex-grow: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 6px;
+      background: var(--nord3);
+      border-radius: 3px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--nord9);
+      cursor: pointer;
+    }
+
+    .size-value {
+      min-width: 40px;
+      text-align: right;
+      color: var(--nord8);
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 400px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Element with applied border-radius */
+    .demo-element {
+      position: relative;
+      background-color: var(--nord10);
+      width: 250px;
+      height: 250px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: all 0.3s ease;
+      z-index: 5;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+      z-index: 10;
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Border Radius Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utility classes for setting border radius. This visualizer demonstrates how different border-radius utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Border Radius Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="default">Default</button>
+          <button class="tab-button" data-category="positions">Positions</button>
+          <button class="tab-button" data-category="corners">Corners</button>
+          <button class="tab-button" data-category="special">Special</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- Default border-radius values -->
+          <div class="value-group" id="default-values">
+            <div class="value-grid">
+              <button class="value-button selected" data-class="rounded-none">rounded-none</button>
+              <button class="value-button" data-class="rounded-sm">rounded-sm</button>
+              <button class="value-button" data-class="rounded">rounded</button>
+              <button class="value-button" data-class="rounded-md">rounded-md</button>
+              <button class="value-button" data-class="rounded-lg">rounded-lg</button>
+              <button class="value-button" data-class="rounded-xl">rounded-xl</button>
+              <button class="value-button" data-class="rounded-2xl">rounded-2xl</button>
+              <button class="value-button" data-class="rounded-3xl">rounded-3xl</button>
+              <button class="value-button" data-class="rounded-full">rounded-full</button>
+            </div>
+          </div>
+
+          <!-- Position-specific values -->
+          <div class="value-group" id="positions-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="rounded-t-none">rounded-t-none</button>
+              <button class="value-button" data-class="rounded-r-none">rounded-r-none</button>
+              <button class="value-button" data-class="rounded-b-none">rounded-b-none</button>
+              <button class="value-button" data-class="rounded-l-none">rounded-l-none</button>
+              <button class="value-button" data-class="rounded-t-sm">rounded-t-sm</button>
+              <button class="value-button" data-class="rounded-r-sm">rounded-r-sm</button>
+              <button class="value-button" data-class="rounded-b-sm">rounded-b-sm</button>
+              <button class="value-button" data-class="rounded-l-sm">rounded-l-sm</button>
+              <button class="value-button" data-class="rounded-t">rounded-t</button>
+              <button class="value-button" data-class="rounded-r">rounded-r</button>
+              <button class="value-button" data-class="rounded-b">rounded-b</button>
+              <button class="value-button" data-class="rounded-l">rounded-l</button>
+              <button class="value-button" data-class="rounded-t-md">rounded-t-md</button>
+              <button class="value-button" data-class="rounded-r-md">rounded-r-md</button>
+              <button class="value-button" data-class="rounded-b-md">rounded-b-md</button>
+              <button class="value-button" data-class="rounded-l-md">rounded-l-md</button>
+              <button class="value-button" data-class="rounded-t-lg">rounded-t-lg</button>
+              <button class="value-button" data-class="rounded-r-lg">rounded-r-lg</button>
+              <button class="value-button" data-class="rounded-b-lg">rounded-b-lg</button>
+              <button class="value-button" data-class="rounded-l-lg">rounded-l-lg</button>
+              <button class="value-button" data-class="rounded-t-xl">rounded-t-xl</button>
+              <button class="value-button" data-class="rounded-r-xl">rounded-r-xl</button>
+              <button class="value-button" data-class="rounded-b-xl">rounded-b-xl</button>
+              <button class="value-button" data-class="rounded-l-xl">rounded-l-xl</button>
+              <button class="value-button" data-class="rounded-t-2xl">rounded-t-2xl</button>
+              <button class="value-button" data-class="rounded-r-2xl">rounded-r-2xl</button>
+              <button class="value-button" data-class="rounded-b-2xl">rounded-b-2xl</button>
+              <button class="value-button" data-class="rounded-l-2xl">rounded-l-2xl</button>
+              <button class="value-button" data-class="rounded-t-3xl">rounded-t-3xl</button>
+              <button class="value-button" data-class="rounded-r-3xl">rounded-r-3xl</button>
+              <button class="value-button" data-class="rounded-b-3xl">rounded-b-3xl</button>
+              <button class="value-button" data-class="rounded-l-3xl">rounded-l-3xl</button>
+            </div>
+          </div>
+
+          <!-- Individual corners -->
+          <div class="value-group" id="corners-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="rounded-tl-none">rounded-tl-none</button>
+              <button class="value-button" data-class="rounded-tr-none">rounded-tr-none</button>
+              <button class="value-button" data-class="rounded-br-none">rounded-br-none</button>
+              <button class="value-button" data-class="rounded-bl-none">rounded-bl-none</button>
+              <button class="value-button" data-class="rounded-tl-sm">rounded-tl-sm</button>
+              <button class="value-button" data-class="rounded-tr-sm">rounded-tr-sm</button>
+              <button class="value-button" data-class="rounded-br-sm">rounded-br-sm</button>
+              <button class="value-button" data-class="rounded-bl-sm">rounded-bl-sm</button>
+              <button class="value-button" data-class="rounded-tl">rounded-tl</button>
+              <button class="value-button" data-class="rounded-tr">rounded-tr</button>
+              <button class="value-button" data-class="rounded-br">rounded-br</button>
+              <button class="value-button" data-class="rounded-bl">rounded-bl</button>
+              <button class="value-button" data-class="rounded-tl-md">rounded-tl-md</button>
+              <button class="value-button" data-class="rounded-tr-md">rounded-tr-md</button>
+              <button class="value-button" data-class="rounded-br-md">rounded-br-md</button>
+              <button class="value-button" data-class="rounded-bl-md">rounded-bl-md</button>
+              <button class="value-button" data-class="rounded-tl-lg">rounded-tl-lg</button>
+              <button class="value-button" data-class="rounded-tr-lg">rounded-tr-lg</button>
+              <button class="value-button" data-class="rounded-br-lg">rounded-br-lg</button>
+              <button class="value-button" data-class="rounded-bl-lg">rounded-bl-lg</button>
+              <button class="value-button" data-class="rounded-tl-xl">rounded-tl-xl</button>
+              <button class="value-button" data-class="rounded-tr-xl">rounded-tr-xl</button>
+              <button class="value-button" data-class="rounded-br-xl">rounded-br-xl</button>
+              <button class="value-button" data-class="rounded-bl-xl">rounded-bl-xl</button>
+              <button class="value-button" data-class="rounded-tl-2xl">rounded-tl-2xl</button>
+              <button class="value-button" data-class="rounded-tr-2xl">rounded-tr-2xl</button>
+              <button class="value-button" data-class="rounded-br-2xl">rounded-br-2xl</button>
+              <button class="value-button" data-class="rounded-bl-2xl">rounded-bl-2xl</button>
+              <button class="value-button" data-class="rounded-tl-3xl">rounded-tl-3xl</button>
+              <button class="value-button" data-class="rounded-tr-3xl">rounded-tr-3xl</button>
+              <button class="value-button" data-class="rounded-br-3xl">rounded-br-3xl</button>
+              <button class="value-button" data-class="rounded-bl-3xl">rounded-bl-3xl</button>
+            </div>
+          </div>
+
+          <!-- Special values -->
+          <div class="value-group" id="special-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="rounded-full">rounded-full</button>
+              <button class="value-button" data-class="rounded-t-full">rounded-t-full</button>
+              <button class="value-button" data-class="rounded-r-full">rounded-r-full</button>
+              <button class="value-button" data-class="rounded-b-full">rounded-b-full</button>
+              <button class="value-button" data-class="rounded-l-full">rounded-l-full</button>
+              <button class="value-button" data-class="rounded-tl-full">rounded-tl-full</button>
+              <button class="value-button" data-class="rounded-tr-full">rounded-tr-full</button>
+              <button class="value-button" data-class="rounded-br-full">rounded-br-full</button>
+              <button class="value-button" data-class="rounded-bl-full">rounded-bl-full</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="size-controls">
+          <h2>Element Size</h2>
+          <div class="size-row">
+            <label class="size-label">Width:</label>
+            <input type="range" id="element-width" min="50" max="500" value="250">
+            <span class="size-value" id="width-value">250px</span>
+          </div>
+          <div class="size-row">
+            <label class="size-label">Height:</label>
+            <input type="range" id="element-height" min="50" max="500" value="250">
+            <span class="size-value" id="height-value">250px</span>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-content" checked>
+            <label for="show-content" class="option-label">Show content</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container">
+          <div class="grid-background"></div>
+          
+          <div class="demo-element" id="demo-element">
+            <div class="element-label" id="element-label">rounded-none</div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">rounded-none</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">border-radius:</span> <span class="css-value">0px</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Current Time: 2025-07-24 13:41:16 UTC
+    </div>
+  </div>
+
+  <script>
+    // Border radius value mappings
+    const borderRadiusValues = {
+      // Default values
+      'rounded-none': '0px',
+      'rounded-sm': '0.125rem', // 2px
+      'rounded': '0.25rem',     // 4px
+      'rounded-md': '0.375rem', // 6px
+      'rounded-lg': '0.5rem',   // 8px
+      'rounded-xl': '0.75rem',  // 12px
+      'rounded-2xl': '1rem',    // 16px
+      'rounded-3xl': '1.5rem',  // 24px
+      'rounded-full': '9999px', // Fully rounded
+
+      // Top side
+      'rounded-t-none': '0px 0px 0px 0px',
+      'rounded-t-sm': '0.125rem 0.125rem 0px 0px',
+      'rounded-t': '0.25rem 0.25rem 0px 0px',
+      'rounded-t-md': '0.375rem 0.375rem 0px 0px',
+      'rounded-t-lg': '0.5rem 0.5rem 0px 0px',
+      'rounded-t-xl': '0.75rem 0.75rem 0px 0px',
+      'rounded-t-2xl': '1rem 1rem 0px 0px',
+      'rounded-t-3xl': '1.5rem 1.5rem 0px 0px',
+      'rounded-t-full': '9999px 9999px 0px 0px',
+
+      // Right side
+      'rounded-r-none': '0px 0px 0px 0px',
+      'rounded-r-sm': '0px 0.125rem 0.125rem 0px',
+      'rounded-r': '0px 0.25rem 0.25rem 0px',
+      'rounded-r-md': '0px 0.375rem 0.375rem 0px',
+      'rounded-r-lg': '0px 0.5rem 0.5rem 0px',
+      'rounded-r-xl': '0px 0.75rem 0.75rem 0px',
+      'rounded-r-2xl': '0px 1rem 1rem 0px',
+      'rounded-r-3xl': '0px 1.5rem 1.5rem 0px',
+      'rounded-r-full': '0px 9999px 9999px 0px',
+
+      // Bottom side
+      'rounded-b-none': '0px 0px 0px 0px',
+      'rounded-b-sm': '0px 0px 0.125rem 0.125rem',
+      'rounded-b': '0px 0px 0.25rem 0.25rem',
+      'rounded-b-md': '0px 0px 0.375rem 0.375rem',
+      'rounded-b-lg': '0px 0px 0.5rem 0.5rem',
+      'rounded-b-xl': '0px 0px 0.75rem 0.75rem',
+      'rounded-b-2xl': '0px 0px 1rem 1rem',
+      'rounded-b-3xl': '0px 0px 1.5rem 1.5rem',
+      'rounded-b-full': '0px 0px 9999px 9999px',
+
+      // Left side
+      'rounded-l-none': '0px 0px 0px 0px',
+      'rounded-l-sm': '0.125rem 0px 0px 0.125rem',
+      'rounded-l': '0.25rem 0px 0px 0.25rem',
+      'rounded-l-md': '0.375rem 0px 0px 0.375rem',
+      'rounded-l-lg': '0.5rem 0px 0px 0.5rem',
+      'rounded-l-xl': '0.75rem 0px 0px 0.75rem',
+      'rounded-l-2xl': '1rem 0px 0px 1rem',
+      'rounded-l-3xl': '1.5rem 0px 0px 1.5rem',
+      'rounded-l-full': '9999px 0px 0px 9999px',
+
+      // Top left corner
+      'rounded-tl-none': '0px 0px 0px 0px',
+      'rounded-tl-sm': '0.125rem 0px 0px 0px',
+      'rounded-tl': '0.25rem 0px 0px 0px',
+      'rounded-tl-md': '0.375rem 0px 0px 0px',
+      'rounded-tl-lg': '0.5rem 0px 0px 0px',
+      'rounded-tl-xl': '0.75rem 0px 0px 0px',
+      'rounded-tl-2xl': '1rem 0px 0px 0px',
+      'rounded-tl-3xl': '1.5rem 0px 0px 0px',
+      'rounded-tl-full': '9999px 0px 0px 0px',
+
+      // Top right corner
+      'rounded-tr-none': '0px 0px 0px 0px',
+      'rounded-tr-sm': '0px 0.125rem 0px 0px',
+      'rounded-tr': '0px 0.25rem 0px 0px',
+      'rounded-tr-md': '0px 0.375rem 0px 0px',
+      'rounded-tr-lg': '0px 0.5rem 0px 0px',
+      'rounded-tr-xl': '0px 0.75rem 0px 0px',
+      'rounded-tr-2xl': '0px 1rem 0px 0px',
+      'rounded-tr-3xl': '0px 1.5rem 0px 0px',
+      'rounded-tr-full': '0px 9999px 0px 0px',
+
+      // Bottom right corner
+      'rounded-br-none': '0px 0px 0px 0px',
+      'rounded-br-sm': '0px 0px 0.125rem 0px',
+      'rounded-br': '0px 0px 0.25rem 0px',
+      'rounded-br-md': '0px 0px 0.375rem 0px',
+      'rounded-br-lg': '0px 0px 0.5rem 0px',
+      'rounded-br-xl': '0px 0px 0.75rem 0px',
+      'rounded-br-2xl': '0px 0px 1rem 0px',
+      'rounded-br-3xl': '0px 0px 1.5rem 0px',
+      'rounded-br-full': '0px 0px 9999px 0px',
+
+      // Bottom left corner
+      'rounded-bl-none': '0px 0px 0px 0px',
+      'rounded-bl-sm': '0px 0px 0px 0.125rem',
+      'rounded-bl': '0px 0px 0px 0.25rem',
+      'rounded-bl-md': '0px 0px 0px 0.375rem',
+      'rounded-bl-lg': '0px 0px 0px 0.5rem',
+      'rounded-bl-xl': '0px 0px 0px 0.75rem',
+      'rounded-bl-2xl': '0px 0px 0px 1rem',
+      'rounded-bl-3xl': '0px 0px 0px 1.5rem',
+      'rounded-bl-full': '0px 0px 0px 9999px'
+    };
+
+    // DOM elements
+    const demoElement = document.getElementById('demo-element');
+    const elementLabel = document.getElementById('element-label');
+    const codeDisplay = document.getElementById('code-display');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const showContent = document.getElementById('show-content');
+    const elementWidth = document.getElementById('element-width');
+    const elementHeight = document.getElementById('element-height');
+    const widthValue = document.getElementById('width-value');
+    const heightValue = document.getElementById('height-value');
+
+    // Initial state
+    let currentClass = 'rounded-none';
+
+    // Set the element border-radius based on selected class
+    function setElementBorderRadius(className) {
+      currentClass = className;
+      
+      // Get the CSS value
+      const cssValue = borderRadiusValues[className];
+      
+      // Update the actual CSS property
+      demoElement.style.borderRadius = cssValue;
+      
+      // Update the label
+      elementLabel.textContent = className;
+
+      // Update code display
+      updateCodeDisplay(className, cssValue);
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className, cssValue) {
+      // Determine the appropriate CSS property based on the class
+      let cssProp = 'border-radius';
+      if (className.includes('-tl-')) {
+        cssProp = 'border-top-left-radius';
+      } else if (className.includes('-tr-')) {
+        cssProp = 'border-top-right-radius';
+      } else if (className.includes('-br-')) {
+        cssProp = 'border-bottom-right-radius';
+      } else if (className.includes('-bl-')) {
+        cssProp = 'border-bottom-left-radius';
+      } else if (className.includes('-t-')) {
+        cssProp = 'border-radius';
+        // For top, the actual CSS would be setting top-left and top-right
+      } else if (className.includes('-r-')) {
+        cssProp = 'border-radius';
+        // For right, the actual CSS would be setting top-right and bottom-right
+      } else if (className.includes('-b-')) {
+        cssProp = 'border-radius';
+        // For bottom, the actual CSS would be setting bottom-left and bottom-right
+      } else if (className.includes('-l-')) {
+        cssProp = 'border-radius';
+        // For left, the actual CSS would be setting top-left and bottom-left
+      }
+
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">${cssProp}:</span> <span class="css-value">${cssValue}</span>;`;
+    }
+
+    // Initialize
+    setElementBorderRadius('rounded-none');
+
+    // Update element size
+    function updateElementSize() {
+      const width = elementWidth.value;
+      const height = elementHeight.value;
+      
+      demoElement.style.width = `${width}px`;
+      demoElement.style.height = `${height}px`;
+      
+      widthValue.textContent = `${width}px`;
+      heightValue.textContent = `${height}px`;
+    }
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Select the first button of the category if none is selected
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          const groupButtons = activeGroup.querySelectorAll('.value-button');
+          let hasSelected = false;
+          groupButtons.forEach(btn => {
+            if (btn.classList.contains('selected')) {
+              hasSelected = true;
+              setElementBorderRadius(btn.dataset.class);
+            }
+          });
+          
+          if (!hasSelected && groupButtons.length > 0) {
+            groupButtons[0].classList.add('selected');
+            setElementBorderRadius(groupButtons[0].dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons
+        valueButtons.forEach(btn => btn.classList.remove('selected'));
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        // Update element border radius
+        setElementBorderRadius(button.dataset.class);
+      });
+    });
+
+    // Event listeners for options
+    showContent.addEventListener('change', () => {
+      elementLabel.style.display = showContent.checked ? 'block' : 'none';
+    });
+
+    // Event listeners for size controls
+    elementWidth.addEventListener('input', updateElementSize);
+    elementHeight.addEventListener('input', updateElementSize);
+  </script>
+</body>
+</html>

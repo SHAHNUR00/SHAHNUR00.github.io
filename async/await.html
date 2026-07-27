@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Promise Execution Flow Visualization</title>
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono&display=swap">
+	<style>
+		:root {
+			--bg-color: #2E3440;
+			--text-color: #ECEFF4;
+			--line-color: #4C566A;
+			--primary-color: #88C0D0;
+			--secondary-color: #EBCB8B;
+			--tertiary-color: #A3BE8C;
+			--highlight-color: #BF616A;
+			--card-color: #3B4252;
+			--queue-color: #B48EAD;
+			--api-color: #81A1C1;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Ubuntu Sans Mono', monospace !important;
+		}
+		
+		body {
+			background-color: var(--bg-color);
+			color: var(--text-color);
+			padding: 20px;
+			line-height: 1.6;
+		}
+		
+		.header {
+			text-align: center;
+			margin-bottom: 20px;
+			padding: 15px;
+			background-color: var(--card-color);
+			border-radius: 8px;
+		}
+		
+		h1 {
+			margin-bottom: 10px;
+			color: var(--primary-color);
+		}
+		
+		.user-info {
+			display: flex;
+			justify-content: space-between;
+			font-size: 0.9rem;
+			color: var(--tertiary-color);
+		}
+		
+		.container {
+			display: flex;
+			max-width: 1400px;
+			margin: 0 auto;
+			gap: 20px;
+		}
+		
+		@media (max-width: 1200px) {
+			.container {
+				flex-direction: column;
+			}
+		}
+		
+		.code-panel {
+			flex: 1;
+			background-color: var(--card-color);
+			border-radius: 8px;
+			padding: 20px;
+			overflow: auto;
+			max-height: 500px;
+		}
+		
+		.flow-panel {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			gap: 15px;
+		}
+		
+		.call-stack, .web-api, .callback-queue, .console-output {
+			background-color: var(--card-color);
+			border-radius: 8px;
+			padding: 15px;
+		}
+		
+		pre {
+			white-space: pre-wrap;
+			font-size: 15px;
+			line-height: 1.5;
+		}
+		
+		code {
+			color: var(--text-color);
+		}
+		
+		.code-line {
+			display: flex;
+			margin-bottom: 4px;
+			padding: 2px 0;
+			border-radius: 3px;
+		}
+		
+		.line-number {
+			color: var(--line-color);
+			text-align: right;
+			min-width: 30px;
+			margin-right: 10px;
+			user-select: none;
+		}
+		
+		.line-content {
+			flex: 1;
+		}
+		
+		.section-title {
+			font-size: 18px;
+			margin-bottom: 10px;
+			color: var(--primary-color);
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+		}
+		
+		.execution-container {
+			display: grid;
+			grid-template-columns: 1fr;
+			gap: 15px;
+		}
+		
+		.call-stack-container, .web-api-container, .callback-queue-container {
+			height: 220px;
+			border: 1px solid var(--line-color);
+			position: relative;
+			overflow: auto;
+			padding: 5px;
+		}
+		
+		.call-stack-container {
+			display: flex;
+			flex-direction: column-reverse;
+		}
+		
+		.stack-item, .web-api-item, .queue-item {
+			padding: 10px 15px;
+			margin-bottom: 4px;
+			border-radius: 4px;
+			transition: all 0.3s;
+			opacity: 0;
+			transform: translateX(-20px);
+			font-size: 14px;
+			word-break: break-word;
+			line-height: 1.4;
+		}
+		
+		.stack-item.active, .web-api-item.active, .queue-item.active {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		
+		.stack-item {
+			background-color: rgba(136, 192, 208, 0.2);
+			border-left: 3px solid var(--primary-color);
+		}
+		
+		.web-api-item {
+			background-color: rgba(129, 161, 193, 0.2);
+			border-left: 3px solid var(--api-color);
+		}
+		
+		.queue-item {
+			background-color: rgba(180, 142, 173, 0.2);
+			border-left: 3px solid var(--queue-color);
+		}
+		
+		.suspended {
+			background-color: rgba(235, 203, 139, 0.2);
+			border-left: 3px solid var(--secondary-color);
+		}
+		
+		.console-output-container {
+			height: 180px;
+			border: 1px solid var(--line-color);
+			padding: 10px;
+			overflow-y: auto;
+		}
+		
+		.console-line {
+			margin-bottom: 5px;
+			opacity: 0;
+			transform: translateY(10px);
+			transition: all 0.5s;
+		}
+		
+		.console-line.active {
+			opacity: 1;
+			transform: translateY(0);
+		}
+		
+		.console-line.log {
+			color: var(--tertiary-color);
+		}
+		
+		.console-line.error {
+			color: var(--highlight-color);
+		}
+		
+		.legend {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			margin-top: 20px;
+			justify-content: center;
+		}
+		
+		.legend-item {
+			display: flex;
+			align-items: center;
+			gap: 5px;
+			font-size: 0.9rem;
+		}
+		
+		.legend-color {
+			width: 15px;
+			height: 15px;
+			border-radius: 3px;
+		}
+		
+		.controls {
+			display: flex;
+			justify-content: center;
+			margin: 20px 0;
+			gap: 10px;
+		}
+		
+		button {
+			padding: 8px 15px;
+			background-color: var(--primary-color);
+			color: var(--bg-color);
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 16px;
+			transition: background-color 0.3s;
+		}
+		
+		button:hover {
+			background-color: var(--secondary-color);
+		}
+		
+		button:disabled {
+			background-color: var(--line-color);
+			cursor: not-allowed;
+		}
+		
+		.step-counter {
+			background-color: var(--card-color);
+			padding: 8px 15px;
+			border-radius: 5px;
+			font-size: 16px;
+			margin: 0 10px;
+		}
+		
+		.step-description {
+			background-color: var(--card-color);
+			padding: 10px 15px;
+			border-radius: 5px;
+			margin: 10px auto;
+			max-width: 1200px;
+			text-align: center;
+			color: var(--secondary-color);
+			font-size: 16px;
+		}
+		
+		.code-keyword {
+			color: var(--primary-color);
+		}
+		
+		.code-string {
+			color: var(--tertiary-color);
+		}
+		
+		.code-function {
+			color: var(--secondary-color);
+		}
+		
+		.code-comment {
+			color: var(--line-color);
+			font-style: italic;
+		}
+	</style>
+</head>
+<body>
+<div class="header">
+	<h1>Promise & Async/Await Execution Flow</h1>
+	<div class="user-info">
+		<div>Current Date and Time: <span>2025-07-18 07:16:17 (UTC)</span></div>
+		<div>User: <span>SHAHNUR00</span></div>
+	</div>
+</div>
+
+<div class="controls">
+	<button id="startBtn">Start Visualization</button>
+	<button id="nextBtn" disabled>Next Step</button>
+	<div class="step-counter">Step: <span id="currentStep">0</span>/<span id="totalSteps">0</span></div>
+	<button id="resetBtn" disabled>Reset</button>
+</div>
+
+<div class="step-description" id="stepDescription">
+	Click "Start Visualization" to begin
+</div>
+
+<div class="container">
+	<div class="code-panel">
+		<pre><code id="code-container"></code></pre>
+	</div>
+	
+	<div class="flow-panel">
+		<div class="call-stack">
+			<div class="section-title">Call Stack</div>
+			<div class="call-stack-container" id="call-stack-container">
+				<!-- Stack items will be inserted here by JavaScript -->
+			</div>
+		</div>
+		
+		<div class="web-api">
+			<div class="section-title">Web API</div>
+			<div class="web-api-container" id="web-api-container">
+				<!-- Web API items will be inserted here by JavaScript -->
+			</div>
+		</div>
+		
+		<div class="callback-queue">
+			<div class="section-title">Callback Queue</div>
+			<div class="callback-queue-container" id="callback-queue-container">
+				<!-- Callback Queue items will be inserted here by JavaScript -->
+			</div>
+		</div>
+		
+		<div class="console-output">
+			<div class="section-title">Console Output</div>
+			<div class="console-output-container" id="console-container">
+				<!-- Console output will be inserted here by JavaScript -->
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="legend">
+	<div class="legend-item">
+		<div class="legend-color" style="background-color: var(--primary-color);"></div>
+		<span>Call Stack</span>
+	</div>
+	<div class="legend-item">
+		<div class="legend-color" style="background-color: var(--api-color);"></div>
+		<span>Web API</span>
+	</div>
+	<div class="legend-item">
+		<div class="legend-color" style="background-color: var(--queue-color);"></div>
+		<span>Callback Queue</span>
+	</div>
+	<div class="legend-item">
+		<div class="legend-color" style="background-color: var(--tertiary-color);"></div>
+		<span>Console Output</span>
+	</div>
+	<div class="legend-item">
+		<div class="legend-color" style="background-color: var(--secondary-color);"></div>
+		<span>Suspended Function</span>
+	</div>
+</div>
+
+<script>
+	// Code to display
+	const code = `const k = true;
+const meeting = new Promise((resolve, reject)=>{
+  console.log('hello there!');
+  if(k){
+    const m = {
+      name: "Shahnur",
+      section: "B"
+    }
+    resolve(m);
+  }
+  else{
+    reject("meeting not found");
+  }
+});
+
+const addF = function (m){
+  const test = \`\${m.name} and \${m.section}\`;
+  return Promise.resolve(test);
+}
+
+async function myMeeting(){
+  console.log('Inside async!');
+  const meet = await meeting;
+  const add = await addF(meet);
+  console.log(add);
+}
+
+myMeeting();
+
+console.log('Hello');`;
+	
+	// Define code snippets to use in execution steps
+	const codeSnippets = {
+		globalContext: "Global Execution Context",
+		promiseExecutor: "new Promise((resolve, reject)=>{ ... })",
+		consoleLogHello: "console.log('Hello')",
+		consoleLogHelloThere: "console.log('hello there!')",
+		consoleLogInsideAsync: "console.log('Inside async!')",
+		consoleLogAdd: "console.log(add)",
+		resolveM: "resolve(m)",
+		myMeetingCall: "myMeeting()",
+		awaitMeeting: "const meet = await meeting",
+		awaitAddF: "const add = await addF(meet)",
+		addFCall: "addF(meet)",
+		promiseResolveTest: "Promise.resolve(test)"
+	};
+	
+	// Execution steps with detailed tracking of all components using code snippets
+	const executionSteps = [
+		{
+			description: "Variable k is initialized to true",
+			callStack: [{ action: 'push', item: codeSnippets.globalContext }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Creating Promise object 'meeting'",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Executing Promise executor function immediately",
+			callStack: [{ action: 'push', item: codeSnippets.promiseExecutor }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Log 'hello there!' to console",
+			callStack: [{ action: 'push', item: codeSnippets.consoleLogHelloThere }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: { text: '> hello there!', type: 'log' }
+		},
+		{
+			description: "Console.log completed, popped from stack",
+			callStack: [{ action: 'pop', item: codeSnippets.consoleLogHelloThere }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Checking if condition (k is true)",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Creating object m with name and section",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Resolving the meeting Promise with object m",
+			callStack: [],
+			webAPI: [{ action: 'add', item: codeSnippets.resolveM }],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Promise executor function completes",
+			callStack: [{ action: 'pop', item: codeSnippets.promiseExecutor }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Defining addF function",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Defining async function myMeeting",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Calling myMeeting() - this returns a Promise immediately",
+			callStack: [{ action: 'push', item: codeSnippets.myMeetingCall }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Enter myMeeting async function body",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Executing console.log('Inside async!')",
+			callStack: [{ action: 'push', item: codeSnippets.consoleLogInsideAsync }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: { text: '> Inside async!', type: 'log' }
+		},
+		{
+			description: "Console.log completed, popped from stack",
+			callStack: [{ action: 'pop', item: codeSnippets.consoleLogInsideAsync }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Encountering 'await meeting' - suspend execution of myMeeting",
+			callStack: [{ action: 'pop', item: codeSnippets.myMeetingCall }],
+			webAPI: [{ action: 'add', item: "myMeeting continuation after: " + codeSnippets.awaitMeeting }],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Control returns to main thread - myMeeting is suspended",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Executing console.log('Hello')",
+			callStack: [{ action: 'push', item: codeSnippets.consoleLogHello }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: { text: '> Hello', type: 'log' }
+		},
+		{
+			description: "Console.log completed, popped from stack",
+			callStack: [{ action: 'pop', item: codeSnippets.consoleLogHello }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Main synchronous code execution completed",
+			callStack: [{ action: 'pop', item: codeSnippets.globalContext }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Event loop checks for resolved promises - 'meeting' promise is already resolved",
+			callStack: [],
+			webAPI: [{ action: 'remove', item: codeSnippets.resolveM }],
+			callbackQueue: [{ action: 'add', item: "Promise.then() handler for: " + codeSnippets.resolveM }],
+			consoleOutput: null
+		},
+		{
+			description: "Event loop moves myMeeting continuation to call stack",
+			callStack: [{ action: 'push', item: "Continue myMeeting() after: " + codeSnippets.awaitMeeting }],
+			webAPI: [{ action: 'remove', item: "myMeeting continuation after: " + codeSnippets.awaitMeeting }],
+			callbackQueue: [{ action: 'remove', item: "Promise.then() handler for: " + codeSnippets.resolveM }],
+			consoleOutput: null
+		},
+		{
+			description: "myMeeting resumes - 'meet' now contains the resolved value {name: 'Shahnur', section: 'B'}",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Calling addF(meet) and awaiting its result",
+			callStack: [{ action: 'push', item: codeSnippets.addFCall }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Inside addF: Creating string 'Shahnur and B'",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Inside addF: Creating and returning a resolved promise",
+			callStack: [],
+			webAPI: [{ action: 'add', item: codeSnippets.promiseResolveTest }],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "addF completes and returns promise",
+			callStack: [{ action: 'pop', item: codeSnippets.addFCall }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "myMeeting is suspended again waiting for addF's promise",
+			callStack: [{ action: 'pop', item: "Continue myMeeting() after: " + codeSnippets.awaitMeeting }],
+			webAPI: [{ action: 'add', item: "myMeeting continuation after: " + codeSnippets.awaitAddF }],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Event loop checks for resolved promises - addF's promise is already resolved",
+			callStack: [],
+			webAPI: [{ action: 'remove', item: codeSnippets.promiseResolveTest }],
+			callbackQueue: [{ action: 'add', item: "Promise.then() handler for: " + codeSnippets.promiseResolveTest }],
+			consoleOutput: null
+		},
+		{
+			description: "Event loop moves myMeeting continuation to call stack",
+			callStack: [{ action: 'push', item: "Continue myMeeting() after: " + codeSnippets.awaitAddF }],
+			webAPI: [{ action: 'remove', item: "myMeeting continuation after: " + codeSnippets.awaitAddF }],
+			callbackQueue: [{ action: 'remove', item: "Promise.then() handler for: " + codeSnippets.promiseResolveTest }],
+			consoleOutput: null
+		},
+		{
+			description: "myMeeting resumes - 'add' now contains the string 'Shahnur and B'",
+			callStack: [],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "Executing console.log(add) with value 'Shahnur and B'",
+			callStack: [{ action: 'push', item: codeSnippets.consoleLogAdd }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: { text: '> Shahnur and B', type: 'log' }
+		},
+		{
+			description: "Console.log completed, popped from stack",
+			callStack: [{ action: 'pop', item: codeSnippets.consoleLogAdd }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "myMeeting function completes execution",
+			callStack: [{ action: 'pop', item: "Continue myMeeting() after: " + codeSnippets.awaitAddF }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		},
+		{
+			description: "All code execution completed",
+			callStack: [{ action: 'clear', item: "" }],
+			webAPI: [],
+			callbackQueue: [],
+			consoleOutput: null
+		}
+	];
+	
+	// DOM elements
+	const codeContainer = document.getElementById('code-container');
+	const callStackContainer = document.getElementById('call-stack-container');
+	const webApiContainer = document.getElementById('web-api-container');
+	const callbackQueueContainer = document.getElementById('callback-queue-container');
+	const consoleContainer = document.getElementById('console-container');
+	const startBtn = document.getElementById('startBtn');
+	const nextBtn = document.getElementById('nextBtn');
+	const resetBtn = document.getElementById('resetBtn');
+	const currentStepEl = document.getElementById('currentStep');
+	const totalStepsEl = document.getElementById('totalSteps');
+	const stepDescriptionEl = document.getElementById('stepDescription');
+	
+	// State
+	let currentStep = 0;
+	let started = false;
+	let callStackState = [];
+	
+	// Format code with line numbers
+	function formatCode() {
+		const lines = code.split('\n');
+		let html = '';
+		
+		lines.forEach((line, index) => {
+			html += `<div class="code-line" data-line="${index + 1}">
+                    <div class="line-number">${index + 1}</div>
+                    <div class="line-content">${line.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</div>
+                </div>`;
+		});
+		
+		codeContainer.innerHTML = html;
+	}
+	
+	// Update call stack
+	function updateCallStack(changes) {
+		if (!changes || changes.length === 0) return;
+		
+		// Process all call stack changes for this step
+		changes.forEach(change => {
+			if (change.action === 'push') {
+				const stackItem = document.createElement('div');
+				stackItem.className = 'stack-item';
+				stackItem.textContent = change.item;
+				stackItem.dataset.item = change.item;
+				callStackContainer.appendChild(stackItem);
+				callStackState.push(change.item);
+				setTimeout(() => stackItem.classList.add('active'), 10);
+			}
+			else if (change.action === 'pop') {
+				const items = callStackContainer.querySelectorAll('.stack-item');
+				for (let i = items.length - 1; i >= 0; i--) {
+					if (items[i].dataset.item === change.item) {
+						items[i].classList.remove('active');
+						setTimeout(() => items[i].remove(), 300);
+						
+						// Remove from tracking
+						const index = callStackState.indexOf(change.item);
+						if (index > -1) {
+							callStackState.splice(index, 1);
+						}
+						break;
+					}
+				}
+			}
+			else if (change.action === 'suspend' || change.action === 'resume') {
+				const items = callStackContainer.querySelectorAll('.stack-item');
+				for (let i = items.length - 1; i >= 0; i--) {
+					if (items[i].dataset.item.startsWith(change.item.split(' ')[0])) {
+						items[i].textContent = change.item;
+						items[i].dataset.item = change.item;
+						items[i].className = change.action === 'suspend' ? 'stack-item suspended active' : 'stack-item active';
+						break;
+					}
+				}
+			}
+			else if (change.action === 'clear') {
+				// Force clear the call stack at the final step
+				callStackContainer.innerHTML = '';
+				callStackState = [];
+			}
+		});
+	}
+	
+	// Update Web API container
+	function updateWebAPI(changes) {
+		if (!changes || changes.length === 0) return;
+		
+		changes.forEach(change => {
+			if (change.action === 'add') {
+				const apiItem = document.createElement('div');
+				apiItem.className = 'web-api-item';
+				apiItem.textContent = change.item;
+				apiItem.dataset.item = change.item;
+				webApiContainer.appendChild(apiItem);
+				setTimeout(() => apiItem.classList.add('active'), 10);
+			}
+			else if (change.action === 'remove') {
+				const items = webApiContainer.querySelectorAll('.web-api-item');
+				for (let i = 0; i < items.length; i++) {
+					if (items[i].dataset.item === change.item) {
+						items[i].classList.remove('active');
+						setTimeout(() => items[i].remove(), 300);
+						break;
+					}
+				}
+			}
+			else if (change.action === 'clear') {
+				// Clear the Web API container
+				webApiContainer.innerHTML = '';
+			}
+		});
+	}
+	
+	// Update Callback Queue container
+	function updateCallbackQueue(changes) {
+		if (!changes || changes.length === 0) return;
+		
+		changes.forEach(change => {
+			if (change.action === 'add') {
+				const queueItem = document.createElement('div');
+				queueItem.className = 'queue-item';
+				queueItem.textContent = change.item;
+				queueItem.dataset.item = change.item;
+				callbackQueueContainer.appendChild(queueItem);
+				setTimeout(() => queueItem.classList.add('active'), 10);
+			}
+			else if (change.action === 'remove') {
+				const items = callbackQueueContainer.querySelectorAll('.queue-item');
+				for (let i = 0; i < items.length; i++) {
+					if (items[i].dataset.item === change.item) {
+						items[i].classList.remove('active');
+						setTimeout(() => items[i].remove(), 300);
+						break;
+					}
+				}
+			}
+			else if (change.action === 'clear') {
+				// Clear the Callback Queue container
+				callbackQueueContainer.innerHTML = '';
+			}
+		});
+	}
+	
+	// Add console output
+	function addConsoleOutput(consoleData) {
+		if (!consoleData) return;
+		
+		const consoleItem = document.createElement('div');
+		consoleItem.className = `console-line ${consoleData.type}`;
+		consoleItem.textContent = consoleData.text;
+		consoleContainer.appendChild(consoleItem);
+		setTimeout(() => consoleItem.classList.add('active'), 10);
+		
+		// Scroll to bottom
+		consoleContainer.scrollTop = consoleContainer.scrollHeight;
+	}
+	
+	// Execute a single step
+	function executeStep(stepIndex) {
+		if (stepIndex >= executionSteps.length) return;
+		
+		const step = executionSteps[stepIndex];
+		
+		// Update step description
+		stepDescriptionEl.textContent = step.description;
+		
+		// Update call stack
+		updateCallStack(step.callStack);
+		
+		// Update Web API
+		updateWebAPI(step.webAPI);
+		
+		// Update Callback Queue
+		updateCallbackQueue(step.callbackQueue);
+		
+		// Add console output if present
+		addConsoleOutput(step.consoleOutput);
+		
+		// Update step counter
+		currentStepEl.textContent = stepIndex + 1;
+	}
+	
+	// Start visualization
+	function startVisualization() {
+		startBtn.disabled = true;
+		nextBtn.disabled = false;
+		resetBtn.disabled = false;
+		started = true;
+		
+		// Reset call stack state
+		callStackState = [];
+		
+		// Set total steps
+		totalStepsEl.textContent = executionSteps.length;
+		currentStepEl.textContent = '0';
+		
+		// Enable next button
+		nextBtn.disabled = false;
+	}
+	
+	// Go to next step
+	function nextStep() {
+		if (currentStep < executionSteps.length) {
+			executeStep(currentStep);
+			currentStep++;
+			
+			// Disable next button if we're at the end
+			if (currentStep >= executionSteps.length) {
+				nextBtn.disabled = true;
+			}
+		}
+	}
+	
+	// Reset visualization
+	function resetVisualization() {
+		// Clear all visualizations
+		callStackContainer.innerHTML = '';
+		webApiContainer.innerHTML = '';
+		callbackQueueContainer.innerHTML = '';
+		consoleContainer.innerHTML = '';
+		
+		// Reset state
+		currentStep = 0;
+		callStackState = [];
+		currentStepEl.textContent = '0';
+		stepDescriptionEl.textContent = "Click \"Start Visualization\" to begin";
+		
+		// Reset buttons
+		startBtn.disabled = false;
+		nextBtn.disabled = true;
+		
+		started = false;
+	}
+	
+	// Initialize
+	function init() {
+		formatCode();
+		
+		// Set total steps
+		totalStepsEl.textContent = executionSteps.length;
+		
+		// Add event listeners
+		startBtn.addEventListener('click', startVisualization);
+		nextBtn.addEventListener('click', nextStep);
+		resetBtn.addEventListener('click', resetVisualization);
+	}
+	
+	// Start when document is loaded
+	document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS @layer Interactive Visualization - Nord Theme</title>
+  <style>
+    /* Nord Theme Colors */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A; /* Red */
+      --nord12: #D08770; /* Orange */
+      --nord13: #EBCB8B; /* Yellow */
+      --nord14: #A3BE8C; /* Green */
+      --nord15: #B48EAD; /* Purple */
+    }
+
+    *{
+        font-family: 'Ubuntu Sans Mono', sans-serif !important;
+    }
+    
+    /* General styling */
+    body {
+      line-height: 1.6;
+      color: var(--nord4);
+      background-color: var(--nord0);
+      padding: 1rem;
+      margin: 0;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    h1 {
+      grid-column: 1 / -1;
+      color: var(--nord8);
+      margin-bottom: 0.5rem;
+    }
+
+    .description {
+      grid-column: 1 / -1;
+      margin-bottom: 1.5rem;
+      color: var(--nord5);
+    }
+
+    .control-panel {
+      grid-column: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .visualization {
+      grid-column: 2;
+      border: 1px solid var(--nord3);
+      border-radius: 8px;
+      padding: 1.5rem;
+      background: var(--nord1);
+    }
+
+    .layer-container {
+      border: 1px solid var(--nord3);
+      border-radius: 8px;
+      padding: 1rem;
+      background-color: var(--nord1);
+      margin-bottom: 1rem;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    }
+
+    .layer-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .layer-title {
+      font-weight: 600;
+      margin-right: auto;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      color: var(--nord6);
+    }
+
+    .layer-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 4px;
+      color: var(--nord0);
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .layer-reset {
+      background-color: var(--nord11);
+    }
+
+    .layer-base {
+      background-color: var(--nord14);
+    }
+
+    .layer-components {
+      background-color: var(--nord15);
+    }
+
+    .layer-utilities {
+      background-color: var(--nord12);
+    }
+
+    .editor {
+      font-family: 'Monaco', 'Consolas', monospace;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      border: 1px solid var(--nord3);
+      border-radius: 4px;
+      padding: 0.75rem;
+      width: 100%;
+      min-height: 100px;
+      font-size: 0.875rem;
+      resize: vertical;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    .toggle-active {
+      cursor: pointer;
+      background-color: var(--nord10);
+      border: 1px solid var(--nord9);
+      color: var(--nord6);
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+    }
+
+    .toggle-inactive {
+      cursor: pointer;
+      background-color: var(--nord2);
+      border: 1px solid var(--nord3);
+      color: var(--nord4);
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      opacity: 0.6;
+    }
+
+    .box {
+      width: 150px;
+      height: 150px;
+      margin: 1rem auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+    }
+
+    .precedence-visualization {
+      margin-top: 2rem;
+      padding: 1rem;
+      background: var(--nord0);
+      border-radius: 8px;
+      border: 1px solid var(--nord3);
+    }
+
+    .precedence-bar {
+      display: flex;
+      height: 40px;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      position: relative;
+    }
+
+    .precedence-segment {
+      position: relative;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--nord0);
+      font-weight: bold;
+      transition: all 0.3s ease;
+    }
+
+    .precedence-segment.inactive {
+      opacity: 0.3;
+    }
+
+    .reset-segment {
+      background-color: var(--nord11);
+    }
+
+    .base-segment {
+      background-color: var(--nord14);
+    }
+
+    .components-segment {
+      background-color: var(--nord15);
+    }
+
+    .utilities-segment {
+      background-color: var(--nord12);
+    }
+
+    .apply-button {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      border: none;
+      border-radius: 4px;
+      padding: 0.5rem 1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .apply-button:hover {
+      background-color: var(--nord8);
+    }
+
+    .selector-specificity {
+      font-size: 0.75rem;
+      color: var(--nord9);
+      margin-top: 0.5rem;
+    }
+
+    .explanation {
+      grid-column: 1 / -1;
+      margin-top: 2rem;
+      background-color: var(--nord1);
+      border: 1px solid var(--nord3);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+
+    code {
+      background-color: var(--nord0);
+      padding: 0.125rem 0.25rem;
+      border-radius: 3px;
+      font-family: 'Monaco', 'Consolas', monospace;
+      font-size: 0.875rem;
+      color: var(--nord8);
+    }
+
+    .revert-button {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      border: none;
+      border-radius: 4px;
+      padding: 0.25rem 0.5rem;
+      font-size: 0.75rem;
+      cursor: pointer;
+      margin-left: 0.5rem;
+    }
+
+    .revert-button:hover {
+      background-color: var(--nord10);
+    }
+
+    .layers-order {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+      font-size: 0.875rem;
+      color: var(--nord4);
+    }
+
+    .order-arrow {
+      color: var(--nord3);
+    }
+    
+    .demo-element {
+      position: relative;
+    }
+    
+    .info-overlay {
+      position: absolute;
+      top: -8px;
+      right: -8px;
+      background-color: var(--nord9);
+      color: var(--nord0);
+      border-radius: 50%;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      cursor: pointer;
+    }
+    
+    h2, h3 {
+      color: var(--nord7);
+    }
+    
+    ul li {
+      color: var(--nord4);
+    }
+    
+    .user-info {
+      grid-column: 1 / -1;
+      background-color: var(--nord1);
+      border-radius: 8px;
+      padding: 10px 15px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+      border-left: 4px solid var(--nord10);
+    }
+    
+    .user-info span {
+      color: var(--nord8);
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="user-info">
+      <p>Current User: <span>SHAHNUR00</span> | Date: <span>2025-07-21 03:55:43 UTC</span></p>
+    </div>
+  
+    <h1>CSS @layer Interactive Visualization</h1>
+    
+    <div class="description">
+      <p>Experiment with CSS cascade layers to see how they affect style precedence regardless of specificity. 
+      Edit the CSS in each layer, toggle layers on/off, and observe the changes in real-time.</p>
+      
+      <div class="layers-order">
+        <span><strong>Lowest precedence</strong></span>
+        <span class="layer-badge layer-reset">reset</span>
+        <span class="order-arrow">→</span>
+        <span class="layer-badge layer-base">base</span>
+        <span class="order-arrow">→</span>
+        <span class="layer-badge layer-components">components</span>
+        <span class="order-arrow">→</span>
+        <span class="layer-badge layer-utilities">utilities</span>
+        <span><strong>Highest precedence</strong></span>
+      </div>
+    </div>
+
+    <div class="control-panel">
+      <div class="layer-container" id="reset-layer">
+        <div class="layer-header">
+          <div class="layer-title">
+            <span class="layer-badge layer-reset">reset</span>
+            <span>Layer</span>
+          </div>
+          <button class="toggle-active" id="reset-toggle">Enabled</button>
+          <button class="revert-button" data-layer="reset">Reset</button>
+        </div>
+        <textarea class="editor" id="reset-editor">/* Reset Layer */
+.box {
+  background-color: #BF616A;
+  color: white;
+  border: 2px solid #99424A;
+  font-size: 16px;
+}</textarea>
+        <div class="selector-specificity">Specificity: (0, 0, 1)</div>
+      </div>
+
+      <div class="layer-container" id="base-layer">
+        <div class="layer-header">
+          <div class="layer-title">
+            <span class="layer-badge layer-base">base</span>
+            <span>Layer</span>
+          </div>
+          <button class="toggle-active" id="base-toggle">Enabled</button>
+          <button class="revert-button" data-layer="base">Reset</button>
+        </div>
+        <textarea class="editor" id="base-editor">/* Base Layer */
+.box {
+  background-color: #A3BE8C;
+  color: #2E3440;
+  font-size: 18px;
+  font-weight: bold;
+}</textarea>
+        <div class="selector-specificity">Specificity: (0, 0, 1)</div>
+      </div>
+
+      <div class="layer-container" id="components-layer">
+        <div class="layer-header">
+          <div class="layer-title">
+            <span class="layer-badge layer-components">components</span>
+            <span>Layer</span>
+          </div>
+          <button class="toggle-active" id="components-toggle">Enabled</button>
+          <button class="revert-button" data-layer="components">Reset</button>
+        </div>
+        <textarea class="editor" id="components-editor">/* Components Layer */
+div.box {
+  background-color: #B48EAD;
+  color: #ECEFF4;
+  border: 2px dashed #8A6A88;
+  padding: 10px;
+}</textarea>
+        <div class="selector-specificity">Specificity: (0, 1, 1)</div>
+      </div>
+
+      <div class="layer-container" id="utilities-layer">
+        <div class="layer-header">
+          <div class="layer-title">
+            <span class="layer-badge layer-utilities">utilities</span>
+            <span>Layer</span>
+          </div>
+          <button class="toggle-active" id="utilities-toggle">Enabled</button>
+          <button class="revert-button" data-layer="utilities">Reset</button>
+        </div>
+        <textarea class="editor" id="utilities-editor">/* Utilities Layer */
+.box {
+  background-color: #D08770;
+  box-shadow: 0 4px 6px rgba(46, 52, 64, 0.3);
+  border-radius: 10px;
+}</textarea>
+        <div class="selector-specificity">Specificity: (0, 0, 1)</div>
+      </div>
+
+      <button class="apply-button" id="apply-button">Apply Changes</button>
+    </div>
+
+    <div class="visualization">
+      <h2>Result</h2>
+      <div class="demo-element">
+        <div class="box" id="demo-box">Box Element</div>
+        <div class="info-overlay" id="info-button">i</div>
+      </div>
+      
+      <div class="precedence-visualization">
+        <h3>Layer Precedence</h3>
+        <p>Later layers override earlier ones regardless of specificity:</p>
+        <div class="precedence-bar">
+          <div class="precedence-segment reset-segment" id="reset-segment" style="width: 25%;">reset</div>
+          <div class="precedence-segment base-segment" id="base-segment" style="width: 25%;">base</div>
+          <div class="precedence-segment components-segment" id="components-segment" style="width: 25%;">components</div>
+          <div class="precedence-segment utilities-segment" id="utilities-segment" style="width: 25%;">utilities</div>
+        </div>
+        <div id="active-style-info">
+          <strong>Currently applied styles:</strong>
+          <ul id="applied-styles-list"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="explanation">
+      <h2>How CSS @layer Works</h2>
+      <p>The <code>@layer</code> rule introduces cascade layers to CSS, giving you control over precedence regardless of specificity:</p>
+      
+      <ul>
+        <li><strong>Order Matters:</strong> Styles in later layers override those in earlier layers, regardless of specificity.</li>
+        <li><strong>Declaration Order:</strong> The order in which you declare your layers determines their precedence.</li>
+        <li><strong>Named Layers:</strong> Organizing styles into named layers makes CSS more maintainable.</li>
+        <li><strong>Reduces !important usage:</strong> With proper layer organization, you rarely need !important.</li>
+      </ul>
+      
+      <p>Typical layering pattern:</p>
+      <pre><code>@layer reset, base, components, utilities;</code></pre>
+      
+      <p>This establishes the precedence of your layers before adding any styles to them. Later layers (utilities) will override earlier ones (reset) even with lower specificity selectors.</p>
+    </div>
+  </div>
+
+  <script>
+    // Default CSS for each layer
+    const defaultCSS = {
+      reset: `/* Reset Layer */
+.box {
+  background-color: #BF616A;
+  color: white;
+  border: 2px solid #99424A;
+  font-size: 16px;
+}`,
+      base: `/* Base Layer */
+.box {
+  background-color: #A3BE8C;
+  color: #2E3440;
+  font-size: 18px;
+  font-weight: bold;
+}`,
+      components: `/* Components Layer */
+div.box {
+  background-color: #B48EAD;
+  color: #ECEFF4;
+  border: 2px dashed #8A6A88;
+  padding: 10px;
+}`,
+      utilities: `/* Utilities Layer */
+.box {
+  background-color: #D08770;
+  box-shadow: 0 4px 6px rgba(46, 52, 64, 0.3);
+  border-radius: 10px;
+}`
+    };
+
+    // Track layer states
+    const layerState = {
+      reset: true,
+      base: true,
+      components: true,
+      utilities: true
+    };
+
+    // Get elements
+    const applyButton = document.getElementById('apply-button');
+    const resetEditor = document.getElementById('reset-editor');
+    const baseEditor = document.getElementById('base-editor');
+    const componentsEditor = document.getElementById('components-editor');
+    const utilitiesEditor = document.getElementById('utilities-editor');
+    const resetToggle = document.getElementById('reset-toggle');
+    const baseToggle = document.getElementById('base-toggle');
+    const componentsToggle = document.getElementById('components-toggle');
+    const utilitiesToggle = document.getElementById('utilities-toggle');
+    const resetSegment = document.getElementById('reset-segment');
+    const baseSegment = document.getElementById('base-segment');
+    const componentsSegment = document.getElementById('components-segment');
+    const utilitiesSegment = document.getElementById('utilities-segment');
+    const demoBox = document.getElementById('demo-box');
+    const appliedStylesList = document.getElementById('applied-styles-list');
+    const infoButton = document.getElementById('info-button');
+
+    // Setup reset buttons
+    document.querySelectorAll('.revert-button').forEach(button => {
+      button.addEventListener('click', () => {
+        const layer = button.dataset.layer;
+        document.getElementById(`${layer}-editor`).value = defaultCSS[layer];
+      });
+    });
+
+    // Setup toggle buttons
+    function setupToggle(toggleId, layer, segment) {
+      const toggle = document.getElementById(toggleId);
+      toggle.addEventListener('click', () => {
+        layerState[layer] = !layerState[layer];
+        toggle.textContent = layerState[layer] ? 'Enabled' : 'Disabled';
+        toggle.className = layerState[layer] ? 'toggle-active' : 'toggle-inactive';
+        segment.classList.toggle('inactive', !layerState[layer]);
+        applyChanges();
+      });
+    }
+
+    setupToggle('reset-toggle', 'reset', resetSegment);
+    setupToggle('base-toggle', 'base', baseSegment);
+    setupToggle('components-toggle', 'components', componentsSegment);
+    setupToggle('utilities-toggle', 'utilities', utilitiesSegment);
+
+    // Generate and apply CSS
+    function applyChanges() {
+      // Remove existing style element if it exists
+      const existingStyle = document.getElementById('generated-css');
+      if (existingStyle) {
+        existingStyle.remove();
+      }
+
+      // Create new style element
+      const styleEl = document.createElement('style');
+      styleEl.id = 'generated-css';
+      
+      // Build CSS with layers
+      let css = '@layer reset, base, components, utilities;\n\n';
+      
+      if (layerState.reset) {
+        css += `@layer reset {\n  ${resetEditor.value}\n}\n\n`;
+      }
+      
+      if (layerState.base) {
+        css += `@layer base {\n  ${baseEditor.value}\n}\n\n`;
+      }
+      
+      if (layerState.components) {
+        css += `@layer components {\n  ${componentsEditor.value}\n}\n\n`;
+      }
+      
+      if (layerState.utilities) {
+        css += `@layer utilities {\n  ${utilitiesEditor.value}\n}\n\n`;
+      }
+      
+      styleEl.textContent = css;
+      document.head.appendChild(styleEl);
+      
+      // Update applied styles list
+      updateAppliedStyles();
+    }
+
+    // Parse computed styles to show what's being applied
+    function updateAppliedStyles() {
+      const computedStyle = window.getComputedStyle(demoBox);
+      const appliedStyles = [];
+      
+      // Check for applied styles from each layer
+      if (layerState.reset) {
+        appliedStyles.push({
+          layer: 'reset',
+          styles: extractStylesFromLayer(resetEditor.value)
+        });
+      }
+      
+      if (layerState.base) {
+        appliedStyles.push({
+          layer: 'base',
+          styles: extractStylesFromLayer(baseEditor.value)
+        });
+      }
+      
+      if (layerState.components) {
+        appliedStyles.push({
+          layer: 'components',
+          styles: extractStylesFromLayer(componentsEditor.value)
+        });
+      }
+      
+      if (layerState.utilities) {
+        appliedStyles.push({
+          layer: 'utilities',
+          styles: extractStylesFromLayer(utilitiesEditor.value)
+        });
+      }
+
+      // Clear existing list
+      appliedStylesList.innerHTML = '';
+      
+      // Get all currently visible properties in computed style
+      const currentProps = {};
+      const highestLayerProps = {};
+      
+      // Process layers from lowest to highest precedence to find the highest layer for each property
+      appliedStyles.forEach(layer => {
+        layer.styles.forEach(style => {
+          const prop = style.property.trim();
+          highestLayerProps[prop] = layer.layer;
+        });
+      });
+      
+      // Create applied styles list, highlighting which layer's properties are actually visible
+      appliedStyles.forEach(layer => {
+        const layerItem = document.createElement('li');
+        const layerName = document.createElement('strong');
+        layerName.textContent = `${layer.layer} layer: `;
+        layerName.style.color = getLayerColor(layer.layer);
+        layerItem.appendChild(layerName);
+        
+        const stylesList = document.createElement('ul');
+        layer.styles.forEach(style => {
+          const prop = style.property.trim();
+          const value = style.value.trim();
+          const styleItem = document.createElement('li');
+          styleItem.textContent = `${prop}: ${value};`;
+          
+          // If this property is from the highest layer for this property, mark it as active
+          if (highestLayerProps[prop] === layer.layer) {
+            styleItem.style.fontWeight = 'bold';
+          } else {
+            styleItem.style.textDecoration = 'line-through';
+            styleItem.style.opacity = '0.7';
+          }
+          
+          stylesList.appendChild(styleItem);
+        });
+        
+        layerItem.appendChild(stylesList);
+        appliedStylesList.appendChild(layerItem);
+      });
+    }
+
+    // Extract styles from layer CSS text
+    function extractStylesFromLayer(cssText) {
+      const styles = [];
+      // Extract properties and values using regex
+      const regex = /\s*([^:]+):\s*([^;]+);/g;
+      let match;
+      
+      while ((match = regex.exec(cssText)) !== null) {
+        styles.push({
+          property: match[1],
+          value: match[2]
+        });
+      }
+      
+      return styles;
+    }
+
+    // Get color for a layer
+    function getLayerColor(layer) {
+      const colors = {
+        reset: '#BF616A',
+        base: '#A3BE8C',
+        components: '#B48EAD',
+        utilities: '#D08770'
+      };
+      
+      return colors[layer] || '#ECEFF4';
+    }
+
+    // Initialize
+    applyButton.addEventListener('click', applyChanges);
+    
+    // Show info about current styles
+    infoButton.addEventListener('click', () => {
+      alert('This box demonstrates how CSS @layer rules work.\n\n' +
+            'The styles are applied according to layer order, not specificity.\n\n' +
+            'Current order (lowest to highest precedence):\n' +
+            '1. reset layer\n' +
+            '2. base layer\n' +
+            '3. components layer\n' +
+            '4. utilities layer\n\n' +
+            'Notice that even though the components layer uses a higher specificity selector (div.box), ' +
+            'it can still be overridden by the utilities layer with a lower specificity (.box).');
+    });
+    
+    // Apply initial styles
+    applyChanges();
+  </script>
+</body>
+</html>

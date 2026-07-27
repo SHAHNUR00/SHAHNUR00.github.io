@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex-Grow Visualization - Nord Theme</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Polar Night (darkest) */
+            --nord1: #3B4252;  /* Polar Night */
+            --nord2: #434C5E;  /* Polar Night */
+            --nord3: #4C566A;  /* Polar Night */
+            --nord4: #D8DEE9;  /* Snow Storm */
+            --nord5: #E5E9F0;  /* Snow Storm */
+            --nord6: #ECEFF4;  /* Snow Storm (lightest) */
+            --nord7: #8FBCBB;  /* Frost */
+            --nord8: #88C0D0;  /* Frost */
+            --nord9: #81A1C1;  /* Frost */
+            --nord10: #5E81AC; /* Frost */
+            --nord11: #BF616A; /* Aurora (red) */
+            --nord12: #D08770; /* Aurora (orange) */
+            --nord13: #EBCB8B; /* Aurora (yellow) */
+            --nord14: #A3BE8C; /* Aurora (green) */
+            --nord15: #B48EAD; /* Aurora (purple) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        p {
+            color: var(--nord4);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 2rem;
+            background: var(--nord1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Graph paper grid */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord2) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord2) 1px, transparent 1px);
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .flex-container {
+            display: flex;
+            height: 100%;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+        }
+
+        .flex-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100%;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .flex-item:nth-child(1) { background-color: var(--nord7); color: var(--nord0); }
+        .flex-item:nth-child(2) { background-color: var(--nord8); color: var(--nord0); }
+        .flex-item:nth-child(3) { background-color: var(--nord9); color: var(--nord0); }
+        .flex-item:nth-child(4) { background-color: var(--nord10); color: var(--nord0); }
+
+        .flex-item-label {
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .flex-item-value {
+            font-size: 1.4rem;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            background-color: var(--nord1);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--nord8);
+            font-weight: bold;
+        }
+
+        .control-value {
+            display: inline-block;
+            width: 40px;
+            text-align: center;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin: 0.5rem 0;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: var(--nord3);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]:nth-of-type(1)::-webkit-slider-thumb {
+            background: var(--nord7);
+        }
+        input[type="range"]:nth-of-type(2)::-webkit-slider-thumb {
+            background: var(--nord8);
+        }
+        input[type="range"]:nth-of-type(3)::-webkit-slider-thumb {
+            background: var(--nord9);
+        }
+        input[type="range"]:nth-of-type(4)::-webkit-slider-thumb {
+            background: var(--nord10);
+        }
+
+        .info-panel {
+            background-color: var(--nord1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            color: var(--nord13);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .calculation {
+            font-family: monospace;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 4px;
+            color: var(--nord6);
+            margin: 1rem 0;
+            white-space: pre-wrap;
+        }
+
+        .space-distribution {
+            display: flex;
+            height: 40px;
+            margin-top: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .space-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--nord0);
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+        }
+
+        .button-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .reset-button {
+            background-color: var(--nord11);
+        }
+
+        .reset-button:hover {
+            background-color: var(--nord12);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Flex-Grow</h1>
+    <p>
+        The <code>flex-grow</code> property defines how much space a flex item should take up when there's extra space available.
+        It's a proportion of the available space in the flex container.
+    </p>
+
+    <div class="container">
+        <div class="visualization">
+            <div class="grid-background"></div>
+            <div class="flex-container" id="flexContainer">
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 1</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 2</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 3</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+                <div class="flex-item">
+                    <span class="flex-item-label">Item 4</span>
+                    <span class="flex-item-value">1</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label class="control-label">
+                    Item 1 flex-grow
+                    <span class="control-value" id="item1Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item1Slider">
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 2 flex-grow
+                    <span class="control-value" id="item2Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item2Slider">
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 3 flex-grow
+                    <span class="control-value" id="item3Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item3Slider">
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 4 flex-grow
+                    <span class="control-value" id="item4Value">1</span>
+                </label>
+                <input type="range" min="0" max="10" value="1" step="1" id="item4Slider">
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3 class="info-title">How Flex-Grow Works</h3>
+            <p>
+                The <code>flex-grow</code> property distributes available space proportionally among flex items. 
+                The browser calculates a "flex factor" for each item based on its flex-grow value.
+            </p>
+            
+            <div class="calculation" id="calculation">
+Available space is divided among items according to their flex-grow values.
+Each item gets: (item's flex-grow / sum of all flex-grow values) × available space
+            </div>
+            
+            <p>Space distribution:</p>
+            <div class="space-distribution" id="spaceDistribution">
+                <div class="space-segment" style="background-color: var(--nord7); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord8); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord9); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord10); width: 25%;">25%</div>
+            </div>
+            
+            <div class="button-container">
+                <button id="equalButton">Equal Distribution (1:1:1:1)</button>
+                <button id="customButton">Custom Distribution (1:2:3:4)</button>
+                <button class="reset-button" id="resetButton">Reset All</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Created by shanur00 | Nordic-themed Flex-Grow Visualization | &copy; 2025</p>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const flexContainer = document.getElementById('flexContainer');
+        const flexItems = Array.from(flexContainer.querySelectorAll('.flex-item'));
+        const flexItemValues = Array.from(document.querySelectorAll('.flex-item-value'));
+        
+        const sliders = [
+            document.getElementById('item1Slider'),
+            document.getElementById('item2Slider'),
+            document.getElementById('item3Slider'),
+            document.getElementById('item4Slider')
+        ];
+        
+        const valueDisplays = [
+            document.getElementById('item1Value'),
+            document.getElementById('item2Value'),
+            document.getElementById('item3Value'),
+            document.getElementById('item4Value')
+        ];
+        
+        const calculationDisplay = document.getElementById('calculation');
+        const spaceDistribution = document.getElementById('spaceDistribution');
+        const spaceSegments = Array.from(spaceDistribution.querySelectorAll('.space-segment'));
+        
+        const equalButton = document.getElementById('equalButton');
+        const customButton = document.getElementById('customButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // Initialize flex-grow values
+        let flexGrowValues = [1, 1, 1, 1];
+        
+        // Function to update the visualization
+        function updateVisualization() {
+            // Update flex-grow for each item
+            flexItems.forEach((item, index) => {
+                item.style.flexGrow = flexGrowValues[index];
+                flexItemValues[index].textContent = flexGrowValues[index];
+            });
+            
+            // Update control values
+            sliders.forEach((slider, index) => {
+                slider.value = flexGrowValues[index];
+                valueDisplays[index].textContent = flexGrowValues[index];
+            });
+            
+            // Calculate the sum of all flex-grow values
+            const totalFlexGrow = flexGrowValues.reduce((sum, value) => sum + value, 0);
+            
+            // If the sum is zero, show equal distribution
+            if (totalFlexGrow === 0) {
+                flexItems.forEach(item => {
+                    item.style.flexGrow = 0;
+                    item.style.flexBasis = '25%';
+                });
+                
+                spaceSegments.forEach((segment, index) => {
+                    segment.style.width = '25%';
+                    segment.textContent = '25%';
+                });
+                
+                calculationDisplay.textContent = 'All flex-grow values are 0, so items use their base sizes.\nEach item gets 25% of the container width.';
+                return;
+            } else {
+                // Reset flexBasis if we're using flex-grow again
+                flexItems.forEach(item => {
+                    item.style.flexBasis = '0';
+                });
+            }
+            
+            // Update the calculation display
+            let calcText = 'Calculation:\n';
+            calcText += `Total flex-grow sum: ${totalFlexGrow}\n\n`;
+            
+            // Update space distribution visualization
+            flexGrowValues.forEach((value, index) => {
+                const percentage = totalFlexGrow > 0 
+                    ? Math.round((value / totalFlexGrow) * 100) 
+                    : Math.round(100 / flexGrowValues.length);
+                
+                calcText += `Item ${index + 1}: ${value}/${totalFlexGrow} = ${percentage}%\n`;
+                
+                spaceSegments[index].style.width = `${percentage}%`;
+                spaceSegments[index].textContent = `${percentage}%`;
+            });
+            
+            calculationDisplay.textContent = calcText;
+        }
+        
+        // Add event listeners to sliders
+        sliders.forEach((slider, index) => {
+            slider.addEventListener('input', () => {
+                flexGrowValues[index] = parseInt(slider.value);
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to buttons
+        equalButton.addEventListener('click', () => {
+            flexGrowValues = [1, 1, 1, 1];
+            updateVisualization();
+        });
+        
+        customButton.addEventListener('click', () => {
+            flexGrowValues = [1, 2, 3, 4];
+            updateVisualization();
+        });
+        
+        resetButton.addEventListener('click', () => {
+            flexGrowValues = [0, 0, 0, 0];
+            updateVisualization();
+        });
+        
+        // Initialize the visualization
+        updateVisualization();
+    </script>
+</body>
+</html>

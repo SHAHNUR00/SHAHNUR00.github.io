@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>CSS Grid Item Placement Visualization</title>
+	<style>
+		:root {
+			/* Nord Dark Theme */
+			--nord0: #2e3440;
+			--nord1: #3b4252;
+			--nord2: #434c5e;
+			--nord3: #4c566a;
+			--nord4: #d8dee9;
+			--nord5: #e5e9f0;
+			--nord6: #eceff4;
+			--nord7: #8fbcbb;
+			--nord8: #88c0d0;
+			--nord9: #81a1c1;
+			--nord10: #5e81ac;
+			--nord11: #bf616a;
+			--nord12: #d08770;
+			--nord13: #ebcb8b;
+			--nord14: #a3be8c;
+			--nord15: #b48ead;
+			
+			/* Theme Variables */
+			--bg-primary: var(--nord0);
+			--bg-secondary: var(--nord1);
+			--bg-tertiary: var(--nord2);
+			--border-color: var(--nord3);
+			--text-primary: var(--nord4);
+			--text-secondary: var(--nord5);
+			--text-bright: var(--nord6);
+			--accent-primary: var(--nord8);
+			--accent-secondary: var(--nord13);
+			--accent-tertiary: var(--nord14);
+		}
+		
+		[data-theme="light"] {
+			/* Nord Light Theme */
+			--bg-primary: #eceff4;
+			--bg-secondary: #e5e9f0;
+			--bg-tertiary: #d8dee9;
+			--border-color: #4c566a;
+			--text-primary: #2e3440;
+			--text-secondary: #3b4252;
+			--text-bright: #2e3440;
+			--accent-primary: #5e81ac;
+			--accent-secondary: #d08770;
+			--accent-tertiary: #a3be8c;
+		}
+		
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+			font-family: 'Ubuntu Sans Mono', sans-serif !important;
+		}
+		
+		body {
+			font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+			background: var(--bg-primary);
+			color: var(--text-primary);
+			line-height: 1.6;
+			padding: 20px;
+			transition: background-color 0.3s ease, color 0.3s ease;
+		}
+		
+		.container {
+			max-width: 1200px;
+			margin: 0 auto;
+		}
+		
+		.header {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			margin-bottom: 30px;
+			flex-wrap: wrap;
+			gap: 20px;
+		}
+		
+		h1 {
+			color: var(--accent-primary);
+			font-size: 2.5em;
+			margin: 0;
+		}
+		
+		.theme-toggle {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+			background: var(--bg-secondary);
+			padding: 8px 16px;
+			border-radius: 25px;
+			border: 2px solid var(--border-color);
+			cursor: pointer;
+			transition: all 0.3s ease;
+		}
+		
+		.theme-toggle:hover {
+			background: var(--bg-tertiary);
+			transform: translateY(-1px);
+		}
+		
+		.theme-toggle-icon {
+			font-size: 18px;
+			transition: transform 0.3s ease;
+		}
+		
+		.theme-toggle-text {
+			font-size: 14px;
+			font-weight: 600;
+			color: var(--text-primary);
+		}
+		
+		.section {
+			margin-bottom: 40px;
+			background: var(--bg-secondary);
+			padding: 30px;
+			border-radius: 10px;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+			border: 1px solid var(--border-color);
+			transition: all 0.3s ease;
+		}
+		
+		.section h2 {
+			color: var(--accent-secondary);
+			margin-bottom: 20px;
+			font-size: 1.8em;
+		}
+		
+		.controls {
+			display: flex;
+			flex-wrap: wrap;
+			gap: 15px;
+			margin-bottom: 30px;
+			align-items: center;
+		}
+		
+		.control-group {
+			display: flex;
+			flex-direction: column;
+			gap: 5px;
+		}
+		
+		label {
+			color: var(--accent-tertiary);
+			font-weight: 600;
+			font-size: 0.9em;
+		}
+		
+		select, input {
+			padding: 8px 12px;
+			border: 2px solid var(--border-color);
+			border-radius: 5px;
+			background: var(--bg-tertiary);
+			color: var(--text-primary);
+			font-size: 14px;
+			min-width: 140px;
+			transition: all 0.3s ease;
+		}
+		
+		select:focus, input:focus {
+			outline: none;
+			border-color: var(--accent-primary);
+			box-shadow: 0 0 0 3px rgba(94, 129, 172, 0.1);
+		}
+		
+		.grid-container {
+			display: grid;
+			grid-template-columns: repeat(5, 1fr);
+			grid-template-rows: repeat(4, 80px);
+			gap: 2px;
+			background: var(--border-color);
+			padding: 50px 15px 15px 50px;
+			border-radius: 8px;
+			margin-bottom: 20px;
+			position: relative;
+			min-height: 400px;
+		}
+		
+		.grid-cell {
+			background: var(--bg-tertiary);
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: var(--text-secondary);
+			position: relative;
+			z-index: 1;
+		}
+		
+		.grid-item {
+			background: var(--nord12);
+			border: 3px solid var(--nord13);
+			border-radius: 8px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 18px;
+			color: var(--nord0);
+			transition: all 0.3s ease;
+			z-index: 5;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			opacity: 0.9;
+		}
+		
+		.grid-item.invalid {
+			background: var(--nord11);
+			border-color: var(--nord11);
+			opacity: 0.7;
+		}
+		
+		.grid-item.invalid::after {
+			content: "Invalid";
+			font-size: 12px;
+			position: absolute;
+			bottom: 5px;
+			left: 50%;
+			transform: translateX(-50%);
+			color: var(--nord6);
+		}
+		
+		.grid-lines {
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+			pointer-events: none;
+			z-index: 10;
+		}
+		
+		.line-number {
+			position: absolute;
+			font-size: 12px;
+			color: var(--accent-primary);
+			font-weight: 700;
+			background: var(--bg-primary);
+			padding: 4px 6px;
+			border-radius: 4px;
+			border: 2px solid var(--accent-primary);
+			box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+			z-index: 15;
+		}
+		
+		.line-number.column {
+			top: 10px;
+		}
+		
+		.line-number.row {
+			left: 10px;
+		}
+		
+		.code-display {
+			background: var(--bg-primary);
+			border: 1px solid var(--border-color);
+			border-radius: 5px;
+			padding: 15px;
+			font-family: 'Courier New', monospace;
+			color: var(--accent-tertiary);
+			font-size: 14px;
+			overflow-x: auto;
+			white-space: pre;
+			transition: all 0.3s ease;
+		}
+		
+		.error-message {
+			background: var(--nord11);
+			color: var(--nord6);
+			padding: 10px;
+			border-radius: 5px;
+			margin-bottom: 15px;
+			font-weight: 600;
+			display: none;
+		}
+		
+		.error-message.show {
+			display: block;
+		}
+		
+		.explanation {
+			background: var(--bg-tertiary);
+			border-left: 4px solid var(--accent-primary);
+			padding: 15px;
+			margin-top: 15px;
+			border-radius: 0 5px 5px 0;
+			transition: all 0.3s ease;
+		}
+		
+		.explanation h3 {
+			color: var(--accent-primary);
+			margin-bottom: 10px;
+		}
+		
+		.explanation ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.explanation li {
+			margin-bottom: 8px;
+			padding-left: 20px;
+			position: relative;
+		}
+		
+		.explanation li:before {
+			content: "•";
+			color: var(--accent-primary);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 0;
+		}
+		
+		.preset-buttons {
+			display: flex;
+			gap: 10px;
+			margin-bottom: 20px;
+			flex-wrap: wrap;
+		}
+		
+		.preset-btn {
+			padding: 8px 16px;
+			background: var(--nord10);
+			color: var(--nord6);
+			border: none;
+			border-radius: 5px;
+			cursor: pointer;
+			font-size: 12px;
+			transition: all 0.3s ease;
+		}
+		
+		.preset-btn:hover {
+			background: var(--nord9);
+			transform: translateY(-1px);
+		}
+		
+		.info-box {
+			background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+			border: 1px solid var(--border-color);
+			border-radius: 8px;
+			padding: 20px;
+			margin-top: 20px;
+			transition: all 0.3s ease;
+		}
+		
+		.info-box h4 {
+			color: var(--accent-secondary);
+			margin-bottom: 15px;
+		}
+		
+		.info-box ul {
+			list-style: none;
+			padding-left: 0;
+		}
+		
+		.info-box li {
+			padding: 8px 0;
+			border-bottom: 1px solid var(--border-color);
+			position: relative;
+			padding-left: 20px;
+		}
+		
+		.info-box li:before {
+			content: "•";
+			color: var(--accent-primary);
+			font-weight: bold;
+			position: absolute;
+			left: 0;
+			top: 8px;
+		}
+		
+		.info-box li:last-child {
+			border-bottom: none;
+		}
+		
+		.info-box code {
+			background: var(--bg-primary);
+			color: var(--accent-tertiary);
+			padding: 2px 6px;
+			border-radius: 3px;
+			font-size: 0.9em;
+			border: 1px solid var(--border-color);
+		}
+		
+		.demo-grid {
+			display: grid;
+			grid-template-columns: repeat(4, 1fr);
+			grid-template-rows: repeat(3, 60px);
+			gap: 2px;
+			background: var(--border-color);
+			padding: 10px;
+			border-radius: 8px;
+			margin: 15px 0;
+			position: relative;
+		}
+		
+		.demo-cell {
+			background: var(--bg-tertiary);
+			border: 1px solid var(--border-color);
+			border-radius: 4px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-size: 12px;
+			color: var(--text-secondary);
+		}
+		
+		.demo-item {
+			background: var(--nord12);
+			color: var(--nord0);
+			border: 3px solid var(--nord13);
+			border-radius: 6px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			font-weight: 700;
+			font-size: 16px;
+			grid-area: 1 / 2 / 3 / 4;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+			z-index: 5;
+		}
+		
+		@media (max-width: 768px) {
+			.header {
+				flex-direction: column;
+				text-align: center;
+			}
+			
+			.controls {
+				flex-direction: column;
+				align-items: stretch;
+			}
+			
+			.control-group {
+				width: 100%;
+			}
+			
+			select, input {
+				width: 100%;
+			}
+			
+			.grid-container {
+				padding: 40px 10px 10px 40px;
+			}
+		}
+	</style>
+</head>
+<body>
+<div class="container">
+	<div class="header">
+		<h1>CSS Grid Item Placement Visualization</h1>
+		<div class="theme-toggle" onclick="toggleTheme()">
+			<span class="theme-toggle-icon" id="theme-icon">🌙</span>
+			<span class="theme-toggle-text" id="theme-text">Dark Mode</span>
+		</div>
+	</div>
+	
+	<!-- Grid Column Placement Section -->
+	<div class="section">
+		<h2>grid-column-start & grid-column-end</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setColumnPreset('1', '3')">Span 2 Columns</button>
+			<button class="preset-btn" onclick="setColumnPreset('2', '5')">Columns 2-5</button>
+			<button class="preset-btn" onclick="setColumnPreset('1', '-1')">Full Width</button>
+			<button class="preset-btn" onclick="setColumnPreset('3', 'span 2')">Span 2 from 3</button>
+			<button class="preset-btn" onclick="setColumnPreset('2', '4')">Middle Columns</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="colStart">grid-column-start:</label>
+				<input type="text" id="colStart" value="1" placeholder="1, 2, 3, 4, 5">
+			</div>
+			<div class="control-group">
+				<label for="colEnd">grid-column-end:</label>
+				<input type="text" id="colEnd" value="3" placeholder="2, 3, 4, 5, span 2, -1">
+			</div>
+		</div>
+		
+		<div class="error-message" id="columnError"></div>
+		
+		<div id="columnGrid" class="grid-container">
+			<!-- Grid cells will be created by JavaScript -->
+		</div>
+		
+		<div class="code-display" id="columnCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding Column Placement:</h3>
+			<p>These properties control where grid items are placed horizontally in a 5-column grid:</p>
+			<ul>
+				<li><strong>grid-column-start:</strong> Starting column line (1, 2, 3, 4, 5)</li>
+				<li><strong>grid-column-end:</strong> Ending column line (2, 3, 4, 5) or span length</li>
+				<li><strong>Negative values:</strong> Count from the end (-1 = last column)</li>
+				<li><strong>span keyword:</strong> Span across a number of columns (e.g., span 2)</li>
+				<li><strong>Line numbers:</strong> Column lines are numbered 1 to 5</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- Grid Row Placement Section -->
+	<div class="section">
+		<h2>grid-row-start & grid-row-end</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setRowPreset('1', '3')">Span 2 Rows</button>
+			<button class="preset-btn" onclick="setRowPreset('2', '4')">Rows 2-4</button>
+			<button class="preset-btn" onclick="setRowPreset('1', '-1')">Full Height</button>
+			<button class="preset-btn" onclick="setRowPreset('2', 'span 2')">Span 2 from 2</button>
+			<button class="preset-btn" onclick="setRowPreset('3', '4')">Bottom Rows</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="rowStart">grid-row-start:</label>
+				<input type="text" id="rowStart" value="1" placeholder="1, 2, 3, 4">
+			</div>
+			<div class="control-group">
+				<label for="rowEnd">grid-row-end:</label>
+				<input type="text" id="rowEnd" value="3" placeholder="2, 3, 4, span 2, -1">
+			</div>
+		</div>
+		
+		<div class="error-message" id="rowError"></div>
+		
+		<div id="rowGrid" class="grid-container">
+			<!-- Grid cells will be created by JavaScript -->
+		</div>
+		
+		<div class="code-display" id="rowCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding Row Placement:</h3>
+			<p>These properties control where grid items are placed vertically in a 4-row grid:</p>
+			<ul>
+				<li><strong>grid-row-start:</strong> Starting row line (1, 2, 3, 4)</li>
+				<li><strong>grid-row-end:</strong> Ending row line (2, 3, 4) or span length</li>
+				<li><strong>Negative values:</strong> Count from the end (-1 = last row)</li>
+				<li><strong>span keyword:</strong> Span across a number of rows (e.g., span 2)</li>
+				<li><strong>Line numbers:</strong> Row lines are numbered 1 to 4</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- Combined Placement Section -->
+	<div class="section">
+		<h2>Combined Column & Row Placement</h2>
+		
+		<div class="preset-buttons">
+			<button class="preset-btn" onclick="setCombinedPreset('1', '3', '1', '3')">Top-Left Square</button>
+			<button class="preset-btn" onclick="setCombinedPreset('3', '5', '2', '4')">Center Rectangle</button>
+			<button class="preset-btn" onclick="setCombinedPreset('1', '-1', '1', '2')">Top Full Width</button>
+			<button class="preset-btn" onclick="setCombinedPreset('2', '4', '2', '4')">Large Center</button>
+			<button class="preset-btn" onclick="setCombinedPreset('4', '5', '3', '4')">Bottom-Right</button>
+		</div>
+		
+		<div class="controls">
+			<div class="control-group">
+				<label for="combColStart">grid-column-start:</label>
+				<input type="text" id="combColStart" value="1" placeholder="1, 2, 3, 4, 5">
+			</div>
+			<div class="control-group">
+				<label for="combColEnd">grid-column-end:</label>
+				<input type="text" id="combColEnd" value="3" placeholder="2, 3, 4, 5, span 2, -1">
+			</div>
+			<div class="control-group">
+				<label for="combRowStart">grid-row-start:</label>
+				<input type="text" id="combRowStart" value="1" placeholder="1, 2, 3, 4">
+			</div>
+			<div class="control-group">
+				<label for="combRowEnd">grid-row-end:</label>
+				<input type="text" id="combRowEnd" value="3" placeholder="2, 3, 4, span 2, -1">
+			</div>
+		</div>
+		
+		<div class="error-message" id="combinedError"></div>
+		
+		<div id="combinedGrid" class="grid-container">
+			<!-- Grid cells will be created by JavaScript -->
+		</div>
+		
+		<div class="code-display" id="combinedCode"></div>
+		
+		<div class="explanation">
+			<h3>Understanding Combined Placement:</h3>
+			<p>Combine column and row placement for precise positioning in a 5×4 grid:</p>
+			<ul>
+				<li><strong>Area control:</strong> Define exact rectangular areas</li>
+				<li><strong>Overlapping:</strong> Items can overlap other grid areas</li>
+				<li><strong>Shorthand:</strong> Use grid-column and grid-row for brevity</li>
+				<li><strong>Flexibility:</strong> Mix different units and keywords</li>
+			</ul>
+		</div>
+	</div>
+	
+	<!-- Examples Section -->
+	<div class="section">
+		<h2>Common Patterns & Examples</h2>
+		
+		<div class="info-box">
+			<h4>Syntax Examples (for 5×4 grid):</h4>
+			<ul>
+				<li><code>grid-column-start: 1;</code> - Start at first column line</li>
+				<li><code>grid-column-end: 5;</code> - End at last column line (full width)</li>
+				<li><code>grid-column-end: span 2;</code> - Span across 2 columns</li>
+				<li><code>grid-row-end: -1;</code> - End at last row line</li>
+				<li><code>grid-row: 1 / 3;</code> - Shorthand for start / end</li>
+				<li><code>grid-area: 1 / 1 / 3 / 3;</code> - row-start / col-start / row-end / col-end</li>
+			</ul>
+		</div>
+		
+		<div class="demo-grid">
+			<div class="demo-cell">1</div>
+			<div class="demo-cell">2</div>
+			<div class="demo-cell">3</div>
+			<div class="demo-cell">4</div>
+			<div class="demo-cell">5</div>
+			<div class="demo-cell">6</div>
+			<div class="demo-cell">7</div>
+			<div class="demo-cell">8</div>
+			<div class="demo-cell">9</div>
+			<div class="demo-cell">10</div>
+			<div class="demo-cell">11</div>
+			<div class="demo-cell">12</div>
+			<div class="demo-item">item-a</div>
+		</div>
+		
+		<div class="info-box">
+			<h4>Key Concepts:</h4>
+			<ul>
+				<li><strong>Grid Lines:</strong> Numbered lines that define grid tracks (columns/rows)</li>
+				<li><strong>Grid Tracks:</strong> Space between two adjacent grid lines</li>
+				<li><strong>Grid Areas:</strong> Rectangular areas bounded by grid lines</li>
+				<li><strong>Simplified Lines:</strong> Only show the lines that define grid cells</li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<script>
+	// Theme management
+	function toggleTheme() {
+		const body = document.body;
+		const themeIcon = document.getElementById('theme-icon');
+		const themeText = document.getElementById('theme-text');
+		
+		const currentTheme = body.getAttribute('data-theme');
+		
+		if (currentTheme === 'light') {
+			body.removeAttribute('data-theme');
+			themeIcon.textContent = '🌙';
+			themeText.textContent = 'Dark Mode';
+			localStorage.setItem('theme', 'dark');
+		} else {
+			body.setAttribute('data-theme', 'light');
+			themeIcon.textContent = '☀️';
+			themeText.textContent = 'Light Mode';
+			localStorage.setItem('theme', 'light');
+		}
+	}
+	
+	// Load saved theme
+	function loadTheme() {
+		const savedTheme = localStorage.getItem('theme');
+		const body = document.body;
+		const themeIcon = document.getElementById('theme-icon');
+		const themeText = document.getElementById('theme-text');
+		
+		if (savedTheme === 'light') {
+			body.setAttribute('data-theme', 'light');
+			themeIcon.textContent = '☀️';
+			themeText.textContent = 'Light Mode';
+		} else {
+			body.removeAttribute('data-theme');
+			themeIcon.textContent = '🌙';
+			themeText.textContent = 'Dark Mode';
+		}
+	}
+	
+	// Validate grid placement values
+	function validatePlacement(start, end, isColumn) {
+		const maxStartLine = isColumn ? 5 : 4;  // 5 columns, 4 rows
+		const maxEndLine = isColumn ? 5 : 4;    // 5 columns, 4 rows (no extra lines)
+		const type = isColumn ? 'column' : 'row';
+		const errorMsg = [];
+		
+		// Parse start value
+		let startNum = parseInt(start);
+		if (isNaN(startNum) || startNum < 1 || startNum > maxStartLine) {
+			errorMsg.push(`${type} start must be between 1 and ${maxStartLine}`);
+		}
+		
+		// Parse end value
+		let endNum;
+		if (end.includes('span')) {
+			const spanMatch = end.match(/span\s+(\d+)/);
+			if (spanMatch) {
+				const spanSize = parseInt(spanMatch[1]);
+				endNum = startNum + spanSize;
+				if (endNum > maxEndLine + 1) {
+					errorMsg.push(`Span extends beyond grid (max ${type}: ${maxEndLine})`);
+				}
+			} else {
+				errorMsg.push("Invalid span syntax. Use 'span 2' format");
+			}
+		} else if (end === '-1') {
+			endNum = maxEndLine;
+		} else {
+			endNum = parseInt(end);
+			if (isNaN(endNum) || endNum < 2 || endNum > maxEndLine) {
+				errorMsg.push(`${type} end must be between 2 and ${maxEndLine}`);
+			}
+		}
+		
+		// Check if start >= end
+		if (startNum >= endNum) {
+			errorMsg.push(`${type} start must be less than ${type} end`);
+		}
+		
+		return {
+			valid: errorMsg.length === 0,
+			errors: errorMsg,
+			startNum,
+			endNum
+		};
+	}
+	
+	// Show/hide error messages
+	function showError(errorId, messages) {
+		const errorEl = document.getElementById(errorId);
+		if (messages.length > 0) {
+			errorEl.textContent = messages.join('. ');
+			errorEl.classList.add('show');
+		} else {
+			errorEl.classList.remove('show');
+		}
+	}
+	
+	// Create grid with cells and lines
+	function createGrid(containerId) {
+		const container = document.getElementById(containerId);
+		container.innerHTML = '';
+		
+		// Create grid cells
+		for (let row = 1; row <= 4; row++) {
+			for (let col = 1; col <= 5; col++) {
+				const cell = document.createElement('div');
+				cell.className = 'grid-cell';
+				cell.textContent = `${row},${col}`;
+				cell.style.gridArea = `${row} / ${col} / ${row + 1} / ${col + 1}`;
+				container.appendChild(cell);
+			}
+		}
+		
+		// Create grid item
+		const item = document.createElement('div');
+		item.className = 'grid-item';
+		item.id = containerId + 'Item';
+		item.textContent = 'item-a';
+		container.appendChild(item);
+		
+		// Create grid lines container
+		const lines = document.createElement('div');
+		lines.className = 'grid-lines';
+		lines.id = containerId + 'Lines';
+		container.appendChild(lines);
+		
+		// Add line numbers
+		addLineNumbers(containerId + 'Lines');
+	}
+	
+	function addLineNumbers(linesId) {
+		const lines = document.getElementById(linesId);
+		lines.innerHTML = '';
+		
+		// Column line numbers (1-5 only, no 6)
+		for (let i = 1; i <= 5; i++) {
+			const lineNum = document.createElement('div');
+			lineNum.className = 'line-number column';
+			lineNum.textContent = i;
+			lineNum.style.left = `${((i - 1) * 20) + 10}%`;
+			lines.appendChild(lineNum);
+		}
+		
+		// Row line numbers (1-4 only, no 5)
+		for (let i = 1; i <= 4; i++) {
+			const lineNum = document.createElement('div');
+			lineNum.className = 'line-number row';
+			lineNum.textContent = i;
+			lineNum.style.top = `${((i - 1) * 25) + 10}%`;
+			lines.appendChild(lineNum);
+		}
+	}
+	
+	// Update column placement
+	function updateColumnPlacement() {
+		const colStart = document.getElementById('colStart').value.trim();
+		const colEnd = document.getElementById('colEnd').value.trim();
+		const item = document.getElementById('columnGridItem');
+		const codeDisplay = document.getElementById('columnCode');
+		
+		if (item) {
+			const validation = validatePlacement(colStart, colEnd, true);
+			showError('columnError', validation.errors);
+			
+			if (validation.valid) {
+				item.classList.remove('invalid');
+				item.style.gridColumnStart = colStart;
+				item.style.gridColumnEnd = colEnd;
+				item.style.gridRowStart = '2';
+				item.style.gridRowEnd = '4';
+				item.textContent = 'item-a';
+			} else {
+				item.classList.add('invalid');
+				item.style.gridColumnStart = '1';
+				item.style.gridColumnEnd = '2';
+				item.style.gridRowStart = '1';
+				item.style.gridRowEnd = '2';
+				item.textContent = 'Invalid';
+			}
+			
+			codeDisplay.textContent = `.grid-item {
+  grid-column-start: ${colStart};
+  grid-column-end: ${colEnd};
+  
+  /* Shorthand: */
+  grid-column: ${colStart} / ${colEnd};
+}`;
+		}
+	}
+	
+	// Update row placement
+	function updateRowPlacement() {
+		const rowStart = document.getElementById('rowStart').value.trim();
+		const rowEnd = document.getElementById('rowEnd').value.trim();
+		const item = document.getElementById('rowGridItem');
+		const codeDisplay = document.getElementById('rowCode');
+		
+		if (item) {
+			const validation = validatePlacement(rowStart, rowEnd, false);
+			showError('rowError', validation.errors);
+			
+			if (validation.valid) {
+				item.classList.remove('invalid');
+				item.style.gridRowStart = rowStart;
+				item.style.gridRowEnd = rowEnd;
+				item.style.gridColumnStart = '2';
+				item.style.gridColumnEnd = '4';
+				item.textContent = 'item-a';
+			} else {
+				item.classList.add('invalid');
+				item.style.gridColumnStart = '1';
+				item.style.gridColumnEnd = '2';
+				item.style.gridRowStart = '1';
+				item.style.gridRowEnd = '2';
+				item.textContent = 'Invalid';
+			}
+			
+			codeDisplay.textContent = `.grid-item {
+  grid-row-start: ${rowStart};
+  grid-row-end: ${rowEnd};
+  
+  /* Shorthand: */
+  grid-row: ${rowStart} / ${rowEnd};
+}`;
+		}
+	}
+	
+	// Update combined placement
+	function updateCombinedPlacement() {
+		const colStart = document.getElementById('combColStart').value.trim();
+		const colEnd = document.getElementById('combColEnd').value.trim();
+		const rowStart = document.getElementById('combRowStart').value.trim();
+		const rowEnd = document.getElementById('combRowEnd').value.trim();
+		const item = document.getElementById('combinedGridItem');
+		const codeDisplay = document.getElementById('combinedCode');
+		
+		if (item) {
+			const colValidation = validatePlacement(colStart, colEnd, true);
+			const rowValidation = validatePlacement(rowStart, rowEnd, false);
+			const allErrors = [...colValidation.errors, ...rowValidation.errors];
+			
+			showError('combinedError', allErrors);
+			
+			if (colValidation.valid && rowValidation.valid) {
+				item.classList.remove('invalid');
+				item.style.gridColumnStart = colStart;
+				item.style.gridColumnEnd = colEnd;
+				item.style.gridRowStart = rowStart;
+				item.style.gridRowEnd = rowEnd;
+				item.textContent = 'item-a';
+			} else {
+				item.classList.add('invalid');
+				item.style.gridColumnStart = '1';
+				item.style.gridColumnEnd = '2';
+				item.style.gridRowStart = '1';
+				item.style.gridRowEnd = '2';
+				item.textContent = 'Invalid';
+			}
+			
+			codeDisplay.textContent = `.grid-item {
+  grid-column-start: ${colStart};
+  grid-column-end: ${colEnd};
+  grid-row-start: ${rowStart};
+  grid-row-end: ${rowEnd};
+  
+  /* Shorthand: */
+  grid-column: ${colStart} / ${colEnd};
+  grid-row: ${rowStart} / ${rowEnd};
+  
+  /* Or use grid-area: */
+  grid-area: ${rowStart} / ${colStart} / ${rowEnd} / ${colEnd};
+}`;
+		}
+	}
+	
+	// Preset functions
+	function setColumnPreset(start, end) {
+		document.getElementById('colStart').value = start;
+		document.getElementById('colEnd').value = end;
+		updateColumnPlacement();
+	}
+	
+	function setRowPreset(start, end) {
+		document.getElementById('rowStart').value = start;
+		document.getElementById('rowEnd').value = end;
+		updateRowPlacement();
+	}
+	
+	function setCombinedPreset(colStart, colEnd, rowStart, rowEnd) {
+		document.getElementById('combColStart').value = colStart;
+		document.getElementById('combColEnd').value = colEnd;
+		document.getElementById('combRowStart').value = rowStart;
+		document.getElementById('combRowEnd').value = rowEnd;
+		updateCombinedPlacement();
+	}
+	
+	// Event listeners
+	document.getElementById('colStart').addEventListener('input', updateColumnPlacement);
+	document.getElementById('colEnd').addEventListener('input', updateColumnPlacement);
+	document.getElementById('rowStart').addEventListener('input', updateRowPlacement);
+	document.getElementById('rowEnd').addEventListener('input', updateRowPlacement);
+	document.getElementById('combColStart').addEventListener('input', updateCombinedPlacement);
+	document.getElementById('combColEnd').addEventListener('input', updateCombinedPlacement);
+	document.getElementById('combRowStart').addEventListener('input', updateCombinedPlacement);
+	document.getElementById('combRowEnd').addEventListener('input', updateCombinedPlacement);
+	
+	// Initialize on page load
+	loadTheme();
+	createGrid('columnGrid');
+	createGrid('rowGrid');
+	createGrid('combinedGrid');
+	
+	// Small delay to ensure DOM is ready
+	setTimeout(() => {
+		updateColumnPlacement();
+		updateRowPlacement();
+		updateCombinedPlacement();
+	}, 100);
+</script>
+</body>
+</html>

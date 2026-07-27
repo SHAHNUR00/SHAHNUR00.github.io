@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tailwind CSS Max Width Utilities - Visualizer</title>
+  <style>
+    /* Nord Color Palette */
+    :root {
+      --nord0: #2E3440;
+      --nord1: #3B4252;
+      --nord2: #434C5E;
+      --nord3: #4C566A;
+      --nord4: #D8DEE9;
+      --nord5: #E5E9F0;
+      --nord6: #ECEFF4;
+      --nord7: #8FBCBB;
+      --nord8: #88C0D0;
+      --nord9: #81A1C1;
+      --nord10: #5E81AC;
+      --nord11: #BF616A;
+      --nord12: #D08770;
+      --nord13: #EBCB8B;
+      --nord14: #A3BE8C;
+      --nord15: #B48EAD;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Ubuntu Sans Mono',sans-serif !important;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: var(--nord0);
+      color: var(--nord4);
+      padding: 20px;
+      line-height: 1.6;
+    }
+
+    h1 {
+      color: var(--nord8);
+      text-align: center;
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+
+    h2 {
+      color: var(--nord7);
+      margin: 15px 0;
+      font-size: 20px;
+    }
+
+    .container {
+      max-width: 1550px; /* Changed to 1550px */
+      margin: 0 auto;
+    }
+
+    .description {
+      background-color: var(--nord1);
+      padding: 15px 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .main-content {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+    }
+
+    .control-panel {
+      flex: 1;
+      min-width: 280px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+    }
+
+    .visualization {
+      flex: 2;
+      min-width: 500px;
+      background-color: var(--nord1);
+      padding: 20px;
+      border-radius: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Tabs for category selection */
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-bottom: 15px;
+    }
+
+    .tab-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 15px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .tab-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .tab-button.active {
+      background-color: var(--nord9);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Width value selection */
+    .value-selector {
+      margin-bottom: 20px;
+    }
+
+    .value-group {
+      margin-bottom: 15px;
+    }
+
+    .value-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(85px, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .value-button {
+      background-color: var(--nord2);
+      border: none;
+      color: var(--nord4);
+      padding: 8px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .value-button:hover {
+      background-color: var(--nord3);
+    }
+
+    .value-button.selected {
+      background-color: var(--nord7);
+      color: var(--nord0);
+      font-weight: 500;
+    }
+
+    /* Options for visualization */
+    .options {
+      margin-bottom: 20px;
+    }
+
+    .option-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .option-label {
+      margin-left: 8px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+    }
+
+    /* Visualization container */
+    .demo-container {
+      position: relative;
+      height: 300px;
+      background-color: var(--nord2);
+      border-radius: 8px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Width markers */
+    .width-markers {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 40px;
+      border-bottom: 1px dashed var(--nord3);
+      pointer-events: none;
+    }
+
+    .marker {
+      position: absolute;
+      top: 0;
+      height: 100%;
+      border-left: 1px dashed var(--nord3);
+      font-size: 10px;
+      color: var(--nord4);
+      text-align: center;
+      padding-top: 5px;
+    }
+
+    /* Grid background */
+    .grid-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        linear-gradient(var(--nord3) 1px, transparent 1px),
+        linear-gradient(90deg, var(--nord3) 1px, transparent 1px);
+      background-size: 20px 20px;
+      opacity: 0.3;
+      pointer-events: none;
+    }
+
+    /* Element with applied width class */
+    .demo-element {
+      position: relative;
+      width: 100%;
+      background-color: var(--nord10);
+      border-radius: 6px;
+      transition: max-width 0.3s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100px;
+      margin: 60px 20px 20px 20px;
+    }
+
+    .element-label {
+      color: var(--nord0);
+      font-weight: 500;
+      text-align: center;
+      padding: 10px;
+      font-size: 14px;
+    }
+
+    .width-indicator {
+      position: absolute;
+      top: -30px;
+      width: 100%;
+      text-align: center;
+      font-size: 12px;
+      color: var(--nord4);
+    }
+
+    /* Code display */
+    .code-display {
+      background-color: var(--nord1);
+      padding: 15px;
+      border-radius: 8px;
+    }
+
+    pre {
+      background-color: var(--nord0);
+      padding: 15px;
+      border-radius: 4px;
+      overflow-x: auto;
+      margin: 0;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.4;
+      font-size: 14px;
+    }
+
+    code {
+      color: var(--nord4);
+    }
+
+    .comment {
+      color: var(--nord9);
+    }
+
+    .utility {
+      color: var(--nord7);
+    }
+
+    .value {
+      color: var(--nord13);
+    }
+
+    .css-prop {
+      color: var(--nord8);
+    }
+
+    .css-value {
+      color: var(--nord14);
+    }
+
+    /* Footer */
+    .footer {
+      margin-top: 30px;
+      text-align: right;
+      font-size: 12px;
+      color: var(--nord3);
+      padding-top: 10px;
+      border-top: 1px solid var(--nord3);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .main-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Tailwind CSS Max Width Utilities Visualizer</h1>
+
+    <div class="description">
+      <p>Tailwind CSS provides utility classes for setting the maximum width of elements. This visualizer demonstrates how different max-width utilities affect elements and shows their CSS equivalents.</p>
+    </div>
+
+    <div class="main-content">
+      <div class="control-panel">
+        <h2>Max Width Utilities</h2>
+        <div class="tabs">
+          <button class="tab-button active" data-category="default">Default</button>
+          <button class="tab-button" data-category="screens">Screen Sizes</button>
+          <button class="tab-button" data-category="special">Special</button>
+        </div>
+
+        <div class="value-selector">
+          <!-- Default max-width values -->
+          <div class="value-group" id="default-values">
+            <div class="value-grid">
+              <button class="value-button selected" data-class="max-w-0">max-w-0</button>
+              <button class="value-button" data-class="max-w-none">max-w-none</button>
+              <button class="value-button" data-class="max-w-xs">max-w-xs</button>
+              <button class="value-button" data-class="max-w-sm">max-w-sm</button>
+              <button class="value-button" data-class="max-w-md">max-w-md</button>
+              <button class="value-button" data-class="max-w-lg">max-w-lg</button>
+              <button class="value-button" data-class="max-w-xl">max-w-xl</button>
+              <button class="value-button" data-class="max-w-2xl">max-w-2xl</button>
+              <button class="value-button" data-class="max-w-3xl">max-w-3xl</button>
+              <button class="value-button" data-class="max-w-4xl">max-w-4xl</button>
+              <button class="value-button" data-class="max-w-5xl">max-w-5xl</button>
+              <button class="value-button" data-class="max-w-6xl">max-w-6xl</button>
+              <button class="value-button" data-class="max-w-7xl">max-w-7xl</button>
+            </div>
+          </div>
+
+          <!-- Screen size max-width values -->
+          <div class="value-group" id="screens-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="max-w-screen-sm">max-w-screen-sm</button>
+              <button class="value-button" data-class="max-w-screen-md">max-w-screen-md</button>
+              <button class="value-button" data-class="max-w-screen-lg">max-w-screen-lg</button>
+              <button class="value-button" data-class="max-w-screen-xl">max-w-screen-xl</button>
+              <button class="value-button" data-class="max-w-screen-2xl">max-w-screen-2xl</button>
+            </div>
+          </div>
+
+          <!-- Special max-width values -->
+          <div class="value-group" id="special-values" style="display: none;">
+            <div class="value-grid">
+              <button class="value-button" data-class="max-w-full">max-w-full</button>
+              <button class="value-button" data-class="max-w-min">max-w-min</button>
+              <button class="value-button" data-class="max-w-max">max-w-max</button>
+              <button class="value-button" data-class="max-w-fit">max-w-fit</button>
+              <button class="value-button" data-class="max-w-prose">max-w-prose</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="options">
+          <h2>Options</h2>
+          <div class="option-row">
+            <input type="checkbox" id="show-content" checked>
+            <label for="show-content" class="option-label">Show content</label>
+          </div>
+          <div class="option-row">
+            <input type="checkbox" id="show-markers" checked>
+            <label for="show-markers" class="option-label">Show width markers</label>
+          </div>
+        </div>
+      </div>
+
+      <div class="visualization">
+        <div class="demo-container">
+          <div class="grid-background"></div>
+          
+          <div class="width-markers" id="width-markers">
+            <!-- Width markers will be added with JavaScript -->
+          </div>
+          
+          <div class="demo-element" id="demo-element">
+            <div class="width-indicator" id="width-indicator">0px (actual: 1px)</div>
+            <div class="element-label" id="element-label">max-w-0</div>
+          </div>
+        </div>
+
+        <div class="code-display">
+          <pre><code id="code-display"><span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">max-w-0</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">max-width:</span> <span class="css-value">0px</span>;</code></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer">
+      User: SHAHNUR00 | Current Time: 2025-07-24 13:25:03 UTC
+    </div>
+  </div>
+
+  <script>
+    // Max width value mappings
+    const maxWidthValues = {
+      // Default values
+      'max-w-0': '0px',
+      'max-w-none': 'none',
+      'max-w-xs': '20rem', // 320px
+      'max-w-sm': '24rem', // 384px
+      'max-w-md': '28rem', // 448px
+      'max-w-lg': '32rem', // 512px
+      'max-w-xl': '36rem', // 576px
+      'max-w-2xl': '42rem', // 672px
+      'max-w-3xl': '48rem', // 768px
+      'max-w-4xl': '56rem', // 896px
+      'max-w-5xl': '64rem', // 1024px
+      'max-w-6xl': '72rem', // 1152px
+      'max-w-7xl': '80rem', // 1280px
+
+      // Screen sizes
+      'max-w-screen-sm': '640px',
+      'max-w-screen-md': '768px',
+      'max-w-screen-lg': '1024px',
+      'max-w-screen-xl': '1280px',
+      'max-w-screen-2xl': '1536px',
+
+      // Special values
+      'max-w-full': '100%',
+      'max-w-min': 'min-content',
+      'max-w-max': 'max-content',
+      'max-w-fit': 'fit-content',
+      'max-w-prose': '65ch'
+    };
+
+    // Pixel equivalents for display purposes
+    const pixelEquivalents = {
+      'max-w-0': '0px',
+      'max-w-none': 'No limit',
+      'max-w-xs': '320px',
+      'max-w-sm': '384px',
+      'max-w-md': '448px',
+      'max-w-lg': '512px',
+      'max-w-xl': '576px',
+      'max-w-2xl': '672px',
+      'max-w-3xl': '768px',
+      'max-w-4xl': '896px',
+      'max-w-5xl': '1024px',
+      'max-w-6xl': '1152px',
+      'max-w-7xl': '1280px',
+      'max-w-screen-sm': '640px',
+      'max-w-screen-md': '768px',
+      'max-w-screen-lg': '1024px',
+      'max-w-screen-xl': '1280px',
+      'max-w-screen-2xl': '1536px',
+      'max-w-full': '100%',
+      'max-w-min': 'min-content',
+      'max-w-max': 'max-content',
+      'max-w-fit': 'fit-content',
+      'max-w-prose': '65ch (~780px)'
+    };
+
+    // DOM elements
+    const demoElement = document.getElementById('demo-element');
+    const elementLabel = document.getElementById('element-label');
+    const widthIndicator = document.getElementById('width-indicator');
+    const codeDisplay = document.getElementById('code-display');
+    const widthMarkers = document.getElementById('width-markers');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const valueGroups = document.querySelectorAll('.value-group');
+    const valueButtons = document.querySelectorAll('.value-button');
+    const showContent = document.getElementById('show-content');
+    const showMarkers = document.getElementById('show-markers');
+
+    // Initial state
+    let currentClass = 'max-w-0';
+
+    // Create width markers
+    function createWidthMarkers() {
+      // Clear existing markers
+      widthMarkers.innerHTML = '';
+      
+      // Calculate container width
+      const containerWidth = document.querySelector('.demo-container').clientWidth;
+      
+      // Add markers at 100px intervals
+      for (let i = 0; i <= containerWidth; i += 100) {
+        const marker = document.createElement('div');
+        marker.className = 'marker';
+        marker.style.left = `${i}px`;
+        marker.textContent = `${i}px`;
+        widthMarkers.appendChild(marker);
+      }
+    }
+
+    // Set the element width based on selected class
+    function setElementWidth(className) {
+      currentClass = className;
+      
+      // Get the CSS value
+      const cssValue = maxWidthValues[className];
+      
+      // Update the actual CSS property
+      demoElement.style.maxWidth = cssValue;
+      
+      // Update the labels
+      elementLabel.textContent = className;
+      widthIndicator.textContent = pixelEquivalents[className];
+
+      // Update code display
+      updateCodeDisplay(className, cssValue);
+      
+      // Calculate the actual width for demonstration purposes
+      setTimeout(() => {
+        const actualWidth = demoElement.offsetWidth;
+        widthIndicator.textContent = `${pixelEquivalents[className]} (actual: ${actualWidth}px)`;
+      }, 300);
+    }
+
+    // Update the code display
+    function updateCodeDisplay(className, cssValue) {
+      codeDisplay.innerHTML = `<span class="comment">/* Tailwind CSS Class */</span>
+<span class="utility">${className}</span>
+
+<span class="comment">/* Generated CSS */</span>
+<span class="css-prop">max-width:</span> <span class="css-value">${cssValue}</span>;`;
+    }
+
+    // Initialize
+    createWidthMarkers();
+    setElementWidth('max-w-0');
+
+    // Event listeners for tab buttons
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Update active tab
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        
+        // Show corresponding value group
+        const category = button.dataset.category;
+        valueGroups.forEach(group => {
+          if (group.id === `${category}-values`) {
+            group.style.display = 'block';
+          } else {
+            group.style.display = 'none';
+          }
+        });
+        
+        // Select the first button of the category if none is selected
+        const activeGroup = document.getElementById(`${category}-values`);
+        if (activeGroup) {
+          const groupButtons = activeGroup.querySelectorAll('.value-button');
+          let hasSelected = false;
+          groupButtons.forEach(btn => {
+            if (btn.classList.contains('selected')) {
+              hasSelected = true;
+              setElementWidth(btn.dataset.class);
+            }
+          });
+          
+          if (!hasSelected && groupButtons.length > 0) {
+            groupButtons[0].classList.add('selected');
+            setElementWidth(groupButtons[0].dataset.class);
+          }
+        }
+      });
+    });
+
+    // Event listeners for value buttons
+    valueButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        // Remove selected class from all buttons
+        valueButtons.forEach(btn => btn.classList.remove('selected'));
+        // Add selected class to clicked button
+        button.classList.add('selected');
+        // Update element width
+        setElementWidth(button.dataset.class);
+      });
+    });
+
+    // Event listeners for options
+    showContent.addEventListener('change', () => {
+      elementLabel.style.display = showContent.checked ? 'block' : 'none';
+    });
+
+    showMarkers.addEventListener('change', () => {
+      widthMarkers.style.display = showMarkers.checked ? 'block' : 'none';
+    });
+
+    // Handle window resize
+    window.addEventListener('resize', () => {
+      createWidthMarkers();
+      
+      // Update width indicator
+      const actualWidth = demoElement.offsetWidth;
+      widthIndicator.textContent = `${pixelEquivalents[currentClass]} (actual: ${actualWidth}px)`;
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flex-Basis Visualization - Nord Theme</title>
+    <style>
+        /* Nord Theme Colors */
+        :root {
+            --nord0: #2E3440;  /* Polar Night (darkest) */
+            --nord1: #3B4252;  /* Polar Night */
+            --nord2: #434C5E;  /* Polar Night */
+            --nord3: #4C566A;  /* Polar Night */
+            --nord4: #D8DEE9;  /* Snow Storm */
+            --nord5: #E5E9F0;  /* Snow Storm */
+            --nord6: #ECEFF4;  /* Snow Storm (lightest) */
+            --nord7: #8FBCBB;  /* Frost */
+            --nord8: #88C0D0;  /* Frost */
+            --nord9: #81A1C1;  /* Frost */
+            --nord10: #5E81AC; /* Frost */
+            --nord11: #BF616A; /* Aurora (red) */
+            --nord12: #D08770; /* Aurora (orange) */
+            --nord13: #EBCB8B; /* Aurora (yellow) */
+            --nord14: #A3BE8C; /* Aurora (green) */
+            --nord15: #B48EAD; /* Aurora (purple) */
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        p {
+            color: var(--nord4);
+            margin-bottom: 2rem;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .visualization {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            margin-bottom: 2rem;
+            background: var(--nord1);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Graph paper grid */
+        .grid-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: 20px 20px;
+            background-image:
+                linear-gradient(to right, var(--nord2) 1px, transparent 1px),
+                linear-gradient(to bottom, var(--nord2) 1px, transparent 1px);
+            opacity: 0.4;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .flex-container {
+            height: 100%;
+            width: 100%;
+            position: relative;
+            z-index: 2;
+            display: flex;
+        }
+
+        .flex-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            height: 100%;
+            font-weight: bold;
+            position: relative;
+            transition: all 0.3s ease;
+            overflow: hidden;
+            flex-grow: 1;
+            flex-shrink: 1;
+            min-width: 20px;
+        }
+
+        .flex-item:nth-child(1) { background-color: var(--nord7); color: var(--nord0); }
+        .flex-item:nth-child(2) { background-color: var(--nord8); color: var(--nord0); }
+        .flex-item:nth-child(3) { background-color: var(--nord9); color: var(--nord0); }
+        .flex-item:nth-child(4) { background-color: var(--nord10); color: var(--nord0); }
+
+        .flex-item-label {
+            margin-bottom: 8px;
+            text-align: center;
+            font-size: 0.9rem;
+        }
+
+        .flex-item-value {
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+        }
+
+        .content-size {
+            font-size: 0.9rem;
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .control-group {
+            background-color: var(--nord1);
+            padding: 1.2rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .control-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--nord8);
+            font-weight: bold;
+        }
+
+        .control-value {
+            display: inline-block;
+            width: 60px;
+            text-align: center;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            margin-left: 0.5rem;
+        }
+
+        .control-input-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.5rem 0;
+        }
+
+        input[type="range"] {
+            flex-grow: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            background: var(--nord3);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        input[type="range"]:nth-of-type(1)::-webkit-slider-thumb {
+            background: var(--nord7);
+        }
+        input[type="range"]:nth-of-type(2)::-webkit-slider-thumb {
+            background: var(--nord8);
+        }
+        input[type="range"]:nth-of-type(3)::-webkit-slider-thumb {
+            background: var(--nord9);
+        }
+        input[type="range"]:nth-of-type(4)::-webkit-slider-thumb {
+            background: var(--nord10);
+        }
+
+        select {
+            background-color: var(--nord3);
+            color: var(--nord6);
+            border: none;
+            padding: 0.3rem 0.5rem;
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .info-panel {
+            background-color: var(--nord1);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            max-width: 900px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .info-title {
+            color: var(--nord13);
+            margin-bottom: 0.8rem;
+            font-size: 1.2rem;
+        }
+
+        .calculation {
+            font-family: monospace;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 4px;
+            color: var(--nord6);
+            margin: 1rem 0;
+            white-space: pre-wrap;
+        }
+
+        .space-distribution {
+            display: flex;
+            height: 40px;
+            margin-top: 1rem;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .space-segment {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            transition: all 0.3s ease;
+            font-size: 0.8rem;
+            color: var(--nord0);
+            min-width: 20px;
+        }
+
+        button {
+            background-color: var(--nord10);
+            color: var(--nord6);
+            border: none;
+            padding: 0.7rem 1.2rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s ease;
+            margin-right: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        button:hover {
+            background-color: var(--nord9);
+        }
+
+        .button-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .reset-button {
+            background-color: var(--nord11);
+        }
+
+        .reset-button:hover {
+            background-color: var(--nord12);
+        }
+
+        .overflow-button {
+            background-color: var(--nord12);
+        }
+
+        .overflow-button:hover {
+            background-color: var(--nord11);
+        }
+
+        .footer {
+            margin-top: 2rem;
+            color: var(--nord4);
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .auto-basis {
+            border: 2px solid var(--nord14);
+            box-shadow: 0 0 10px var(--nord14);
+        }
+
+        .fixed-basis {
+            border: 2px solid var(--nord13);
+            box-shadow: 0 0 10px var(--nord13);
+        }
+
+        .overflow-warning {
+            background-color: var(--nord11);
+            color: var(--nord6);
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .container-width-control {
+            display: flex;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            background-color: var(--nord2);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .container-width-control label {
+            margin-right: 1rem;
+            color: var(--nord13);
+            font-weight: bold;
+        }
+
+        .container-width-control input {
+            flex-grow: 1;
+        }
+
+        .width-value {
+            margin-left: 1rem;
+            background-color: var(--nord3);
+            color: var(--nord6);
+            padding: 0.2rem 0.6rem;
+            border-radius: 4px;
+            min-width: 60px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Understanding Flex-Basis</h1>
+    <p>
+        The <code>flex-basis</code> property defines the initial main size of a flex item before free space is distributed. 
+        It can be set to a specific size (px, %, em) or 'auto' to use the item's content size. When total basis exceeds container width, items shrink proportionally.
+    </p>
+
+    <div class="container">
+        <div class="container-width-control">
+            <label for="containerWidth">Container Width:</label>
+            <input type="range" id="containerWidth" min="300" max="900" value="900" step="50">
+            <span class="width-value" id="containerWidthValue">900px</span>
+        </div>
+
+        <div id="overflowWarning" class="overflow-warning" style="display: none;">
+            ⚠️ Overflow Detected: Total flex-basis exceeds container width!
+        </div>
+
+        <div class="visualization">
+            <div class="grid-background"></div>
+            <div class="flex-container" id="flexContainer">
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 1</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size1">25%</div>
+                </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 2</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size2">25%</div>
+                </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 3</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size3">25%</div>
+                </div>
+                <div class="flex-item">
+                    <div class="flex-item-label">Item 4</div>
+                    <div class="flex-item-value">auto</div>
+                    <div class="content-size" id="size4">25%</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label class="control-label">
+                    Item 1 flex-basis
+                    <span class="control-value" id="item1Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item1Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item1Slider" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 2 flex-basis
+                    <span class="control-value" id="item2Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item2Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item2Slider" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 3 flex-basis
+                    <span class="control-value" id="item3Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item3Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item3Slider" disabled>
+                </div>
+            </div>
+            <div class="control-group">
+                <label class="control-label">
+                    Item 4 flex-basis
+                    <span class="control-value" id="item4Value">auto</span>
+                </label>
+                <div class="control-input-group">
+                    <select id="item4Type">
+                        <option value="auto">auto</option>
+                        <option value="px">px</option>
+                        <option value="%">%</option>
+                    </select>
+                    <input type="range" min="0" max="400" value="0" step="10" id="item4Slider" disabled>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <h3 class="info-title">How Flex-Basis Works</h3>
+            <p>
+                The <code>flex-basis</code> property sets the initial main size of a flex item. It defines the size of the item before any remaining space is distributed according to the flex factors. When the total flex-basis exceeds the container width, items shrink proportionally based on their flex-shrink values.
+            </p>
+            
+            <div class="calculation" id="calculation">
+Flex-basis determines the starting size of each item:
+- auto: Uses the item's content size as the basis
+- <length>: Uses the specified size (px, %, em, etc.)
+- 0: Item has no inherent size, relies entirely on flex-grow
+
+After flex-basis is applied, remaining space is distributed based on flex-grow values.
+When total basis > container width, items shrink based on flex-shrink values.
+            </div>
+            
+            <p>Size distribution:</p>
+            <div class="space-distribution" id="spaceDistribution">
+                <div class="space-segment" style="background-color: var(--nord7); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord8); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord9); width: 25%;">25%</div>
+                <div class="space-segment" style="background-color: var(--nord10); width: 25%;">25%</div>
+            </div>
+            
+            <div class="button-container">
+                <button id="autoButton">All Auto (auto:auto:auto:auto)</button>
+                <button id="mixedButton">Mixed Basis (100px:auto:30%:auto)</button>
+                <button id="fixedButton">Fixed Sizes (150px:100px:200px:50px)</button>
+                <button id="zeroButton">Zero Basis (0:0:0:0)</button>
+                <button class="overflow-button" id="overflowButton">Overflow Scenario (250px:200px:300px:180px)</button>
+                <button class="reset-button" id="resetButton">Reset All</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Created by shanur00 | Nordic-themed Flex-Basis Visualization | &copy; 2025-07-24 21:09:37</p>
+    </div>
+
+    <script>
+        // Get DOM elements
+        const flexContainer = document.getElementById('flexContainer');
+        const flexItems = Array.from(flexContainer.querySelectorAll('.flex-item'));
+        const flexItemValues = Array.from(document.querySelectorAll('.flex-item-value'));
+        const contentSizes = Array.from(document.querySelectorAll('.content-size'));
+        
+        const containerWidthSlider = document.getElementById('containerWidth');
+        const containerWidthValue = document.getElementById('containerWidthValue');
+        const overflowWarning = document.getElementById('overflowWarning');
+        
+        const typeSelects = [
+            document.getElementById('item1Type'),
+            document.getElementById('item2Type'),
+            document.getElementById('item3Type'),
+            document.getElementById('item4Type')
+        ];
+        
+        const sliders = [
+            document.getElementById('item1Slider'),
+            document.getElementById('item2Slider'),
+            document.getElementById('item3Slider'),
+            document.getElementById('item4Slider')
+        ];
+        
+        const valueDisplays = [
+            document.getElementById('item1Value'),
+            document.getElementById('item2Value'),
+            document.getElementById('item3Value'),
+            document.getElementById('item4Value')
+        ];
+        
+        const calculationDisplay = document.getElementById('calculation');
+        const spaceDistribution = document.getElementById('spaceDistribution');
+        const spaceSegments = Array.from(spaceDistribution.querySelectorAll('.space-segment'));
+        
+        const autoButton = document.getElementById('autoButton');
+        const mixedButton = document.getElementById('mixedButton');
+        const fixedButton = document.getElementById('fixedButton');
+        const zeroButton = document.getElementById('zeroButton');
+        const overflowButton = document.getElementById('overflowButton');
+        const resetButton = document.getElementById('resetButton');
+
+        // Initialize flex-basis values
+        let flexBasisValues = [
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 },
+            { type: 'auto', value: 0 }
+        ];
+        
+        let containerWidth = 900;
+        
+        // Function to calculate basis size in pixels
+        function calculateBasisSize(basis, containerWidthPx) {
+            if (basis.type === 'auto') {
+                return 120; // Assume 120px content size for auto
+            } else if (basis.type === '%') {
+                return (basis.value / 100) * containerWidthPx;
+            } else {
+                return basis.value;
+            }
+        }
+        
+        // Function to update the visualization
+        function updateVisualization() {
+            // Update container width
+            flexContainer.style.width = `${containerWidth}px`;
+            containerWidthValue.textContent = `${containerWidth}px`;
+            
+            // Calculate basis sizes
+            const basisSizes = flexBasisValues.map(basis => 
+                calculateBasisSize(basis, containerWidth)
+            );
+            const totalBasisSize = basisSizes.reduce((sum, size) => sum + size, 0);
+            
+            // Check for overflow
+            const isOverflow = totalBasisSize > containerWidth;
+            overflowWarning.style.display = isOverflow ? 'block' : 'none';
+            
+            // Apply flex properties
+            flexItems.forEach((item, index) => {
+                const basis = flexBasisValues[index];
+                
+                // Update visual indicators
+                item.classList.remove('auto-basis', 'fixed-basis');
+                if (basis.type === 'auto') {
+                    item.classList.add('auto-basis');
+                } else {
+                    item.classList.add('fixed-basis');
+                }
+                
+                // Apply flex-basis
+                if (basis.type === 'auto') {
+                    item.style.flexBasis = 'auto';
+                    flexItemValues[index].textContent = 'auto';
+                } else {
+                    const basisValue = `${basis.value}${basis.type}`;
+                    item.style.flexBasis = basisValue;
+                    flexItemValues[index].textContent = basisValue;
+                }
+                
+                // Set flex-grow and flex-shrink
+                item.style.flexGrow = '1';
+                item.style.flexShrink = '1';
+            });
+            
+            // Update control values
+            typeSelects.forEach((select, index) => {
+                select.value = flexBasisValues[index].type;
+                sliders[index].value = flexBasisValues[index].value;
+                sliders[index].disabled = flexBasisValues[index].type === 'auto';
+                
+                if (flexBasisValues[index].type === 'auto') {
+                    valueDisplays[index].textContent = 'auto';
+                } else {
+                    valueDisplays[index].textContent = `${flexBasisValues[index].value}${flexBasisValues[index].type}`;
+                }
+            });
+            
+            // Calculate and display results
+            setTimeout(() => {
+                let calcText = 'Flex-basis calculation:\n\n';
+                calcText += `Container width: ${containerWidth}px\n\n`;
+                
+                // Show basis calculations
+                basisSizes.forEach((size, index) => {
+                    const basis = flexBasisValues[index];
+                    if (basis.type === 'auto') {
+                        calcText += `Item ${index + 1}: flex-basis auto (≈${size}px content)\n`;
+                    } else if (basis.type === '%') {
+                        calcText += `Item ${index + 1}: flex-basis ${basis.value}% = ${size.toFixed(0)}px\n`;
+                    } else {
+                        calcText += `Item ${index + 1}: flex-basis ${basis.value}px\n`;
+                    }
+                });
+                
+                calcText += `\nTotal basis size: ${totalBasisSize.toFixed(0)}px\n`;
+                
+                if (isOverflow) {
+                    const overflow = totalBasisSize - containerWidth;
+                    calcText += `⚠️  OVERFLOW: ${overflow.toFixed(0)}px exceeds container!\n`;
+                    calcText += `Items will shrink proportionally (flex-shrink: 1)\n\n`;
+                    
+                    // Calculate shrinking
+                    const shrinkFactor = containerWidth / totalBasisSize;
+                    calcText += `Shrink factor: ${containerWidth}px ÷ ${totalBasisSize.toFixed(0)}px = ${shrinkFactor.toFixed(3)}\n\n`;
+                    
+                    flexItems.forEach((item, index) => {
+                        const actualWidth = item.offsetWidth;
+                        const percentage = (actualWidth / containerWidth) * 100;
+                        const expectedWidth = basisSizes[index] * shrinkFactor;
+                        
+                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
+                        spaceSegments[index].style.width = `${percentage}%`;
+                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
+                        
+                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px × ${shrinkFactor.toFixed(3)} = ${expectedWidth.toFixed(0)}px\n`;
+                    });
+                } else {
+                    const remainingSpace = containerWidth - totalBasisSize;
+                    calcText += `Remaining space: ${remainingSpace.toFixed(0)}px\n\n`;
+                    
+                    if (remainingSpace > 0) {
+                        calcText += `Positive space distributed equally (flex-grow: 1):\n`;
+                        calcText += `Each item gets: +${(remainingSpace / 4).toFixed(0)}px extra\n\n`;
+                    } else if (remainingSpace === 0) {
+                        calcText += `Perfect fit: no extra space to distribute\n\n`;
+                    }
+                    
+                    // Update displays for normal case
+                    flexItems.forEach((item, index) => {
+                        const actualWidth = item.offsetWidth;
+                        const percentage = (actualWidth / containerWidth) * 100;
+                        const finalSize = basisSizes[index] + (remainingSpace / 4);
+                        
+                        contentSizes[index].textContent = `${actualWidth.toFixed(0)}px`;
+                        spaceSegments[index].style.width = `${percentage}%`;
+                        spaceSegments[index].textContent = `${percentage.toFixed(1)}%`;
+                        
+                        calcText += `Item ${index + 1}: ${basisSizes[index].toFixed(0)}px + ${(remainingSpace / 4).toFixed(0)}px = ${finalSize.toFixed(0)}px\n`;
+                    });
+                }
+                
+                calculationDisplay.textContent = calcText;
+            }, 50);
+        }
+        
+        // Add event listener to container width slider
+        containerWidthSlider.addEventListener('input', () => {
+            containerWidth = parseInt(containerWidthSlider.value);
+            updateVisualization();
+        });
+        
+        // Add event listeners to type selects
+        typeSelects.forEach((select, index) => {
+            select.addEventListener('change', () => {
+                flexBasisValues[index].type = select.value;
+                if (select.value === 'auto') {
+                    flexBasisValues[index].value = 0;
+                    sliders[index].disabled = true;
+                } else {
+                    sliders[index].disabled = false;
+                    if (select.value === '%') {
+                        sliders[index].max = 100;
+                        sliders[index].step = 5;
+                        flexBasisValues[index].value = 25;
+                        sliders[index].value = 25;
+                    } else {
+                        sliders[index].max = 400;
+                        sliders[index].step = 10;
+                        flexBasisValues[index].value = 100;
+                        sliders[index].value = 100;
+                    }
+                }
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to sliders
+        sliders.forEach((slider, index) => {
+            slider.addEventListener('input', () => {
+                flexBasisValues[index].value = parseInt(slider.value);
+                updateVisualization();
+            });
+        });
+        
+        // Add event listeners to buttons
+        autoButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        mixedButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 100 },
+                { type: 'auto', value: 0 },
+                { type: '%', value: 30 },
+                { type: 'auto', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        fixedButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 150 },
+                { type: 'px', value: 100 },
+                { type: 'px', value: 200 },
+                { type: 'px', value: 50 }
+            ];
+            updateVisualization();
+        });
+        
+        zeroButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 },
+                { type: 'px', value: 0 }
+            ];
+            updateVisualization();
+        });
+        
+        overflowButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'px', value: 250 },
+                { type: 'px', value: 200 },
+                { type: 'px', value: 300 },
+                { type: 'px', value: 180 }
+            ];
+            containerWidth = 600;
+            containerWidthSlider.value = 600;
+            updateVisualization();
+        });
+        
+        resetButton.addEventListener('click', () => {
+            flexBasisValues = [
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 },
+                { type: 'auto', value: 0 }
+            ];
+            containerWidth = 900;
+            containerWidthSlider.value = 900;
+            updateVisualization();
+        });
+        
+        // Initialize the visualization
+        updateVisualization();
+    </script>
+</body>
+</html>

@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flexbox Visualizer - Nord Theme</title>
+    <style>
+        /* Nord Color Palette */
+        :root {
+            --nord0: #2E3440;
+            --nord1: #3B4252;
+            --nord2: #434C5E;
+            --nord3: #4C566A;
+            --nord4: #D8DEE9;
+            --nord5: #E5E9F0;
+            --nord6: #ECEFF4;
+            --nord7: #8FBCBB;
+            --nord8: #88C0D0;
+            --nord9: #81A1C1;
+            --nord10: #5E81AC;
+            --nord11: #BF616A;
+            --nord12: #D08770;
+            --nord13: #EBCB8B;
+            --nord14: #A3BE8C;
+            --nord15: #B48EAD;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Ubuntu Sans Mono', sans-serif !important;
+        }
+
+        body {
+            background-color: var(--nord0);
+            color: var(--nord6);
+            padding: 20px;
+        }
+
+        .app {
+            max-width: 1200px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        h1 {
+            color: var(--nord8);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        h3 {
+            color: var(--nord7);
+            margin-bottom: 10px;
+        }
+
+        .controls {
+            background-color: var(--nord1);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .control-group {
+            flex: 1 0 200px;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            gap: 8px;
+        }
+
+        input[type="radio"] {
+            cursor: pointer;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .properties-display {
+            background-color: var(--nord1);
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+        }
+
+        .properties-display code {
+            display: block;
+            margin-bottom: 4px;
+            font-family: monospace;
+            color: var(--nord13);
+        }
+
+        /* Container area with positioning for axes */
+        .flex-container-wrapper {
+            position: relative;
+            padding: 60px 0 0 90px; /* Increased left padding for axis labels */
+            margin-bottom: 40px;
+        }
+
+        .flex-container {
+            background-color: var(--nord2);
+            border: 2px solid var(--nord3);
+            padding: 20px;
+            border-radius: 8px;
+            min-height: 300px;
+            display: flex;
+            flex-wrap: nowrap;
+            flex-direction: row;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .flex-item {
+            background-color: var(--nord8);
+            color: var(--nord0);
+            padding: 20px;
+            margin: 5px;
+            border-radius: 5px;
+            font-size: 20px;
+            font-weight: bold;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-width: 80px;
+            min-height: 80px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 2px solid var(--nord10);
+        }
+
+        /* Axes styling - Completely redesigned */
+        .main-axis, .cross-axis {
+            position: absolute;
+        }
+
+        /* Main Axis - horizontal (row direction) */
+        .main-axis.horizontal {
+            width: calc(100% - 90px);
+            height: 2px;
+            background-color: var(--nord14); /* Green */
+            top: 30px;
+            left: 90px;
+        }
+
+        .main-axis.horizontal .axis-text {
+            position: absolute;
+            color: var(--nord14);
+            top: -30px;
+            right: 10px;
+            white-space: nowrap;
+            font-weight: 500;
+            background-color: var(--nord0);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .main-axis.horizontal .arrow {
+            position: absolute;
+            right: -10px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 10px solid var(--nord14);
+        }
+
+        /* Cross Axis - vertical (row direction) */
+        .cross-axis.vertical {
+            height: calc(100% - 60px);
+            width: 2px;
+            background-color: var(--nord11); /* Red */
+            left: 45px; /* Moved to the side a bit */
+            top: 60px;
+        }
+
+        /* Key fix: Position text BESIDE the axis line, not on it */
+        .cross-axis.vertical .axis-text {
+            position: absolute;
+            color: var(--nord11);
+            left: -80px; /* Position text to the left of the line */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Center alignment correction */
+            white-space: nowrap;
+            font-weight: 500;
+            background-color: var(--nord0);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .cross-axis.vertical .arrow {
+            position: absolute;
+            bottom: -10px;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid var(--nord11);
+        }
+
+        /* Main Axis - vertical (column direction) */
+        .main-axis.vertical {
+            height: calc(100% - 60px);
+            width: 2px;
+            background-color: var(--nord14);
+            left: 45px; /* Moved to the side a bit */
+            top: 60px;
+        }
+
+        /* Key fix: Position text BESIDE the axis line, not on it */
+        .main-axis.vertical .axis-text {
+            position: absolute;
+            color: var(--nord14);
+            left: -80px; /* Position text to the left of the line */
+            top: 50%; /* Center vertically */
+            transform: translateY(-50%); /* Center alignment correction */
+            white-space: nowrap;
+            font-weight: 500;
+            background-color: var(--nord0);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .main-axis.vertical .arrow {
+            position: absolute;
+            bottom: -10px;
+            left: -4px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 10px solid var(--nord14);
+        }
+
+        /* Cross Axis - horizontal (column direction) */
+        .cross-axis.horizontal {
+            width: calc(100% - 90px);
+            height: 2px;
+            background-color: var(--nord11);
+            top: 30px;
+            left: 90px;
+        }
+
+        .cross-axis.horizontal .axis-text {
+            position: absolute;
+            color: var(--nord11);
+            top: -30px;
+            right: 10px;
+            white-space: nowrap;
+            font-weight: 500;
+            background-color: var(--nord0);
+            padding: 2px 6px;
+            border-radius: 3px;
+        }
+
+        .cross-axis.horizontal .arrow {
+            position: absolute;
+            right: -10px;
+            top: -4px;
+            width: 0;
+            height: 0;
+            border-top: 5px solid transparent;
+            border-bottom: 5px solid transparent;
+            border-left: 10px solid var(--nord11);
+        }
+
+        /* Row Reverse */
+        .main-axis.horizontal.reverse .arrow {
+            right: auto;
+            left: -10px;
+            border-left: 0;
+            border-right: 10px solid var(--nord14);
+        }
+
+        .main-axis.horizontal.reverse .axis-text {
+            right: auto;
+            left: 10px;
+        }
+
+        /* Column Reverse */
+        .main-axis.vertical.reverse .arrow {
+            bottom: auto;
+            top: -10px;
+            border-top: 0;
+            border-bottom: 10px solid var(--nord14);
+        }
+
+        footer {
+            margin-top: 30px;
+            background-color: var(--nord1);
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--nord4);
+        }
+
+        .info-label {
+            color: var(--nord9);
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <h1>Flexbox Visualizer</h1>
+        
+        <div class="controls">
+            <div class="control-group">
+                <h3>flex-direction</h3>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="flexDirection" value="row" checked>
+                        row
+                    </label>
+                    <label>
+                        <input type="radio" name="flexDirection" value="column">
+                        column
+                    </label>
+                    <label>
+                        <input type="radio" name="flexDirection" value="row-reverse">
+                        row-reverse
+                    </label>
+                    <label>
+                        <input type="radio" name="flexDirection" value="column-reverse">
+                        column-reverse
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>flex-wrap</h3>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="flexWrap" value="nowrap" checked>
+                        nowrap
+                    </label>
+                    <label>
+                        <input type="radio" name="flexWrap" value="wrap">
+                        wrap
+                    </label>
+                    <label>
+                        <input type="radio" name="flexWrap" value="wrap-reverse">
+                        wrap-reverse
+                    </label>
+                </div>
+            </div>
+
+            <div class="control-group">
+                <h3>Number of boxes</h3>
+                <input type="range" min="3" max="12" value="6" id="boxCount">
+                <span id="boxCountValue">6</span>
+            </div>
+        </div>
+
+        <div class="flex-container-wrapper" id="container-wrapper">
+            <div class="properties-display">
+                <code>display: flex;</code>
+                <code id="directionCode">flex-direction: row;</code>
+                <code id="wrapCode">flex-wrap: nowrap;</code>
+            </div>
+            
+            <!-- Axes displayed alongside the container -->
+            <div class="main-axis horizontal" id="mainAxis">
+                <div class="axis-text">Main Axis</div>
+                <div class="arrow"></div>
+            </div>
+            <div class="cross-axis vertical" id="crossAxis">
+                <div class="axis-text">Cross Axis</div>
+                <div class="arrow"></div>
+            </div>
+            
+            <div class="flex-container" id="demo-container">
+                <div class="flex-item">1</div>
+                <div class="flex-item">2</div>
+                <div class="flex-item">3</div>
+                <div class="flex-item">4</div>
+                <div class="flex-item">5</div>
+                <div class="flex-item">6</div>
+            </div>
+        </div>
+        
+        <footer>
+            <div>
+                <span class="info-label">User:</span>
+                <span>SHAHNUR00</span>
+            </div>
+            <div>
+                <span class="info-label">Last Updated:</span>
+                <span>2025-07-22 04:08:34</span>
+            </div>
+        </footer>
+    </div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const container = document.getElementById('demo-container');
+            const directionCode = document.getElementById('directionCode');
+            const wrapCode = document.getElementById('wrapCode');
+            const boxCount = document.getElementById('boxCount');
+            const boxCountValue = document.getElementById('boxCountValue');
+            const mainAxis = document.getElementById('mainAxis');
+            const crossAxis = document.getElementById('crossAxis');
+            
+            // Initialize boxes
+            updateBoxes();
+            
+            // Direction radio buttons
+            document.querySelectorAll('input[name="flexDirection"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const direction = this.value;
+                    container.style.flexDirection = direction;
+                    directionCode.textContent = `flex-direction: ${direction};`;
+                    
+                    // Update axis visualization based on direction
+                    updateAxisDisplay(direction);
+                });
+            });
+            
+            // Wrap radio buttons
+            document.querySelectorAll('input[name="flexWrap"]').forEach(input => {
+                input.addEventListener('change', function() {
+                    const wrap = this.value;
+                    container.style.flexWrap = wrap;
+                    wrapCode.textContent = `flex-wrap: ${wrap};`;
+                });
+            });
+            
+            // Box count slider
+            boxCount.addEventListener('input', function() {
+                boxCountValue.textContent = this.value;
+                updateBoxes();
+            });
+            
+            function updateBoxes() {
+                // Clear existing boxes
+                container.innerHTML = '';
+                
+                // Add new boxes
+                const count = parseInt(boxCount.value);
+                for (let i = 1; i <= count; i++) {
+                    const box = document.createElement('div');
+                    box.className = 'flex-item';
+                    box.textContent = i;
+                    container.appendChild(box);
+                }
+                
+                // Apply random sizes
+                randomizeSizes();
+            }
+            
+            function updateAxisDisplay(direction) {
+                // Reset classes first
+                mainAxis.className = 'main-axis';
+                crossAxis.className = 'cross-axis';
+                
+                switch(direction) {
+                    case 'row':
+                        mainAxis.className = 'main-axis horizontal';
+                        crossAxis.className = 'cross-axis vertical';
+                        break;
+                        
+                    case 'column':
+                        mainAxis.className = 'main-axis vertical';
+                        crossAxis.className = 'cross-axis horizontal';
+                        break;
+                        
+                    case 'row-reverse':
+                        mainAxis.className = 'main-axis horizontal reverse';
+                        crossAxis.className = 'cross-axis vertical';
+                        break;
+                        
+                    case 'column-reverse':
+                        mainAxis.className = 'main-axis vertical reverse';
+                        crossAxis.className = 'cross-axis horizontal';
+                        break;
+                }
+            }
+            
+            // Make boxes have different sizes randomly to better demonstrate flex behavior
+            function randomizeSizes() {
+                document.querySelectorAll('.flex-item').forEach(box => {
+                    // Only apply to some boxes to maintain visibility of numbers
+                    if (Math.random() > 0.5) {
+                        const width = 80 + Math.floor(Math.random() * 120);
+                        const height = 80 + Math.floor(Math.random() * 80);
+                        box.style.width = `${width}px`;
+                        box.style.height = `${height}px`;
+                    }
+                });
+            }
+            
+            // Re-randomize sizes when box count changes
+            boxCount.addEventListener('change', randomizeSizes);
+        });
+    </script>
+</body>
+</html>
