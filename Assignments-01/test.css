@@ -1,0 +1,110 @@
+.spot{
+  height: 39.875rem;
+  border: 2px solid saddlebrown;
+  margin-left: 3.75rem;
+  margin-right: 3.75rem;
+  padding-bottom: 5rem;
+}
+
+.spotsec{
+  margin-left: 3.75rem;
+  margin-right: 3.75rem;
+  border: 2px solid seagreen;
+  /* padding-bottom: 5rem; */
+}
+
+.header-text{
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 3.75rem;
+  text-align: center;
+  color: rgba(13, 27, 42, 1);
+}
+
+.sub-header{
+  font-size: 1rem;
+  line-height: 1.5rem;
+  text-align: center;
+  font-weight: 400;
+  color: rgba(87, 87, 87, 1); 
+  margin-top: 0.75rem;
+}
+
+.all-cards{
+  border: 2px solid rebeccapurple;
+  display: flex;
+  height: 28.75rem;
+  padding-top: 3rem;
+  justify-content: center;
+  gap: 1.5rem;
+}
+
+.container{
+  height: 27.75rem;
+  border: 2px solid sienna;
+}
+
+.card-content{
+  border: 2px solid greenyellow;
+  height: 20.05rem;
+  width: 19.041rem;
+  padding: 2rem;
+}
+
+.card-heading{
+  border: 2px solid fuchsia;
+  padding-bottom: 1.25rem;
+  border-bottom-color: rgba(136, 136, 136, 1);
+}
+
+.list{
+  border: 2px solid gold;
+  padding-top: 0.63rem;
+}
+
+.li{
+  padding-top: 0.62rem;
+  font-size: 0.875rem;
+  line-height: 1.3125rem;
+  font-weight: 400;
+  color: rgba(51, 51, 51, 1);
+}
+
+.button-conf{
+  padding-top: 1.25rem;
+}
+
+.opt{
+  font-size: 0.8125rem;
+  line-height: 1.2188rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.0203rem;
+  color: rgba(136, 136, 136, 1);
+}
+
+.price{
+  font-size: 2.75rem;
+  font-weight: 700;
+  line-height: 2.75rem;
+  color: rgba(13, 27, 42, 1);
+}
+
+.num{
+  font-size: 0.8125rem;
+  font-weight: 400;
+  line-height: 1.2188rem;
+  color: rgba(136, 136, 136, 1);
+}
+
+.li::marker{
+  color: rgba(37, 99, 235, 1);
+  font-size: 0.875rem;
+  line-height: 1.3125rem;
+  font-weight: 700;
+}
+
+.button-conf{
+  border: 2px solid seagreen;
+  height: 2.8125rem;
+}
